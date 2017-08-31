@@ -1,0 +1,5 @@
+class Main{ 
+    main():Object{ f(10) };
+    f(a:Int):Object{ 0 };
+    f: Int <- 0;
+};
