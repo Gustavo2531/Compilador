@@ -1,0 +1,62 @@
+import "templates"
+
+base(globalsData, tags, strings, ints, classnames, baseObjects, methodsData, globalsText, constructors, methodsText) ::= <<
+    .data
+<!
+-_____            ,                -_-/                                     ,  
+  ' | -,    _    ||    _          (_ /           _                         ||  
+ /| |  |`  < \, =||=  < \,       (_ --_   _-_   / \\ \\/\\/\\  _-_  \\/\\ =||= 
+ || |==||  /-||  ||   /-||         --_ ) || \\ || || || || || || \\ || ||  ||  
+~|| |  |, (( ||  ||  (( ||        _/  )) ||/   || || || || || ||/   || ||  ||  
+ ~-____,   \/\\  \\,  \/\\       (_-_-   \\,/  \\_-| \\ \\ \\ \\,/  \\ \\  \\, 
+(                                               /  \                           
+                                               '----`                                 
+all your data are belong to us
+
+!>
+
+<! <globalsData:globalsDataNames()> !>
+<! <tags:classTags()> !>
+<! <strings:stringLiteral()> !>
+<ints:intLiteral()>
+
+<!
+@ Booleans are boooooring...
+bool_const0:
+    .word    4
+    .word    4
+    .word    Bool_dispTab
+    .word    0
+bool_const1:
+    .word    4
+    .word    4
+    .word    Bool_dispTab
+    .word    1
+!>
+
+<! <classNames:nameTable()> !>
+<! <baseObjects:objectTable()> !>
+<! <methodsData:dispatchTables()> !>
+
+    .text
+<!
+ ___                                                                             
+-   ---___-               ,          -_-/                                     ,  
+   (' ||          ,      ||         (_ /           _                         ||  
+  ((  ||     _-_  \\ /` =||=       (_ --_   _-_   / \\ \\/\\/\\  _-_  \\/\\ =||= 
+ ((   ||    || \\  \\    ||          --_ ) || \\ || || || || || || \\ || ||  ||  
+  (( //     ||/    /\\   ||         _/  )) ||/   || || || || || ||/   || ||  ||  
+    -____-  \\,/  /  \;  \\,       (_-_-   \\,/  \\_-| \\ \\ \\ \\,/  \\ \\  \\, 
+                                                  /  \                           
+                                                 '----`                          
+"what matters most is how well you walk through the fire" 
+    -- Charles Bukowski
+    
+!>
+
+<! <globalsText:globalDataNames()> !>
+<! <constructors:classConstructors()> !>
+<methodsText:methodDeclarations()>
+>>
+
+

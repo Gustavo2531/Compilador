@@ -49,7 +49,7 @@ public class CompilerImpl implements Compiler {
 		}
 		
 
-		start.apply(new ASTPrinter(System.out));
+		//start.apply(new ASTPrinter(System.out));
 		
 		// When generating code, uncomment this:
 		PrintStream out = new PrintStream(new FileOutputStream(outFile));

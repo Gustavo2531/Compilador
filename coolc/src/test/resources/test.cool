@@ -1,5 +1,7 @@
-class Main{ 
+class Main{
+	f: Int <- 5;
+	 
     main():Object{ f(10) };
     f(a:Int):Object{ 0 };
-    f: Int <- 0;
+    
 };
