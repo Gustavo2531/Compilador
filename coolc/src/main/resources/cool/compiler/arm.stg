@@ -56,7 +56,7 @@ bool_const1:
 
 <! <globalsText:globalDataNames()> !>
 <! <constructors:classConstructors()> !>
-<! <methodsText:methodDeclarations()> !>
+<methodsText:methodDeclarations()>
 >>
 
 
