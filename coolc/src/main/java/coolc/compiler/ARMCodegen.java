@@ -15,6 +15,7 @@ import coolc.compiler.autogen.node.AMethodFeature;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.autogen.node.AStrExpr;
 import coolc.compiler.autogen.node.Node;
+import coolc.compiler.autogen.node.PFeature;
 import coolc.compiler.autogen.node.Start;
 import coolc.compiler.util.Util;
 
@@ -61,8 +62,14 @@ public class ARMCodegen implements CodegenFacade {
 		
 		private AClassDecl klass;
 		@Override
-		public void inAClassDecl(AClassDecl node) {
+		public void caseAClassDecl(AClassDecl node) {
 			klass = node;
+			
+			for (PFeature f : node.getFeature()) {
+				if (f instanceof AMethodFeature) {
+					f.apply(this);
+				}
+			}
 		}		
 		
 		@Override

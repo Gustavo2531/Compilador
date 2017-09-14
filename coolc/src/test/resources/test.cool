@@ -1,7 +1,7 @@
-class Main{
-	f: Int <- 5;
+class Main inherits IO {
+	f: Int <- 10000;
 	 
-    main():Object{ f(10) };
-    f(a:Int):Object{ 0 };
+    main():Object{ 1810 };
+    f(a:Int):Object{ 1821 };
     
 };
