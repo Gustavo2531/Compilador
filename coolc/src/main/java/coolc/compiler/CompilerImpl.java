@@ -14,7 +14,7 @@ import coolc.compiler.autogen.parser.ParserException;
 import coolc.compiler.visitors.ASTPrinter;
 
 public class CompilerImpl implements Compiler {
-	public static String file = "src/test/resources/test.cool";
+	public static String file = "src/test/resources/test2.cool";
 	public static String outFile = "src/test/resources/test.s";
 	
 	private CoolcLexer lexer;
@@ -49,7 +49,7 @@ public class CompilerImpl implements Compiler {
 		}
 		
 
-		//start.apply(new ASTPrinter(System.out));
+		start.apply(new ASTPrinter(System.out));
 		
 		// When generating code, uncomment this:
 		PrintStream out = new PrintStream(new FileOutputStream(outFile));

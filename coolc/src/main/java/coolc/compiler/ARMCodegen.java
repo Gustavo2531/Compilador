@@ -2,6 +2,7 @@ package coolc.compiler;
 
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.stringtemplate.v4.ST;
@@ -11,6 +12,8 @@ import org.stringtemplate.v4.STGroupFile;
 import coolc.compiler.autogen.analysis.DepthFirstAdapter;
 import coolc.compiler.autogen.node.AClassDecl;
 import coolc.compiler.autogen.node.AIntExpr;
+import coolc.compiler.autogen.node.ALetDecl;
+import coolc.compiler.autogen.node.ALetExpr;
 import coolc.compiler.autogen.node.AMethodFeature;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.autogen.node.AStrExpr;
@@ -18,6 +21,7 @@ import coolc.compiler.autogen.node.Node;
 import coolc.compiler.autogen.node.PFeature;
 import coolc.compiler.autogen.node.Start;
 import coolc.compiler.util.Util;
+import coolc.compiler.autogen.node.PLetDecl;
 
 public class ARMCodegen implements CodegenFacade {
 	private Map<Node, Integer> literalIdx;
@@ -91,6 +95,24 @@ public class ARMCodegen implements CodegenFacade {
 			lastResult = st.render();
 		}
 		
+		@Override
+		public void outALetDecl(ALetDecl node) {
+			// TODO Auto-generated method stub
+			super.outALetDecl(node);
+			
+			System.out.println("inside the let decl: " + node.toString());
+			
+		}
+		
+		@Override
+		public void outALetExpr(ALetExpr node) {
+			// TODO Auto-generated method stub
+			super.outALetExpr(node);
+			
+			for (PLetDecl p : node.getLetDecl()) {
+				System.out.println("printing node: " + p.toString());
+			}
+		}
 	}
 
 
