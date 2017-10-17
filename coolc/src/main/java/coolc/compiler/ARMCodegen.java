@@ -168,7 +168,7 @@ public class ARMCodegen implements CodegenFacade {
 //		st.addAggr("ints.{idx,tag,value}", 1, 3, 15);
 //		st.addAggr("ints.{idx,tag,value}", 1, 3, 28);
 		
-//		 start.apply(new SweepConstants());
+		start.apply(new SweepConstants());
 		
 //		** Tables
 //	    1. class_nameTab: table for the name of the classes in string
@@ -183,10 +183,10 @@ public class ARMCodegen implements CodegenFacade {
 //      3. dispTab fo reach class
 //        3.1 Listing of the methods for each class considering inheritance
 		// TODO: Dispatch tables
-		/*
+		
 		String [] s = new String[] {"a", "b"};
 		stringTemplate.addAggr("methodsData.{name, methods}", "className", s);
-		*/
+		
 
 //		*** protObjs
 //		Attributes, also consider inherited ones.
@@ -194,7 +194,7 @@ public class ARMCodegen implements CodegenFacade {
 	}
 	
 	private void textSegment() {
-//		start.apply(new MethodVisitor());
+		start.apply(new MethodVisitor());
 
 //		*** Global declarations of the text segment, for example:
 //		.global    Main_init
