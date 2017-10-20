@@ -98,19 +98,43 @@ public class ARMCodegen implements CodegenFacade {
 		@Override
 		public void outALetDecl(ALetDecl node) {
 			// TODO Auto-generated method stub
-			super.outALetDecl(node);
+			//super.outALetDecl(node);
+			ST st;
+			st = templateGroup.getInstanceOf("letExpr");
 			
-			System.out.println("inside the let decl: " + node.toString());
+			String s="";
+			if(node.getExpr() != null){
+	            if(!node.getTypeId().getText().equals("SELF_TYPE")){
+	                
+	      
+	                 node.getObjectId().apply(this);
+	                 st.add("nameVariable",lastResult);
+	                 
+	                
+	                 node.getExpr().apply(this);
+	                 st.add("variable",lastResult);
+	                 
+	                 lastResult=st.render();
+	                 s=node.getExpr().toString();
+	            	}
+			}
+			System.out.println("inside the let decl: " + s);
+			
+		
+		//super.outALetDecl(node);
+		
+		
+			//System.out.println("inside the let decl: " + node.toString());
 			
 		}
 		
 		@Override
 		public void outALetExpr(ALetExpr node) {
 			// TODO Auto-generated method stub
-			super.outALetExpr(node);
-			
+			//super.outALetExpr(node);
+		
 			for (PLetDecl p : node.getLetDecl()) {
-				System.out.println("printing node: " + p.toString());
+				//System.out.println("printing node: " + p.toString());
 			}
 		}
 	}
