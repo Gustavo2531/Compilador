@@ -11,12 +11,18 @@ import org.stringtemplate.v4.STGroupFile;
 import coolc.compiler.autogen.analysis.DepthFirstAdapter;
 import coolc.compiler.autogen.node.AClassDecl;
 import coolc.compiler.autogen.node.AIntExpr;
+import coolc.compiler.autogen.node.AListExpr;
 import coolc.compiler.autogen.node.AMethodFeature;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.autogen.node.AStrExpr;
+import coolc.compiler.autogen.node.AWhileExpr;
 import coolc.compiler.autogen.node.Node;
+import coolc.compiler.autogen.node.PExpr;
 import coolc.compiler.autogen.node.PFeature;
 import coolc.compiler.autogen.node.Start;
+import coolc.compiler.autogen.node.TPlus;
+import coolc.compiler.autogen.node.TWhile;
+import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.util.Util;
 
 public class ARMCodegen implements CodegenFacade {
@@ -42,6 +48,7 @@ public class ARMCodegen implements CodegenFacade {
 
 	class MethodVisitor extends DepthFirstAdapter {
 		String lastResult;
+		int labelCounter = 0;
 		
 		@Override
 		public void inAIntExpr(AIntExpr node) {
@@ -87,6 +94,51 @@ public class ARMCodegen implements CodegenFacade {
 			
 			node.getR().apply(this);
 			st.add("right", lastResult);
+			
+			lastResult = st.render();
+		}
+		
+		String getLabel(String s){
+			labelCounter ++;
+			return s + labelCounter;
+		}
+		
+		@Override
+		public void caseAWhileExpr(AWhileExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("whileExpr");
+			
+			st.add("loopLabel", getLabel("loopLabel"));
+			node.getTest().apply(this);
+			st.add("testExpression", lastResult);
+			
+			node.getLoop().apply(this);
+			st.add("loopExpression", lastResult);
+			st.add("exitLabel", getLabel("exitLabel"));
+			
+			lastResult = st.render();
+		}
+		
+		@Override
+		public void caseAListExpr(AListExpr node) {
+			String r = "";
+			for(PExpr p: node.getExpr()){
+				p.apply(this); //gonna update the last result
+				r += lastResult; 
+			}
+			lastResult = r;
+		}
+		
+		@Override
+		public void outAPlusExpr(APlusExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("addOperation");
+			
+			node.getL().apply(this);
+			st.add("n1", lastResult);
+			
+			node.getR().apply(this);
+			st.add("n2", lastResult);
 			
 			lastResult = st.render();
 		}
@@ -168,7 +220,7 @@ public class ARMCodegen implements CodegenFacade {
 //		st.addAggr("ints.{idx,tag,value}", 1, 3, 15);
 //		st.addAggr("ints.{idx,tag,value}", 1, 3, 28);
 		
-//		 start.apply(new SweepConstants());
+		 start.apply(new SweepConstants());
 		
 //		** Tables
 //	    1. class_nameTab: table for the name of the classes in string
@@ -194,7 +246,7 @@ public class ARMCodegen implements CodegenFacade {
 	}
 	
 	private void textSegment() {
-//		start.apply(new MethodVisitor());
+		start.apply(new MethodVisitor());
 
 //		*** Global declarations of the text segment, for example:
 //		.global    Main_init
