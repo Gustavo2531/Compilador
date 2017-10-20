@@ -1,6 +1,7 @@
 package coolc.compiler;
 
 import java.io.PrintStream;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -12,8 +13,6 @@ import org.stringtemplate.v4.STGroupFile;
 import coolc.compiler.autogen.analysis.DepthFirstAdapter;
 import coolc.compiler.autogen.node.AClassDecl;
 import coolc.compiler.autogen.node.AIntExpr;
-import coolc.compiler.autogen.node.ALetDecl;
-import coolc.compiler.autogen.node.ALetExpr;
 import coolc.compiler.autogen.node.AMethodFeature;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.autogen.node.AStrExpr;
@@ -22,6 +21,8 @@ import coolc.compiler.autogen.node.PFeature;
 import coolc.compiler.autogen.node.Start;
 import coolc.compiler.util.Util;
 import coolc.compiler.autogen.node.PLetDecl;
+import coolc.compiler.autogen.node.ALetDecl;
+import coolc.compiler.autogen.node.ALetExpr;
 
 public class ARMCodegen implements CodegenFacade {
 	private Map<Node, Integer> literalIdx;
@@ -94,7 +95,58 @@ public class ARMCodegen implements CodegenFacade {
 			
 			lastResult = st.render();
 		}
+	
 		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+ 		
 		@Override
 		public void outALetDecl(ALetDecl node) {
 			// TODO Auto-generated method stub
@@ -214,7 +266,7 @@ public class ARMCodegen implements CodegenFacade {
 //		st.addAggr("ints.{idx,tag,value}", 1, 3, 15);
 //		st.addAggr("ints.{idx,tag,value}", 1, 3, 28);
 		
-		start.apply(new SweepConstants());
+			start.apply(new SweepConstants());
 		
 //		** Tables
 //	    1. class_nameTab: table for the name of the classes in string
