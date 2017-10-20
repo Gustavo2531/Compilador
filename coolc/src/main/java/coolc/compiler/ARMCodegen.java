@@ -144,9 +144,6 @@ public class ARMCodegen implements CodegenFacade {
 		
 		
 		
-		
-		
- 		
 		@Override
 		public void outALetDecl(ALetDecl node) {
 			// TODO Auto-generated method stub
@@ -171,20 +168,11 @@ public class ARMCodegen implements CodegenFacade {
 	            	}
 			}
 			System.out.println("inside the let decl: " + s);
-			
-		
-		//super.outALetDecl(node);
-		
-		
-			//System.out.println("inside the let decl: " + node.toString());
-			
 		}
 		
 		@Override
 		public void outALetExpr(ALetExpr node) {
-			// TODO Auto-generated method stub
 			//super.outALetExpr(node);
-		
 			for (PLetDecl p : node.getLetDecl()) {
 				//System.out.println("printing node: " + p.toString());
 			}
@@ -266,7 +254,7 @@ public class ARMCodegen implements CodegenFacade {
 //		st.addAggr("ints.{idx,tag,value}", 1, 3, 15);
 //		st.addAggr("ints.{idx,tag,value}", 1, 3, 28);
 		
-			start.apply(new SweepConstants());
+		 start.apply(new SweepConstants());
 		
 //		** Tables
 //	    1. class_nameTab: table for the name of the classes in string
