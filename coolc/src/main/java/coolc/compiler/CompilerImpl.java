@@ -15,6 +15,7 @@ import coolc.compiler.visitors.ASTPrinter;
 
 public class CompilerImpl implements Compiler {
 	public static String file = "src/test/resources/test.cool";
+//	public static String file = "src/test/resources/codegen/input/while-val.cool";
 	public static String outFile = "src/test/resources/test.s";
 	
 	private CoolcLexer lexer;
