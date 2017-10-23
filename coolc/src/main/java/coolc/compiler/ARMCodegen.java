@@ -102,88 +102,49 @@ public class ARMCodegen implements CodegenFacade {
 			
 			lastResult = st.render();
 		}
-	
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		@Override
 		public void outALetDecl(ALetDecl node) {
 			// TODO Auto-generated method stub
 			//super.outALetDecl(node);
 			ST st;
-			st = templateGroup.getInstanceOf("letExpr");
+			st = templateGroup.getInstanceOf("letDecl");
 			
-			String s="";
 			if(node.getExpr() != null){
 	            if(!node.getTypeId().getText().equals("SELF_TYPE")){
-	                
-	      
-	                 node.getObjectId().apply(this);
-	                 st.add("nameVariable",lastResult);
+	            		node.getExpr().apply(this);
+	            		
+	                st.add("loadedExpr", lastResult);
 	                 
-	                
-	                 node.getExpr().apply(this);
-	                 st.add("variable",lastResult);
-	                 
-	                 lastResult=st.render();
-	                 s=node.getExpr().toString();
+	                lastResult=st.render();
 	            	}
 			}
-			System.out.println("inside the let decl: " + s);
 		}
 		
 
 		@Override
 		public void outALetExpr(ALetExpr node) {
 			//super.outALetExpr(node);
+			String r = "";
 			for (PLetDecl p : node.getLetDecl()) {
 				//System.out.println("printing node: " + p.toString());
+				p.apply(this);
+				r += lastResult; 
 			}
+			
+			ST st;
+			st = templateGroup.getInstanceOf("letExpr");
+			node.getExpr().apply(this);
+			st.add("resultExpr", lastResult);
+			r += st.render();
+			
+			for (PLetDecl p : node.getLetDecl()) {
+				//System.out.println("printing node: " + p.toString());
+				ST stPop;
+				stPop = templateGroup.getInstanceOf("popLetDecl");
+				r += stPop.render();
+			}
+			
+			lastResult = r;
 		}
 
 		String getLabel(String s){

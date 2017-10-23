@@ -1,4 +1,5 @@
-letExpr(nameVariable,variable) ::= <<
-<nameVariable>
-    mov r0, <variable>
+letExpr(resultExpr) ::= <<
+
+<resultExpr> /* Execute block inside let expr */
+
 >>
