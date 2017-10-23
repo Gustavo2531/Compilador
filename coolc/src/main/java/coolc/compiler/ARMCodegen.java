@@ -204,8 +204,15 @@ public class ARMCodegen implements CodegenFacade {
 		// TODO: Replace by global declarations
 		
 		//stringTemplate.addAggr("globalsData.{name}", "name_of_my_lovely_to_be_global_symbol");
-		//stringTemplate.addAggr("globalsData.{name}", "class_nameTab");
-
+		stringTemplate.addAggr("globalsData.{name}", "class_nameTab");
+		stringTemplate.addAggr("globalsData.{name}", "Main_protObj");
+		stringTemplate.addAggr("globalsData.{name}", "Int_protObj");
+		stringTemplate.addAggr("globalsData.{name}", "String_protObj");
+		stringTemplate.addAggr("globalsData.{name}", "bool_const0");
+		stringTemplate.addAggr("globalsData.{name}", "bool_const1");
+		stringTemplate.addAggr("globalsData.{name}", "_int_tag");
+		stringTemplate.addAggr("globalsData.{name}", "_bool_tag");
+		stringTemplate.addAggr("globalsData.{name}", "_string_tag");
 		
 //		*** Constants
 //	    1. String literals
