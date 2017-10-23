@@ -1,5 +1,5 @@
 popLetDecl(loadedExpr) ::= <<
 
-    sub sp, sp, #4
+    pop from stack
 
 >>
