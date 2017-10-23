@@ -200,6 +200,8 @@ public class ARMCodegen implements CodegenFacade {
 		stringTemplate.addAggr("globalsData.{name}", "_bool_tag");
 		stringTemplate.addAggr("globalsData.{name}", "_string_tag");
 		
+		//Por aqui van los tags
+		
 //		*** Constants
 //	    1. String literals
 //        1.1 Get list of literals (each must have a unique index)
