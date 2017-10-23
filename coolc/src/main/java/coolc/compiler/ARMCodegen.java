@@ -54,7 +54,7 @@ public class ARMCodegen implements CodegenFacade {
 	class MethodVisitor extends DepthFirstAdapter {
 		String lastResult;
 		int labelCounter = 0;
-		
+		int counterLets=0;
 		@Override
 		public void inAIntExpr(AIntExpr node) {
 			ST st;
@@ -110,7 +110,10 @@ public class ARMCodegen implements CodegenFacade {
 			st = templateGroup.getInstanceOf("letDecl");
 			
 			if(node.getExpr() != null){
+				
 	            if(!node.getTypeId().getText().equals("SELF_TYPE")){
+	            	
+					
 	            		node.getExpr().apply(this);
 	            		
 	                st.add("loadedExpr", lastResult);
@@ -120,11 +123,16 @@ public class ARMCodegen implements CodegenFacade {
 			}
 		}
 		
-
+		
+	
 		@Override
 		public void outALetExpr(ALetExpr node) {
 			//super.outALetExpr(node);
 			String r = "";
+			LinkedList<PLetDecl> params = node.getLetDecl();
+			System.out.println(params.size());
+			counterLets=params.size();
+		
 			for (PLetDecl p : node.getLetDecl()) {
 				//System.out.println("printing node: " + p.toString());
 				p.apply(this);
@@ -137,12 +145,7 @@ public class ARMCodegen implements CodegenFacade {
 			st.add("resultExpr", lastResult);
 			r += st.render();
 			
-			for (PLetDecl p : node.getLetDecl()) {
-				//System.out.println("printing node: " + p.toString());
-				ST stPop;
-				stPop = templateGroup.getInstanceOf("popLetDecl");
-				r += stPop.render();
-			}
+			
 			
 			lastResult = r;
 		}
