@@ -12,6 +12,8 @@ import coolc.compiler.autogen.analysis.DepthFirstAdapter;
 import coolc.compiler.autogen.node.AClassDecl;
 import coolc.compiler.autogen.node.AIntExpr;
 import coolc.compiler.autogen.node.AListExpr;
+import coolc.compiler.autogen.node.AAtExpr;
+import coolc.compiler.autogen.node.ACallExpr;
 import coolc.compiler.autogen.node.AMethodFeature;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.autogen.node.AStrExpr;
@@ -79,6 +81,16 @@ public class ARMCodegen implements CodegenFacade {
 			}
 		}		
 		
+		public void outAAtExp(AAtExpr node) {
+            ST st;
+            //first step
+        }
+        
+        public void outACallExpr(ACallExpr node){
+            ST st;
+            //first step
+        }
+        
 		@Override
 		public void outAMethodFeature(AMethodFeature node) {
 			stringTemplate.addAggr("methodsText.{klass, name, code}", klass.getName().getText(), node.getObjectId().getText(), lastResult);
