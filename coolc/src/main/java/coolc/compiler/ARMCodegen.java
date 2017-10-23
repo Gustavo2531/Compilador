@@ -19,6 +19,9 @@ import coolc.compiler.autogen.node.AMultExpr;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.autogen.node.AStrExpr;
 import coolc.compiler.autogen.node.AWhileExpr;
+import coolc.compiler.autogen.node.AWhileExpr;
+import coolc.compiler.autogen.node.AAtExpr;
+import coolc.compiler.autogen.node.ACallExpr;
 import coolc.compiler.autogen.node.Node;
 import coolc.compiler.autogen.node.PExpr;
 import coolc.compiler.autogen.node.PFeature;
@@ -98,6 +101,23 @@ public class ARMCodegen implements CodegenFacade {
 			
 			lastResult = st.render();
 		}
+		@Override
+		public void outAAtExpr(AAtExpr node) {
+            ST st;
+			st = templateGroup.getInstanceOf("atExpr");			
+			
+            lastResult=st.render();
+
+        }
+		
+        @Override
+        public void outACallExpr(ACallExpr node){
+            ST st;
+			st = templateGroup.getInstanceOf("callExpr");			
+			
+            lastResult=st.render();
+
+        }
 		@Override
 		public void outALetDecl(ALetDecl node) {
 			// TODO Auto-generated method stub
