@@ -1,7 +1,7 @@
 class Main inherits IO {
 	f: Int <- 987654321;
 	 
-    main():Object{ {while(111) loop 222 pool; while(333) loop 444 pool;} };
+    main():Object{ 2*3 };
     f(a:Int):Object{ 123456789 };
     
 };
