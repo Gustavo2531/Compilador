@@ -13,6 +13,7 @@ import coolc.compiler.autogen.node.AClassDecl;
 import coolc.compiler.autogen.node.AIntExpr;
 import coolc.compiler.autogen.node.AListExpr;
 import coolc.compiler.autogen.node.AMethodFeature;
+import coolc.compiler.autogen.node.AMultExpr;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.autogen.node.AStrExpr;
 import coolc.compiler.autogen.node.AWhileExpr;
@@ -143,8 +144,21 @@ public class ARMCodegen implements CodegenFacade {
 			lastResult = st.render();
 		}
 		
+		@Override
+		public void outAMultExpr(AMultExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("mulOperation");
+			
+			node.getL().apply(this);
+			st.add("n1", lastResult);
+			
+			node.getR().apply(this);
+			st.add("n2", lastResult);
+			
+			lastResult = st.render();
+		}
+		
 	}
-
 
 	private PrintStream out;
 	private Start start;
