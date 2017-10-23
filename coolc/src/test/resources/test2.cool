@@ -1,0 +1,5 @@
+class Main inherits IO {
+	 
+    main():Object{ let foo : Int <- 5, foo2 : Int <- 4, foo3 : Int <- 3 in 10 };
+    
+};
