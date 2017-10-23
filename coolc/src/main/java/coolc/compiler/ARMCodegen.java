@@ -11,6 +11,8 @@ import org.stringtemplate.v4.STGroupFile;
 import coolc.compiler.autogen.analysis.DepthFirstAdapter;
 import coolc.compiler.autogen.node.AClassDecl;
 import coolc.compiler.autogen.node.AIntExpr;
+import coolc.compiler.autogen.node.ALetDecl;
+import coolc.compiler.autogen.node.ALetExpr;
 import coolc.compiler.autogen.node.AListExpr;
 import coolc.compiler.autogen.node.AMethodFeature;
 import coolc.compiler.autogen.node.AMultExpr;
@@ -20,10 +22,8 @@ import coolc.compiler.autogen.node.AWhileExpr;
 import coolc.compiler.autogen.node.Node;
 import coolc.compiler.autogen.node.PExpr;
 import coolc.compiler.autogen.node.PFeature;
+import coolc.compiler.autogen.node.PLetDecl;
 import coolc.compiler.autogen.node.Start;
-import coolc.compiler.autogen.node.TPlus;
-import coolc.compiler.autogen.node.TWhile;
-import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.util.Util;
 
 public class ARMCodegen implements CodegenFacade {
@@ -98,7 +98,51 @@ public class ARMCodegen implements CodegenFacade {
 			
 			lastResult = st.render();
 		}
+		@Override
+		public void outALetDecl(ALetDecl node) {
+			// TODO Auto-generated method stub
+			//super.outALetDecl(node);
+			ST st;
+			st = templateGroup.getInstanceOf("letDecl");
+			
+			if(node.getExpr() != null){
+	            if(!node.getTypeId().getText().equals("SELF_TYPE")){
+	            		node.getExpr().apply(this);
+	            		
+	                st.add("loadedExpr", lastResult);
+	                 
+	                lastResult=st.render();
+	            	}
+			}
+		}
 		
+
+		@Override
+		public void outALetExpr(ALetExpr node) {
+			//super.outALetExpr(node);
+			String r = "";
+			for (PLetDecl p : node.getLetDecl()) {
+				//System.out.println("printing node: " + p.toString());
+				p.apply(this);
+				r += lastResult; 
+			}
+			
+			ST st;
+			st = templateGroup.getInstanceOf("letExpr");
+			node.getExpr().apply(this);
+			st.add("resultExpr", lastResult);
+			r += st.render();
+			
+			for (PLetDecl p : node.getLetDecl()) {
+				//System.out.println("printing node: " + p.toString());
+				ST stPop;
+				stPop = templateGroup.getInstanceOf("popLetDecl");
+				r += stPop.render();
+			}
+			
+			lastResult = r;
+		}
+
 		String getLabel(String s){
 			labelCounter ++;
 			return s + labelCounter;
