@@ -18,8 +18,11 @@ import coolc.compiler.autogen.node.AMethodFeature;
 import coolc.compiler.autogen.node.AMultExpr;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.autogen.node.AStrExpr;
+import coolc.compiler.autogen.node.ABoolExpr;
 import coolc.compiler.autogen.node.AWhileExpr;
 import coolc.compiler.autogen.node.AWhileExpr;
+import coolc.compiler.autogen.node.ALtExpr;
+import coolc.compiler.autogen.node.AEqExpr;
 import coolc.compiler.autogen.node.AAtExpr;
 import coolc.compiler.autogen.node.ACallExpr;
 import coolc.compiler.autogen.node.Node;
@@ -35,6 +38,7 @@ public class ARMCodegen implements CodegenFacade {
 	
 	class SweepConstants extends DepthFirstAdapter {
 		
+		
 		@Override
 		public void inAStrExpr(AStrExpr node) {
 			String s = node.getStrConst().getText();
@@ -42,7 +46,10 @@ public class ARMCodegen implements CodegenFacade {
 			int int32size = ( (s.length() + 1 + 3) & ~0x03 )/4 ;
 			stringTemplate.addAggr("strings.{idx,size,sizeIdx,value}", lidx, int32size+3, lidx-1, Util.escapeString(s));
 			literalIdx.put(node, lidx++);
-		}
+		}	
+		
+		
+		
 		@Override
 		public void inAIntExpr(AIntExpr node) {
 			stringTemplate.addAggr("ints.{idx,value}", lidx, node.getIntConst().getText());
@@ -68,6 +75,43 @@ public class ARMCodegen implements CodegenFacade {
 			
 			st.add("e", "int_const" + literalIdx.get(node));
 			
+			lastResult = st.render();
+		}
+
+		@Override
+		public void inAStrExpr(AStrExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("strExpr");
+			// TODO: Here you need to put some way that the constant know
+			// its name in assembly, for example maybe "34" is int_const3
+			// st.add("e", node.getIntConst().codeRef());
+			// or
+			// st.add("e", node.getIntConst().codeRef());
+			// NEWS!!!! I made your homework
+			// whatever, for the example I will let it fixed
+			
+			st.add("e", "str_const" + literalIdx.get(node));
+			
+			lastResult = st.render();
+		}
+
+		@Override
+		public void inABoolExpr(ABoolExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("boolExpr");
+			// TODO: Here you need to put some way that the constant know
+			// its name in assembly, for example maybe "34" is int_const3
+			// st.add("e", node.getIntConst().codeRef());
+			// or
+			// st.add("e", node.getIntConst().codeRef());
+			// NEWS!!!! I made your homework
+			// whatever, for the example I will let it fixed
+			if(node.getBoolConst().getText().toLowerCase().equals("true")) {
+				st.add("e", "bool_const1");
+			}else {
+				st.add("e", "bool_const0");
+
+			}
 			lastResult = st.render();
 		}
 		
@@ -101,6 +145,35 @@ public class ARMCodegen implements CodegenFacade {
 			
 			lastResult = st.render();
 		}
+		
+		@Override
+		public void caseAEqExpr(AEqExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("eqExpr");
+			
+			node.getL().apply(this);
+			st.add("left", lastResult);
+			
+			node.getR().apply(this);
+			st.add("right", lastResult);
+			
+			lastResult = st.render();
+		}
+		
+		@Override
+		public void caseALtExpr(ALtExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("ltExpr");
+			
+			node.getL().apply(this);
+			st.add("left", lastResult);
+			
+			node.getR().apply(this);
+			st.add("right", lastResult);
+			
+			lastResult = st.render();
+		}
+
 		@Override
 		public void outAAtExpr(AAtExpr node) {
             ST st;
