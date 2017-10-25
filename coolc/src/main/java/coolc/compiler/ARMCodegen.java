@@ -11,11 +11,21 @@ import org.stringtemplate.v4.STGroupFile;
 import coolc.compiler.autogen.analysis.DepthFirstAdapter;
 import coolc.compiler.autogen.node.AClassDecl;
 import coolc.compiler.autogen.node.AIntExpr;
+import coolc.compiler.autogen.node.ALetDecl;
+import coolc.compiler.autogen.node.ALetExpr;
+import coolc.compiler.autogen.node.AListExpr;
 import coolc.compiler.autogen.node.AMethodFeature;
+import coolc.compiler.autogen.node.AMultExpr;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.autogen.node.AStrExpr;
+import coolc.compiler.autogen.node.AWhileExpr;
+import coolc.compiler.autogen.node.AWhileExpr;
+import coolc.compiler.autogen.node.AAtExpr;
+import coolc.compiler.autogen.node.ACallExpr;
 import coolc.compiler.autogen.node.Node;
+import coolc.compiler.autogen.node.PExpr;
 import coolc.compiler.autogen.node.PFeature;
+import coolc.compiler.autogen.node.PLetDecl;
 import coolc.compiler.autogen.node.Start;
 import coolc.compiler.util.Util;
 
@@ -42,6 +52,7 @@ public class ARMCodegen implements CodegenFacade {
 
 	class MethodVisitor extends DepthFirstAdapter {
 		String lastResult;
+		int labelCounter = 0;
 		
 		@Override
 		public void inAIntExpr(AIntExpr node) {
@@ -90,9 +101,128 @@ public class ARMCodegen implements CodegenFacade {
 			
 			lastResult = st.render();
 		}
+		@Override
+		public void outAAtExpr(AAtExpr node) {
+            ST st;
+			st = templateGroup.getInstanceOf("atExpr");			
+			
+            lastResult=st.render();
+
+        }
+		
+        @Override
+        public void outACallExpr(ACallExpr node){
+            ST st;
+			st = templateGroup.getInstanceOf("callExpr");			
+			
+            lastResult=st.render();
+
+        }
+		@Override
+		public void outALetDecl(ALetDecl node) {
+			// TODO Auto-generated method stub
+			//super.outALetDecl(node);
+			ST st;
+			st = templateGroup.getInstanceOf("letDecl");
+			
+			if(node.getExpr() != null){
+	            if(!node.getTypeId().getText().equals("SELF_TYPE")){
+	            		node.getExpr().apply(this);
+	            		
+	                st.add("loadedExpr", lastResult);
+	                 
+	                lastResult=st.render();
+	            	}
+			}
+		}
+		
+
+		@Override
+		public void outALetExpr(ALetExpr node) {
+			//super.outALetExpr(node);
+			String r = "";
+			for (PLetDecl p : node.getLetDecl()) {
+				//System.out.println("printing node: " + p.toString());
+				p.apply(this);
+				r += lastResult; 
+			}
+			
+			ST st;
+			st = templateGroup.getInstanceOf("letExpr");
+			node.getExpr().apply(this);
+			st.add("resultExpr", lastResult);
+			r += st.render();
+			
+			for (PLetDecl p : node.getLetDecl()) {
+				//System.out.println("printing node: " + p.toString());
+				ST stPop;
+				stPop = templateGroup.getInstanceOf("popLetDecl");
+				r += stPop.render();
+			}
+			
+			lastResult = r;
+		}
+
+		String getLabel(String s){
+			labelCounter ++;
+			return s + labelCounter;
+		}
+		
+		@Override
+		public void caseAWhileExpr(AWhileExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("whileExpr");
+			
+			st.add("loopLabel", getLabel("loopLabel"));
+			node.getTest().apply(this);
+			st.add("testExpression", lastResult);
+			
+			node.getLoop().apply(this);
+			st.add("loopExpression", lastResult);
+			st.add("exitLabel", getLabel("exitLabel"));
+			
+			lastResult = st.render();
+		}
+		
+		@Override
+		public void caseAListExpr(AListExpr node) {
+			String r = "";
+			for(PExpr p: node.getExpr()){
+				p.apply(this); //gonna update the last result
+				r += lastResult; 
+			}
+			lastResult = r;
+		}
+		
+		@Override
+		public void outAPlusExpr(APlusExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("addOperation");
+			
+			node.getL().apply(this);
+			st.add("n1", lastResult);
+			
+			node.getR().apply(this);
+			st.add("n2", lastResult);
+			
+			lastResult = st.render();
+		}
+		
+		@Override
+		public void outAMultExpr(AMultExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("mulOperation");
+			
+			node.getL().apply(this);
+			st.add("n1", lastResult);
+			
+			node.getR().apply(this);
+			st.add("n2", lastResult);
+			
+			lastResult = st.render();
+		}
 		
 	}
-
 
 	private PrintStream out;
 	private Start start;
@@ -138,8 +268,17 @@ public class ARMCodegen implements CodegenFacade {
 		// TODO: Replace by global declarations
 		
 		//stringTemplate.addAggr("globalsData.{name}", "name_of_my_lovely_to_be_global_symbol");
-		//stringTemplate.addAggr("globalsData.{name}", "class_nameTab");
-
+		stringTemplate.addAggr("globalsData.{name}", "class_nameTab");
+		stringTemplate.addAggr("globalsData.{name}", "Main_protObj");
+		stringTemplate.addAggr("globalsData.{name}", "Int_protObj");
+		stringTemplate.addAggr("globalsData.{name}", "String_protObj");
+		stringTemplate.addAggr("globalsData.{name}", "bool_const0");
+		stringTemplate.addAggr("globalsData.{name}", "bool_const1");
+		stringTemplate.addAggr("globalsData.{name}", "_int_tag");
+		stringTemplate.addAggr("globalsData.{name}", "_bool_tag");
+		stringTemplate.addAggr("globalsData.{name}", "_string_tag");
+		
+		//Por aqui van los tags
 		
 //		*** Constants
 //	    1. String literals
@@ -168,7 +307,7 @@ public class ARMCodegen implements CodegenFacade {
 //		st.addAggr("ints.{idx,tag,value}", 1, 3, 15);
 //		st.addAggr("ints.{idx,tag,value}", 1, 3, 28);
 		
-//		 start.apply(new SweepConstants());
+		 start.apply(new SweepConstants());
 		
 //		** Tables
 //	    1. class_nameTab: table for the name of the classes in string
@@ -194,7 +333,7 @@ public class ARMCodegen implements CodegenFacade {
 	}
 	
 	private void textSegment() {
-//		start.apply(new MethodVisitor());
+		start.apply(new MethodVisitor());
 
 //		*** Global declarations of the text segment, for example:
 //		.global    Main_init
