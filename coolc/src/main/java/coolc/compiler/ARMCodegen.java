@@ -385,13 +385,17 @@ public class ARMCodegen implements CodegenFacade {
 //        1.1 The objects were already declared above
 //        1.2 The tag of each class is used for the offset from class_nameTab		
 		// TODO: Table of names of classes
-		stringTemplate.addAggr("classNames.{id}", "Dummy 1");
+		 for (int x : new int[] {1,2,3,4,5,6,7,8,9}) {
+			 stringTemplate.addAggr("classNames.{id}", x);
+		 }
 	
 		
 //      2. class_objTab: prototypes and constructors for each object
 //        2.1 Indexed by tag: 2*tag -> protObj, 2*tag+1 -> init
 		// TODO: Table of objects and constructors
-		stringTemplate.addAggr("baseObjects.{id}", "Dummy 2");
+		 for (String s : new String[] {"Klass1", "Klass2", "Klass3"}) {
+			 stringTemplate.addAggr("baseObjects.{id}", s);
+		 }
 		
 //      3. dispTab fo reach class
 //        3.1 Listing of the methods for each class considering inheritance

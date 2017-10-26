@@ -34,9 +34,11 @@ bool_const1:
     .word    Bool_dispTab
     .word    1
 
+class_nameTab:
+<classNames:nameTable()>
 
- <classNames:nameTable()> 
- <baseObjects:objectTable()> 
+class_objTab: 
+<baseObjects:objectTable()> 
 <! <methodsData:dispatchTables()> !>
 
     .text
