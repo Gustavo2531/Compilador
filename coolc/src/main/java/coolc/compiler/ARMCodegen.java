@@ -102,42 +102,61 @@ public class ARMCodegen implements CodegenFacade {
 			
 			lastResult = st.render();
 		}
+		
 		@Override
 		public void outALetDecl(ALetDecl node) {
 			// TODO Auto-generated method stub
 			//super.outALetDecl(node);
+			
 			ST st;
 			st = templateGroup.getInstanceOf("letDecl");
+		
 			
 			if(node.getExpr() != null){
 				
 	            if(!node.getTypeId().getText().equals("SELF_TYPE")){
-	            	
-					
+	            System.out.println(""+node);
+	            	counterLets++;
+	            
 	            		node.getExpr().apply(this);
-	            		
+	            		//System.out.println("Para"+ node.getObjectId().toString());
 	                st.add("loadedExpr", lastResult);
 	                 
 	                lastResult=st.render();
+	                
 	            	}
 			}
 		}
 		
 		
+		public void getCountLet(int num) {
+			if(counterLets!=num) {
+				counterLets+=num;
+			}
+		}
 	
 		@Override
 		public void outALetExpr(ALetExpr node) {
 			//super.outALetExpr(node);
 			String r = "";
+			
+			
+			 for (PLetDecl p : node.getLetDecl()) {
+					//System.out.println("printing node: " + p.toString());
+					p.apply(this);
+					r += lastResult; 
+				}
+			//getCountLet(params.size());
+			
+			System.out.println(counterLets);
+		/**
 			LinkedList<PLetDecl> params = node.getLetDecl();
-			System.out.println(params.size());
-			counterLets=params.size();
-		
-			for (PLetDecl p : node.getLetDecl()) {
-				//System.out.println("printing node: " + p.toString());
-				p.apply(this);
-				r += lastResult; 
-			}
+			 for(int i = 0; i < params.size(); i++){
+		            ALetDecl p = (ALetDecl) params.get(i);
+		            p.apply(this);
+		            //counterLets++;
+		            r += lastResult; 
+			 }**/
 			
 			ST st;
 			st = templateGroup.getInstanceOf("letExpr");
@@ -150,6 +169,9 @@ public class ARMCodegen implements CodegenFacade {
 			lastResult = r;
 		}
 
+		 public void inALetExpr(ALetExpr node){
+		     
+		   }
 		String getLabel(String s){
 			labelCounter ++;
 			return s + labelCounter;
