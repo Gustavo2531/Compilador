@@ -1,9 +1,7 @@
 package coolc.compiler;
 
 import java.io.PrintStream;
-
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 import org.stringtemplate.v4.ST;
@@ -11,30 +9,35 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 
 import coolc.compiler.autogen.analysis.DepthFirstAdapter;
+import coolc.compiler.autogen.node.AAtExpr;
+import coolc.compiler.autogen.node.ABoolExpr;
+import coolc.compiler.autogen.node.ACallExpr;
 import coolc.compiler.autogen.node.AClassDecl;
+import coolc.compiler.autogen.node.AEqExpr;
 import coolc.compiler.autogen.node.AIntExpr;
+import coolc.compiler.autogen.node.ALeExpr;
+import coolc.compiler.autogen.node.ALetDecl;
+import coolc.compiler.autogen.node.ALetExpr;
 import coolc.compiler.autogen.node.AListExpr;
+import coolc.compiler.autogen.node.ALtExpr;
 import coolc.compiler.autogen.node.AMethodFeature;
+import coolc.compiler.autogen.node.AMultExpr;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.autogen.node.AStrExpr;
 import coolc.compiler.autogen.node.AWhileExpr;
 import coolc.compiler.autogen.node.Node;
 import coolc.compiler.autogen.node.PExpr;
 import coolc.compiler.autogen.node.PFeature;
-import coolc.compiler.autogen.node.Start;
-import coolc.compiler.autogen.node.TPlus;
-import coolc.compiler.autogen.node.TWhile;
-import coolc.compiler.autogen.node.APlusExpr;
-import coolc.compiler.util.Util;
 import coolc.compiler.autogen.node.PLetDecl;
-import coolc.compiler.autogen.node.ALetDecl;
-import coolc.compiler.autogen.node.ALetExpr;
+import coolc.compiler.autogen.node.Start;
+import coolc.compiler.util.Util;
 
 public class ARMCodegen implements CodegenFacade {
 	private Map<Node, Integer> literalIdx;
 	private Integer lidx;
 	
 	class SweepConstants extends DepthFirstAdapter {
+		
 		
 		@Override
 		public void inAStrExpr(AStrExpr node) {
@@ -43,7 +46,10 @@ public class ARMCodegen implements CodegenFacade {
 			int int32size = ( (s.length() + 1 + 3) & ~0x03 )/4 ;
 			stringTemplate.addAggr("strings.{idx,size,sizeIdx,value}", lidx, int32size+3, lidx-1, Util.escapeString(s));
 			literalIdx.put(node, lidx++);
-		}
+		}	
+		
+		
+		
 		@Override
 		public void inAIntExpr(AIntExpr node) {
 			stringTemplate.addAggr("ints.{idx,value}", lidx, node.getIntConst().getText());
@@ -59,16 +65,30 @@ public class ARMCodegen implements CodegenFacade {
 		public void inAIntExpr(AIntExpr node) {
 			ST st;
 			st = templateGroup.getInstanceOf("intExpr");
-			// TODO: Here you need to put some way that the constant know
-			// its name in assembly, for example maybe "34" is int_const3
-			// st.add("e", node.getIntConst().codeRef());
-			// or
-			// st.add("e", node.getIntConst().codeRef());
-			// NEWS!!!! I made your homework
-			// whatever, for the example I will let it fixed
-			
 			st.add("e", "int_const" + literalIdx.get(node));
 			
+			lastResult = st.render();
+		}
+
+		@Override
+		public void inAStrExpr(AStrExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("strExpr");
+			st.add("e", "str_const" + literalIdx.get(node));
+			
+			lastResult = st.render();
+		}
+
+		@Override
+		public void inABoolExpr(ABoolExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("boolExpr");
+			if(node.getBoolConst().getText().toLowerCase().equals("true")) {
+				st.add("e", "bool_const1");
+			}else {
+				st.add("e", "bool_const0");
+
+			}
 			lastResult = st.render();
 		}
 		
@@ -83,7 +103,7 @@ public class ARMCodegen implements CodegenFacade {
 				}
 			}
 		}		
-		
+
 		@Override
 		public void outAMethodFeature(AMethodFeature node) {
 			stringTemplate.addAggr("methodsText.{klass, name, code}", klass.getName().getText(), node.getObjectId().getText(), lastResult);
@@ -103,6 +123,73 @@ public class ARMCodegen implements CodegenFacade {
 			lastResult = st.render();
 		}
 		
+		@Override
+		public void caseAEqExpr(AEqExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("eqExpr");
+			
+			node.getL().apply(this);
+			st.add("left", lastResult);
+			
+			node.getR().apply(this);
+			st.add("right", lastResult);
+			
+			lastResult = st.render();
+		}
+		
+		@Override
+		public void caseALtExpr(ALtExpr node) {
+			
+
+			ST st;
+			st = templateGroup.getInstanceOf("ltExpr");
+			
+			st.add("x", getLabel("x"));
+
+			node.getL().apply(this);
+			st.add("left", lastResult);
+			
+			node.getR().apply(this);
+			st.add("right", lastResult);
+						
+			lastResult = st.render();
+		}
+
+		@Override
+		public void caseALeExpr(ALeExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("leExpr");
+			
+			st.add("x", getLabel("x"));
+
+			node.getL().apply(this);
+			st.add("left", lastResult);
+			
+			node.getR().apply(this);
+			st.add("right", lastResult);
+			
+			
+			lastResult = st.render();
+		}
+
+		@Override
+		public void outAAtExpr(AAtExpr node) {
+            ST st;
+			st = templateGroup.getInstanceOf("atExpr");			
+			
+            lastResult=st.render();
+
+        }
+		
+        @Override
+        public void outACallExpr(ACallExpr node){
+            ST st;
+			st = templateGroup.getInstanceOf("callExpr");			
+			
+            lastResult=st.render();
+
+        }
+
 		@Override
 		public void outALetDecl(ALetDecl node) {
 			// TODO Auto-generated method stub
@@ -216,8 +303,22 @@ public class ARMCodegen implements CodegenFacade {
 			
 			lastResult = st.render();
 		}
+		
+		@Override
+		public void outAMultExpr(AMultExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("mulOperation");
+			
+			node.getL().apply(this);
+			st.add("n1", lastResult);
+			
+			node.getR().apply(this);
+			st.add("n2", lastResult);
+			
+			lastResult = st.render();
+		}
+		
 	}
-
 
 	private PrintStream out;
 	private Start start;
@@ -263,8 +364,17 @@ public class ARMCodegen implements CodegenFacade {
 		// TODO: Replace by global declarations
 		
 		//stringTemplate.addAggr("globalsData.{name}", "name_of_my_lovely_to_be_global_symbol");
-		//stringTemplate.addAggr("globalsData.{name}", "class_nameTab");
-
+		stringTemplate.addAggr("globalsData.{name}", "class_nameTab");
+		stringTemplate.addAggr("globalsData.{name}", "Main_protObj");
+		stringTemplate.addAggr("globalsData.{name}", "Int_protObj");
+		stringTemplate.addAggr("globalsData.{name}", "String_protObj");
+		stringTemplate.addAggr("globalsData.{name}", "bool_const0");
+		stringTemplate.addAggr("globalsData.{name}", "bool_const1");
+		stringTemplate.addAggr("globalsData.{name}", "_int_tag");
+		stringTemplate.addAggr("globalsData.{name}", "_bool_tag");
+		stringTemplate.addAggr("globalsData.{name}", "_string_tag");
+		
+		//Por aqui van los tags
 		
 //		*** Constants
 //	    1. String literals
@@ -286,7 +396,7 @@ public class ARMCodegen implements CodegenFacade {
 
 		// TODO: Replace by global constants
 		// Note this is like instance some type of inner class to hold the values
-//		st.addAggr("strings.{idx,tag,size,sizeIdx,value}", 1, 5, 8, 0, "String 1");
+//		stringTemplate.addAggr("strings.{idx,tag,size,sizeIdx,value}", 1, 5, 8, 0, "String 1");
 //		st.addAggr("strings.{idx,tag,size,sizeIdx,value}", 2, 5, 11, 0, "Hello World");
 //		st.addAggr("strings.{idx,tag,size,sizeIdx,value}", 3, 5, 16, 0, "Cool compiler");
 		
@@ -300,18 +410,25 @@ public class ARMCodegen implements CodegenFacade {
 //        1.1 The objects were already declared above
 //        1.2 The tag of each class is used for the offset from class_nameTab		
 		// TODO: Table of names of classes
+		 for (int x : new int[] {1,2,3,4,5,6,7,8,9}) {
+			 stringTemplate.addAggr("classNames.{id}", x);
+		 }
+	
 		
 //      2. class_objTab: prototypes and constructors for each object
 //        2.1 Indexed by tag: 2*tag -> protObj, 2*tag+1 -> init
 		// TODO: Table of objects and constructors
+		 for (String s : new String[] {"Klass1", "Klass2", "Klass3"}) {
+			 stringTemplate.addAggr("baseObjects.{id}", s);
+		 }
 		
 //      3. dispTab fo reach class
 //        3.1 Listing of the methods for each class considering inheritance
 		// TODO: Dispatch tables
-		
+		/*
 		String [] s = new String[] {"a", "b"};
 		stringTemplate.addAggr("methodsData.{name, methods}", "className", s);
-		
+		*/
 
 //		*** protObjs
 //		Attributes, also consider inherited ones.

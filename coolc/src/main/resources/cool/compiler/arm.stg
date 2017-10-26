@@ -1,6 +1,6 @@
 import "templates"
 
-base(globalsData, tags, strings, ints, classnames, baseObjects, methodsData, globalsText, constructors, methodsText) ::= <<
+base(globalsData, tags, strings, ints, classNames, baseObjects, methodsData, globalsText, constructors, methodsText) ::= <<
     .data
 <!
 -_____            ,                -_-/                                     ,  
@@ -15,13 +15,14 @@ all your data are belong to us
 
 !>
 
-<! <globalsData:globalsDataNames()> !>
-<! <tags:classTags()> !>
-<! <strings:stringLiteral()> !>
+ <globalsData:globalsDataNames()>
+ <tags:classTags()>
+ <strings:stringLiteral()>
  <ints:intLiteral()> 
 
 <!
 @ Booleans are boooooring...
+!>
 bool_const0:
     .word    4
     .word    4
@@ -32,10 +33,12 @@ bool_const1:
     .word    4
     .word    Bool_dispTab
     .word    1
-!>
 
-<! <classNames:nameTable()> !>
-<! <baseObjects:objectTable()> !>
+class_nameTab:
+<classNames:nameTable()>
+
+class_objTab: 
+<baseObjects:objectTable()> 
 <! <methodsData:dispatchTables()> !>
 
     .text
