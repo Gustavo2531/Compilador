@@ -1,35 +1,27 @@
     .data
 
+     .global class_nameTab
+     .global Main_protObj
+     .global Int_protObj
+     .global String_protObj
+     .global bool_const0
+     .global bool_const1
+     .global _int_tag
+     .global _bool_tag
+     .global _string_tag
+     
+ 	word(-1)
  int_const0:
      .word   3
      .word   4   
      .word   Int_dispTab
-     .word   987654321
+     .word   5
+ 	word(-1)
  int_const1:
      .word   3
      .word   4   
      .word   Int_dispTab
-     .word   111
- int_const2:
      .word   3
-     .word   4   
-     .word   Int_dispTab
-     .word   222
- int_const3:
-     .word   3
-     .word   4   
-     .word   Int_dispTab
-     .word   333
- int_const4:
-     .word   3
-     .word   4   
-     .word   Int_dispTab
-     .word   444
- int_const5:
-     .word   3
-     .word   4   
-     .word   Int_dispTab
-     .word   123456789
  
 
 bool_const0:
@@ -48,22 +40,12 @@ bool_const1:
     .text
 
 Main.main:
-loopLabel1
-    ldr r0, =int_const1 
-    check r0
-	if false b exitLabel2
-    ldr r0, =int_const2
-	branch to loopLabel1
-exitLabel2
-	mov r0, #0
- loopLabel3
-    ldr r0, =int_const3 
-    check r0
-	if false b exitLabel4
-    ldr r0, =int_const4
-	branch to loopLabel3
-exitLabel4
-	mov r0, #0
- 
-Main.f:
-    ldr r0, =int_const5
+
+    ldr r0, =int_const0
+    mov r0, int_const5
+    ldr r0, =int_const1
+    mov r1, int_const4
+    sub r0, r0, r1
+
+	ldr r0, [sp #24]
+	
