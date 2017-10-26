@@ -22,6 +22,7 @@ import coolc.compiler.autogen.node.ABoolExpr;
 import coolc.compiler.autogen.node.AWhileExpr;
 import coolc.compiler.autogen.node.AWhileExpr;
 import coolc.compiler.autogen.node.ALtExpr;
+import coolc.compiler.autogen.node.ALeExpr;
 import coolc.compiler.autogen.node.AEqExpr;
 import coolc.compiler.autogen.node.AAtExpr;
 import coolc.compiler.autogen.node.ACallExpr;
@@ -162,14 +163,35 @@ public class ARMCodegen implements CodegenFacade {
 		
 		@Override
 		public void caseALtExpr(ALtExpr node) {
+			
+
 			ST st;
 			st = templateGroup.getInstanceOf("ltExpr");
 			
+			st.add("x", getLabel("x"));
+
 			node.getL().apply(this);
 			st.add("left", lastResult);
 			
 			node.getR().apply(this);
 			st.add("right", lastResult);
+						
+			lastResult = st.render();
+		}
+
+		@Override
+		public void caseALeExpr(ALeExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("leExpr");
+			
+			st.add("x", getLabel("x"));
+
+			node.getL().apply(this);
+			st.add("left", lastResult);
+			
+			node.getR().apply(this);
+			st.add("right", lastResult);
+			
 			
 			lastResult = st.render();
 		}
