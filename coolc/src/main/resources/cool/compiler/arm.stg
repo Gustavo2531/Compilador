@@ -1,6 +1,6 @@
 import "templates"
 
-base(globalsData, tags, strings, ints, classnames, baseObjects, methodsData, globalsText, constructors, methodsText) ::= <<
+base(globalsData, tags, strings, ints, classNames, baseObjects, methodsData, globalsText, constructors, methodsText) ::= <<
     .data
 <!
 -_____            ,                -_-/                                     ,  
@@ -35,8 +35,8 @@ bool_const1:
     .word    1
 
 
-<! <classNames:nameTable()> !>
-<! <baseObjects:objectTable()> !>
+ <classNames:nameTable()> 
+ <baseObjects:objectTable()> 
 <! <methodsData:dispatchTables()> !>
 
     .text

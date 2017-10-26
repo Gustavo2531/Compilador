@@ -1,35 +1,39 @@
     .data
 
+     .global class_nameTab
+     .global Main_protObj
+     .global Int_protObj
+     .global String_protObj
+     .global bool_const0
+     .global bool_const1
+     .global _int_tag
+     .global _bool_tag
+     .global _string_tag
+     
+ 	word(-1)
  int_const0:
      .word   3
      .word   4   
      .word   Int_dispTab
-     .word   987654321
+     .word   5
+ 	word(-1)
  int_const1:
      .word   3
      .word   4   
      .word   Int_dispTab
-     .word   111
+     .word   4
+ 	word(-1)
  int_const2:
      .word   3
      .word   4   
      .word   Int_dispTab
-     .word   222
+     .word   3
+ 	word(-1)
  int_const3:
      .word   3
      .word   4   
      .word   Int_dispTab
-     .word   333
- int_const4:
-     .word   3
-     .word   4   
-     .word   Int_dispTab
-     .word   444
- int_const5:
-     .word   3
-     .word   4   
-     .word   Int_dispTab
-     .word   123456789
+     .word   10
  
 
 bool_const0:
@@ -44,26 +48,42 @@ bool_const1:
     .word    1
 
 
+ class_nameTab:
+     .word   str_const3
+     .word   str_const4
+     .word   str_const5
+     .word   str_const6
+     .word   str_const7
+     .word   str_const8 
+ class_objTab:
+     .word   Object_protObj
+     .word   Object_init
+     .word   IO_protObj
+     .word   IO_init
+     .word   Int_protObj
+     .word   Int_init
+     .word   Bool_protObj
+     .word   Bool_init
+     .word   String_protObj
+     .word   String_init
+     .word   Main_protObj
+     .word   Main_init 
 
     .text
 
 Main.main:
-loopLabel1
-    ldr r0, =int_const1 
-    check r0
-	if false b exitLabel2
+
+    ldr r0, =int_const0
+    push into stack
+    ldr r0, =int_const1
+    push into stack
     ldr r0, =int_const2
-	branch to loopLabel1
-exitLabel2
-	mov r0, #0
- loopLabel3
-    ldr r0, =int_const3 
-    check r0
-	if false b exitLabel4
-    ldr r0, =int_const4
-	branch to loopLabel3
-exitLabel4
-	mov r0, #0
- 
-Main.f:
-    ldr r0, =int_const5
+    push into stack
+    ldr r0, =int_const3 /* Execute block inside let expr */
+    pop from stack
+    pop from stack
+    pop from stack
+
+
+	ldr r0, [sp #24]
+	

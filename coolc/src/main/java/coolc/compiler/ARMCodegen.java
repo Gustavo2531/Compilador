@@ -21,9 +21,6 @@ import coolc.compiler.autogen.node.AMultExpr;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.autogen.node.AStrExpr;
 import coolc.compiler.autogen.node.AWhileExpr;
-import coolc.compiler.autogen.node.AWhileExpr;
-import coolc.compiler.autogen.node.AAtExpr;
-import coolc.compiler.autogen.node.ACallExpr;
 import coolc.compiler.autogen.node.Node;
 import coolc.compiler.autogen.node.PExpr;
 import coolc.compiler.autogen.node.PFeature;
@@ -84,17 +81,7 @@ public class ARMCodegen implements CodegenFacade {
 				}
 			}
 		}		
-		
-		public void outAAtExp(AAtExpr node) {
-            ST st;
-            //first step
-        }
-        
-        public void outACallExpr(ACallExpr node){
-            ST st;
-            //first step
-        }
-        
+
 		@Override
 		public void outAMethodFeature(AMethodFeature node) {
 			stringTemplate.addAggr("methodsText.{klass, name, code}", klass.getName().getText(), node.getObjectId().getText(), lastResult);
@@ -312,7 +299,7 @@ public class ARMCodegen implements CodegenFacade {
 
 		// TODO: Replace by global constants
 		// Note this is like instance some type of inner class to hold the values
-//		st.addAggr("strings.{idx,tag,size,sizeIdx,value}", 1, 5, 8, 0, "String 1");
+//		stringTemplate.addAggr("strings.{idx,tag,size,sizeIdx,value}", 1, 5, 8, 0, "String 1");
 //		st.addAggr("strings.{idx,tag,size,sizeIdx,value}", 2, 5, 11, 0, "Hello World");
 //		st.addAggr("strings.{idx,tag,size,sizeIdx,value}", 3, 5, 16, 0, "Cool compiler");
 		
@@ -326,10 +313,13 @@ public class ARMCodegen implements CodegenFacade {
 //        1.1 The objects were already declared above
 //        1.2 The tag of each class is used for the offset from class_nameTab		
 		// TODO: Table of names of classes
+		stringTemplate.addAggr("classNames.{id}", "Dummy 1");
+	
 		
 //      2. class_objTab: prototypes and constructors for each object
 //        2.1 Indexed by tag: 2*tag -> protObj, 2*tag+1 -> init
 		// TODO: Table of objects and constructors
+		stringTemplate.addAggr("baseObjects.{id}", "Dummy 2");
 		
 //      3. dispTab fo reach class
 //        3.1 Listing of the methods for each class considering inheritance
