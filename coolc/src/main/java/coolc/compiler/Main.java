@@ -15,7 +15,7 @@ import coolc.compiler.autogen.node.Token;
 import coolc.compiler.autogen.parser.Parser;
 import coolc.compiler.util.Util;
 
-//test pull request, Steven Potts A01337528
+
 /* Do not move anything below except the name of the test file */
 public class Main {
 	public static String file = "src/test/resources/test.cool";

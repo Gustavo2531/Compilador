@@ -66,14 +66,6 @@ public class ARMCodegen implements CodegenFacade {
 		public void inAIntExpr(AIntExpr node) {
 			ST st;
 			st = templateGroup.getInstanceOf("intExpr");
-			// TODO: Here you need to put some way that the constant know
-			// its name in assembly, for example maybe "34" is int_const3
-			// st.add("e", node.getIntConst().codeRef());
-			// or
-			// st.add("e", node.getIntConst().codeRef());
-			// NEWS!!!! I made your homework
-			// whatever, for the example I will let it fixed
-			
 			st.add("e", "int_const" + literalIdx.get(node));
 			
 			lastResult = st.render();
@@ -83,14 +75,6 @@ public class ARMCodegen implements CodegenFacade {
 		public void inAStrExpr(AStrExpr node) {
 			ST st;
 			st = templateGroup.getInstanceOf("strExpr");
-			// TODO: Here you need to put some way that the constant know
-			// its name in assembly, for example maybe "34" is int_const3
-			// st.add("e", node.getIntConst().codeRef());
-			// or
-			// st.add("e", node.getIntConst().codeRef());
-			// NEWS!!!! I made your homework
-			// whatever, for the example I will let it fixed
-			
 			st.add("e", "str_const" + literalIdx.get(node));
 			
 			lastResult = st.render();
@@ -100,13 +84,6 @@ public class ARMCodegen implements CodegenFacade {
 		public void inABoolExpr(ABoolExpr node) {
 			ST st;
 			st = templateGroup.getInstanceOf("boolExpr");
-			// TODO: Here you need to put some way that the constant know
-			// its name in assembly, for example maybe "34" is int_const3
-			// st.add("e", node.getIntConst().codeRef());
-			// or
-			// st.add("e", node.getIntConst().codeRef());
-			// NEWS!!!! I made your homework
-			// whatever, for the example I will let it fixed
 			if(node.getBoolConst().getText().toLowerCase().equals("true")) {
 				st.add("e", "bool_const1");
 			}else {
