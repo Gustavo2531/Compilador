@@ -28,6 +28,7 @@ import coolc.compiler.autogen.node.PFeature;
 import coolc.compiler.autogen.node.PLetDecl;
 import coolc.compiler.autogen.node.Start;
 import coolc.compiler.util.Util;
+import coolc.compiler.visitors.DeclarationVisitor;
 
 public class ARMCodegen implements CodegenFacade {
 	private Map<Node, Integer> literalIdx;
@@ -254,6 +255,7 @@ public class ARMCodegen implements CodegenFacade {
 	}
 	
 	private void dataSegment() {
+
 //		*** Global Declarations, example:
 //		.globl    class_nameTab
 //		.globl    Main_protObj
