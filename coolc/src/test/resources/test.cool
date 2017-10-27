@@ -1,7 +1,0 @@
-class Main inherits IO {
-	f: Int <- 987654321;
-	 
-    main():Object{ 2*3 };
-    f(a:Int):Object{ 123456789 };
-    
-};
