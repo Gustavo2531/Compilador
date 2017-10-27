@@ -61,6 +61,7 @@ public class ARMCodegen implements CodegenFacade {
 		String lastResult;
 		int labelCounter = 0;
 		int counterLets=0;
+		HashMap<Integer, Boolean> letCountHash = new HashMap<>();
 		@Override
 		public void inAIntExpr(AIntExpr node) {
 			ST st;
@@ -202,15 +203,14 @@ public class ARMCodegen implements CodegenFacade {
 			if(node.getExpr() != null){
 				
 	            if(!node.getTypeId().getText().equals("SELF_TYPE")){
-	            System.out.println(""+node);
-	            	counterLets++;
-	            
 	            		node.getExpr().apply(this);
 	            		//System.out.println("Para"+ node.getObjectId().toString());
 	                st.add("loadedExpr", lastResult);
-	                 
 	                lastResult=st.render();
-	                
+	                if(letCountHash.get(node.hashCode()) == null || letCountHash.get(node.hashCode()) == false) {
+						counterLets++;
+						letCountHash.put(node.hashCode(), true);
+					}
 	            	}
 			}
 		}
@@ -228,29 +228,17 @@ public class ARMCodegen implements CodegenFacade {
 			String r = "";
 			
 			
-			 for (PLetDecl p : node.getLetDecl()) {
-					//System.out.println("printing node: " + p.toString());
-					p.apply(this);
-					r += lastResult; 
-				}
-			//getCountLet(params.size());
+			for (PLetDecl p : node.getLetDecl()) {
+				p.apply(this);
+				r += lastResult;
+			}
 			
-			System.out.println(counterLets);
-		/**
-			LinkedList<PLetDecl> params = node.getLetDecl();
-			 for(int i = 0; i < params.size(); i++){
-		            ALetDecl p = (ALetDecl) params.get(i);
-		            p.apply(this);
-		            //counterLets++;
-		            r += lastResult; 
-			 }**/
 			
 			ST st;
 			st = templateGroup.getInstanceOf("letExpr");
 			node.getExpr().apply(this);
 			st.add("resultExpr", lastResult);
 			r += st.render();
-			
 			
 			
 			lastResult = r;
