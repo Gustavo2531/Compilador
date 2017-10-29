@@ -1,0 +1,8 @@
+(* not implementation with variables comparison *)
+class Main  {
+    	b : Int <- 1;
+    	a : Int <- 1;
+    main() : Object {
+        not b < a
+    };
+};

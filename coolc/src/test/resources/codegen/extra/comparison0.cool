@@ -1,0 +1,6 @@
+(*Comparison integer implementation*)
+class Main {
+    main(): Object {
+		2 < 0
+     };
+};
