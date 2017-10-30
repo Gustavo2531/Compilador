@@ -1,0 +1,7 @@
+(* Basic int implementation *)
+class Main {
+    main(): Object {
+    
+		10
+     };
+};

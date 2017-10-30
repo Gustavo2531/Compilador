@@ -1,0 +1,6 @@
+(*Boolean basic implementation*)
+class Main {
+    main(): Object {
+		true
+     };
+};
