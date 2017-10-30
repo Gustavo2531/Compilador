@@ -21,6 +21,7 @@ import coolc.compiler.autogen.node.ALetExpr;
 import coolc.compiler.autogen.node.AListExpr;
 import coolc.compiler.autogen.node.ALtExpr;
 import coolc.compiler.autogen.node.AMethodFeature;
+import coolc.compiler.autogen.node.AMinusExpr;
 import coolc.compiler.autogen.node.AMultExpr;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.autogen.node.AStrExpr;
@@ -110,20 +111,7 @@ public class ARMCodegen implements CodegenFacade {
 		public void outAMethodFeature(AMethodFeature node) {
 			stringTemplate.addAggr("methodsText.{klass, name, code}", klass.getName().getText(), node.getObjectId().getText(), lastResult);
 		}
-		
-		@Override
-		public void caseAPlusExpr(APlusExpr node) {
-			ST st;
-			st = templateGroup.getInstanceOf("addExpr");
-			
-			node.getL().apply(this);
-			st.add("left", lastResult);
-			
-			node.getR().apply(this);
-			st.add("right", lastResult);
-			
-			lastResult = st.render();
-		}
+
 		
 		@Override
 		public void caseAEqExpr(AEqExpr node) {
@@ -280,7 +268,7 @@ public class ARMCodegen implements CodegenFacade {
 		}
 		
 		@Override
-		public void outAPlusExpr(APlusExpr node) {
+		public void caseAPlusExpr(APlusExpr node) {
 			ST st;
 			st = templateGroup.getInstanceOf("addOperation");
 			
@@ -294,7 +282,7 @@ public class ARMCodegen implements CodegenFacade {
 		}
 		
 		@Override
-		public void outAMultExpr(AMultExpr node) {
+		public void caseAMultExpr(AMultExpr node) {
 			ST st;
 			st = templateGroup.getInstanceOf("mulOperation");
 			
@@ -307,6 +295,19 @@ public class ARMCodegen implements CodegenFacade {
 			lastResult = st.render();
 		}
 		
+		@Override
+		public void caseAMinusExpr(AMinusExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("minusOperation");
+			
+			node.getL().apply(this);
+			st.add("n1", lastResult);
+			
+			node.getR().apply(this);
+			st.add("n2", lastResult);
+			
+			lastResult = st.render();
+		}
 	}
 
 	private PrintStream out;
