@@ -61,7 +61,8 @@ public class ARMCodegen implements CodegenFacade {
 	class MethodVisitor extends DepthFirstAdapter {
 		String lastResult;
 		int labelCounter = 0;
-		
+		int counterLets=0;
+		HashMap<Integer, Boolean> letCountHash = new HashMap<>();
 		@Override
 		public void inAIntExpr(AIntExpr node) {
 			ST st;
@@ -190,34 +191,49 @@ public class ARMCodegen implements CodegenFacade {
             lastResult=st.render();
 
         }
+
 		@Override
 		public void outALetDecl(ALetDecl node) {
 			// TODO Auto-generated method stub
 			//super.outALetDecl(node);
+			
 			ST st;
 			st = templateGroup.getInstanceOf("letDecl");
+		
 			
 			if(node.getExpr() != null){
+				
 	            if(!node.getTypeId().getText().equals("SELF_TYPE")){
 	            		node.getExpr().apply(this);
-	            		
+	            		//System.out.println("Para"+ node.getObjectId().toString());
 	                st.add("loadedExpr", lastResult);
-	                 
 	                lastResult=st.render();
+	                if(letCountHash.get(node.hashCode()) == null || letCountHash.get(node.hashCode()) == false) {
+						counterLets++;
+						letCountHash.put(node.hashCode(), true);
+					}
 	            	}
 			}
 		}
 		
-
+		
+		public void getCountLet(int num) {
+			if(counterLets!=num) {
+				counterLets+=num;
+			}
+		}
+	
 		@Override
 		public void outALetExpr(ALetExpr node) {
 			//super.outALetExpr(node);
 			String r = "";
+			
+			
 			for (PLetDecl p : node.getLetDecl()) {
-				//System.out.println("printing node: " + p.toString());
 				p.apply(this);
-				r += lastResult; 
+				r += lastResult;
 			}
+			
 			
 			ST st;
 			st = templateGroup.getInstanceOf("letExpr");
@@ -225,16 +241,13 @@ public class ARMCodegen implements CodegenFacade {
 			st.add("resultExpr", lastResult);
 			r += st.render();
 			
-			for (PLetDecl p : node.getLetDecl()) {
-				//System.out.println("printing node: " + p.toString());
-				ST stPop;
-				stPop = templateGroup.getInstanceOf("popLetDecl");
-				r += stPop.render();
-			}
 			
 			lastResult = r;
 		}
 
+		 public void inALetExpr(ALetExpr node){
+		     
+		   }
 		String getLabel(String s){
 			labelCounter ++;
 			return s + labelCounter;
