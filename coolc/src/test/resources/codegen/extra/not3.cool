@@ -1,0 +1,6 @@
+(* not implementation with number comparison *)
+class Main  {
+    main() : Object {
+        not 10 < 8
+    };
+};
