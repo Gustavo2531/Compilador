@@ -1,0 +1,7 @@
+(*Multiplication with assignmet implementation*)
+class Main {
+	a : Int <- 1;
+    main(): Object {
+		a * 2 
+     };
+};

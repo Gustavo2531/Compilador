@@ -5,10 +5,8 @@ so I can overwrite it here so the standard is that subexpressions
 leave result in r0
 !>
 <n1>
-    mov r0, inst_constant5
+    mov r0, int_const5
 <n2>
-    jl Object.copy
-    mov r1, inst_constant4
+    mov r1, int_const4
     add r0, r0, r1
-    bx lr 
 >>
