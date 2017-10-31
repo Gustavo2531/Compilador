@@ -1,17 +1,14 @@
-ifOperation(testExpression, loopExpression, loopLabel, exitLabel) ::= <<
-<!
-I assume r0 was pushed into the stack on entry to this method, 
-so I can overwrite it here so the standard is that subexpressions
-leave result in r0
-!>
-
-<loopLabel>
-<testExpression>
-    teq     r4, inst_constant5
-    mvnmi   r0, inst_constant1 <exitLabel>
-    movpl   r0, inst_constant2 <exitLabel>
-<loopExpression>
-    bne     <loopeLabel>
+ifOperation(testExpression, trueExpression,falseExpression, exitLabel) ::= <<
+<testExpression> 
+    cmp r0, #0 
+	beq <trueExpression>
+	beq <falseExpression>
+<trueExpression>
+	str r0, #1 
+	beq <exitLabel>
+<falseExpression>
+	str r0, #0 
+	beq <exitLabel>
 <exitLabel>
-    mov     r0, #0
+	mov r0, [r0,#12]
 >>
