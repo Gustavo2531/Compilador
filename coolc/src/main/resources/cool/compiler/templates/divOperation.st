@@ -1,9 +1,5 @@
 divOperation(n1, n2, substract) ::= <<
-<!
-I assume r0 was pushed into the stack on entry to this method, 
-so I can overwrite it here so the standard is that subexpressions
-leave result in r0
-!>
+
 <n1>
     mov r1, [r0, #12]
 <n2>

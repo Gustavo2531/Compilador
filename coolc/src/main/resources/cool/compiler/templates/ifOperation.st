@@ -1,14 +1,16 @@
-ifOperation(testExpression, trueExpression,falseExpression, exitLabel) ::= <<
-<testExpression> 
-    cmp r0, #0 
-	beq <trueExpression>
-	beq <falseExpression>
+ifOperation(testExpression, trueExpression,falseExpression, nLabel) ::= <<
+<testExpression>
+    cmp r0, #0
+    bne truelabel<nLabel>
+    b falseLabel<nLabel>
+    
+trueLabel<nLabel>:
 <trueExpression>
-	str r0, #1 
-	beq <exitLabel>
+   	b exitLabel<nLabel>
+   	
+falseLabel<nLabel>:
 <falseExpression>
-	str r0, #0 
-	beq <exitLabel>
-<exitLabel>
-	mov r0, [r0,#12]
->>
+    b exitLabel<nLabel>
+    
+exitLabel<nLabel>:
+ >>

@@ -1,15 +1,16 @@
-isVoidExpr(testExpression, testExpression,stringExpression, boolExpression, trueLabel,falseLabel, exitLabel) ::= <<
+isVoidExpr(testExpression, nLabel) ::= <<
 <testExpression> 
-    ldr r1, [r0, #X] <! qué offset necesitamos para saber el tipo de dato X !>
-	cmp r1, 0x00
-	beq<falseLabel> <! si cmp es 0, vete a false porque es ya sabemos que tiene algun tipo de dato !>
-	beq<trueLabel> <! si no, es nulo y es void!>
-<falseLabel>
-	str r0, #0
-	beq <exitLabel>
-<trueLabel>
-	str r0, #1
-	beq <exitLabel>
-<exitLabel>
-	mov r0, [r0, #12]
+	cmp r0, #0
+	bne falseLabel<nLabel> 		 
+	b trueLabel<nLabel>			 
+	
+falseLabel<nLabel>:
+	ldr r0, bool_const0 <! LOAD FALSE BOOLEAN !>
+	b exitLabel<nLabel>
+
+trueLabel<nLabel>:
+	ldr r0, bool_const1 <! LOAD TRUE BOOLEAN !>
+	b exitLabel<nLabel>
+	
+exitLabel<nLabel>:
 >>
