@@ -1,0 +1,8 @@
+(*Comparison variable to variable implementation*)
+class Main {
+    main(): Object {
+    a : Int -> 9;
+    b : Int -> 5;
+		a < b
+     };
+};

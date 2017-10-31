@@ -1,0 +1,8 @@
+(*Comparison variable to integer implementation*)
+class Main {
+	
+    main(): Object {
+    		a : Int -> 9;
+		a < 2
+     };
+};

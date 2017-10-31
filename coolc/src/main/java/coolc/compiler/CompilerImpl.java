@@ -54,7 +54,7 @@ public class CompilerImpl implements Compiler {
 		
 		// When generating code, uncomment this:
 		PrintStream out = new PrintStream(new FileOutputStream(outFile));
-		compiler.genCode(start, out);
+		//compiler.genCode(start, out);
 		compiler.genCode(start, System.out);
 		
 	}
