@@ -1,0 +1,12 @@
+(*New with class implementation*)
+
+
+class Main {
+    main(): Object {		
+		(new A).method(params);	
+     };
+};
+
+class A { 
+}; 
+

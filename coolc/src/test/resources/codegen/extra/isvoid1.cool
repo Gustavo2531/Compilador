@@ -1,0 +1,7 @@
+(* isvoid known class variable implementation implementation*)
+class Main {
+	a : Int;
+    main() : Object {
+        isvoid a
+    };
+};

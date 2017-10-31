@@ -1,0 +1,9 @@
+(*Asignment basic implementation*)
+class Main {
+	a : Type <- value;
+    main(): Object {		
+
+     };
+};
+ 
+
