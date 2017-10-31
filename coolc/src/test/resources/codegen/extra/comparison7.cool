@@ -1,0 +1,9 @@
+(*Plain text equality check if implementation *)
+class Main inherits IO{
+  
+    main() : Object {
+        
+          if "hola" = "adios" then 0 else 1
+          fi
+    };
+};

@@ -1,0 +1,7 @@
+(*Dispatch third implementation*)
+class Main {
+		B : Class;
+    main(): Object {		
+		expr@B.method(params)
+     };
+};

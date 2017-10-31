@@ -1,0 +1,10 @@
+(*Equlality check variable to variable same type scope implementation*)
+class Main {
+		a : String -> "hola";
+		
+    main(): Object {
+    		
+    		b : String -> "adios";
+		a = b
+     };
+};
