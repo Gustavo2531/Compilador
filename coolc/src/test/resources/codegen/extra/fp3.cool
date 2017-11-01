@@ -1,0 +1,15 @@
+(*Function protocol params and local variables implementation*)
+class Main {
+	method(a: Type): Type{
+	
+		var c: Type;
+		var b: Type;
+		
+	}
+	
+    main(): Object {		
+		method(param1, param2)	
+     };
+};
+ 
+

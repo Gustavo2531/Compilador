@@ -1,0 +1,6 @@
+(* isvoid basic implementation*)
+class Main {
+    main() : Object {
+        isvoid 1
+    };
+};

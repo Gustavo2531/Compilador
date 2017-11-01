@@ -1,0 +1,10 @@
+(*Equality check distinct types variable to variable scope implementation*)
+class Main {
+		a : String -> "hola";
+		
+    main(): Object {
+    		
+    		b : Int -> 4;
+		a = b
+     };
+};

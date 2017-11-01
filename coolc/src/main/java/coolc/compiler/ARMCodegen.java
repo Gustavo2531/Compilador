@@ -13,8 +13,11 @@ import coolc.compiler.autogen.node.AAtExpr;
 import coolc.compiler.autogen.node.ABoolExpr;
 import coolc.compiler.autogen.node.ACallExpr;
 import coolc.compiler.autogen.node.AClassDecl;
+import coolc.compiler.autogen.node.ADivExpr;
 import coolc.compiler.autogen.node.AEqExpr;
+import coolc.compiler.autogen.node.AIfExpr;
 import coolc.compiler.autogen.node.AIntExpr;
+import coolc.compiler.autogen.node.AIsvoidExpr;
 import coolc.compiler.autogen.node.ALeExpr;
 import coolc.compiler.autogen.node.ALetDecl;
 import coolc.compiler.autogen.node.ALetExpr;
@@ -23,6 +26,7 @@ import coolc.compiler.autogen.node.ALtExpr;
 import coolc.compiler.autogen.node.AMethodFeature;
 import coolc.compiler.autogen.node.AMinusExpr;
 import coolc.compiler.autogen.node.AMultExpr;
+import coolc.compiler.autogen.node.ANegExpr;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.autogen.node.AStrExpr;
 import coolc.compiler.autogen.node.AWhileExpr;
@@ -368,6 +372,64 @@ public class ARMCodegen implements CodegenFacade {
 			
 			node.getR().apply(this);
 			st.add("n2", lastResult);
+			
+			lastResult = st.render();
+		}
+
+		@Override
+		public void caseADivExpr(ADivExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("divOperation");
+			
+			node.getL().apply(this);
+			st.add("n1", lastResult);
+			
+			node.getR().apply(this);
+			st.add("n2", lastResult);
+			
+			lastResult = st.render();
+		}
+		
+		@Override
+		public void caseANegExpr(ANegExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("negExpr");
+			
+			node.getExpr().apply(this);
+			st.add("n1", lastResult);
+			
+			node.setExpr(node);
+			st.add("n1", lastResult);
+			lastResult = st.render();
+		}
+
+		@Override
+		public void caseAIfExpr(AIfExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("ifOperation");
+			
+			node.getTest().apply(this);
+			st.add("testExpression", lastResult);
+			
+			node.getTrue().apply(this);
+			st.add("trueExpression", lastResult);
+			
+			node.getFalse().apply(this);
+			st.add("falseExpression", lastResult);
+			
+			lastResult = st.render();
+		}
+		
+		@Override
+		public void caseAIsvoidExpr(AIsvoidExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("ifOperation");
+			
+			node.getExpr().apply(this);
+			st.add("testExpression", lastResult);
+			
+			node.setExpr(node);
+			st.add("trueExpression", lastResult);
 			
 			lastResult = st.render();
 		}
