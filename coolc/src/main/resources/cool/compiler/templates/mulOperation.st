@@ -10,5 +10,5 @@ leave result in r0
     jl Object.copy
     mov r1, inst_constant4
     mul r0, r0, r1
-    bx lr 
+   
 >>
