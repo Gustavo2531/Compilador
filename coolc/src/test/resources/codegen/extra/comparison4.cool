@@ -1,0 +1,10 @@
+(*Comparison variable to variable scope implementation*)
+class Main {
+		a : Int -> 9;
+		
+    main(): Object {
+    		
+    		b : Int -> 4;
+		a <= b
+     };
+};

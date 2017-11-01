@@ -1,0 +1,8 @@
+(*Comparison variable to variable string length method implementation*)
+class Main {
+		a : String -> "hola";
+		b : String -> "adios;
+    main(): Object {		
+		a.length() <= b.length()
+     };
+};

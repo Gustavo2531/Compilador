@@ -1,0 +1,7 @@
+(* isvoid generic class variable implementation implementation*)
+class Main {
+	a : Class;
+    main() : Object {
+        isvoid a
+    };
+};
