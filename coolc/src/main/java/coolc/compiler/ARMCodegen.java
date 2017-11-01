@@ -9,7 +9,6 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 
 import coolc.compiler.autogen.analysis.DepthFirstAdapter;
-import coolc.compiler.autogen.node.AAssignExpr;
 import coolc.compiler.autogen.node.AAtExpr;
 import coolc.compiler.autogen.node.ABoolExpr;
 import coolc.compiler.autogen.node.ACallExpr;
@@ -24,7 +23,6 @@ import coolc.compiler.autogen.node.ALtExpr;
 import coolc.compiler.autogen.node.AMethodFeature;
 import coolc.compiler.autogen.node.AMinusExpr;
 import coolc.compiler.autogen.node.AMultExpr;
-import coolc.compiler.autogen.node.AObjectExpr;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.autogen.node.AStrExpr;
 import coolc.compiler.autogen.node.AWhileExpr;
@@ -310,26 +308,6 @@ public class ARMCodegen implements CodegenFacade {
 			
 			lastResult = st.render();
 		}
-		
-		@Override
-		public void outVarExpr(AAssignExpr node) {
-            ST st;
-			st = templateGroup.getInstanceOf("varExpr");			
-			
-            lastResult=st.render();
-
-        }
-		
-		@Override
-		public void outObjExpr(AObjectExpr node) {
-            ST st;
-			st = templateGroup.getInstanceOf("objExpr");		
-			
-			node.getObjectId().getText();
-			
-            lastResult=st.render();
-
-        }
 	}
 
 	private PrintStream out;
