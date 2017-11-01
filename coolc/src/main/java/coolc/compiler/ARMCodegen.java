@@ -121,8 +121,6 @@ public class ARMCodegen implements CodegenFacade {
 			int countMethod = lastResult.length();
 			counterParameters =countMethod2;
 			
-			
-			System.out.println(countMethod2+"---------------------"+countMethod+"-----------------"+counterLets+"---------------"+counterParameters+"---------"+offs);
 			stringTemplate.addAggr("methodsText.{klass, name, code}", klass.getName().getText(), node.getObjectId().getText(), lastResult);
 			
 		}
