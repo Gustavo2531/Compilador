@@ -1,15 +1,16 @@
 (*
 
-Axolotl: String0, String1, boolean0, int0, comparison0, comparison1, comparison 2, comparison3,
-self0, self1, self2, 
+Axolotl: String0, String1, boolean0, int0, comparison0, comparison1, comparison 2, comparison3, comparison4, 
+comparison5, comparison6, comparison7, comparison8, self0, self1, self2, 
 
-DD: String 1
+name4?, DD: String 1, init0, init1, init2
 
-name4?: String 1
+teamblue, equipo1 : fp0, fp1, fp2, fp3
 
 borreguitas: if0, if1, if2,add0, add1, mutiply0, mutiply1, divison0, division1, substraction0, 
-substraction1, not0, not1, not2, not3
+substraction1, not0, not1, not2, not3, isVoid0, isVoid1, isVoid2
 
+Equipo1, Snow: dispatch0, dispatch1, dispatch2, new0, new1, 
 
 
 *)

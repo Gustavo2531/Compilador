@@ -1,0 +1,11 @@
+(*Function protocol params, self implementation*)
+class Main {
+	method(a: Type): Type{
+	}
+	
+    main(): Object {		
+		method(self, param1, param2)	
+     };
+};
+ 
+

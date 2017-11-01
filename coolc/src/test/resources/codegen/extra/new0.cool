@@ -1,0 +1,9 @@
+(*New basic implementation*)
+
+class Main {
+    main(): Object {		
+		new A
+     };
+};
+
+
