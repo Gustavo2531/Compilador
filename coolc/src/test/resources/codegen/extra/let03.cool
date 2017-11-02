@@ -1,0 +1,8 @@
+(*Let inside a let *)c
+lass Main {
+
+    main(): Object {
+        let x: Int in let y: Int in 0        
+	};
+
+};

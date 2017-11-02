@@ -1,0 +1,12 @@
+(*Case basic implementation Main and Object conditions *)
+class Main inherits IO {
+    x:Int <- 3;
+ 	main(): Object {  
+    	case x of 
+        a : String => out_string("String");
+        b : Main => out_string("Main");
+        c: Object => { if 1 then 1 else 0 fi; };
+       		
+        esac
+    };
+};
