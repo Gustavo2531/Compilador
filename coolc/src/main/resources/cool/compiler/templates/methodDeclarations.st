@@ -1,17 +1,17 @@
-methodDeclarations(method, countParameters) ::= <<
+methodDeclarations(method) ::= <<
 
 <method.klass>.<method.name>:
 <method.code>
 
-prolog
+Prolog
    <method.klass>.<method.name>:
-   sub sp, sp, #<countParameters>
+   sub sp, sp, #<method.counterLV>
    <method.code>
 
-postlog
-   add sp, sp, #2
-   ldr fp, sp, #
-   ldr lr, sp, #
+Postlog
+   add sp, sp, #<method.outFramePointer>
+   ldr fp, sp, #<method.inFramePointer>
+   ldr lr, sp, #<method.lr>
    bx lr
 
 >>

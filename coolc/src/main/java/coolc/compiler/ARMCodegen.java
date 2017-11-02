@@ -67,6 +67,8 @@ public class ARMCodegen implements CodegenFacade {
 		String lastResult;
 		int labelCounter = 0;
 		int counterLets=0;
+		int framePointer =0;
+		int lr=0;
 		int counterParameters=0;
 		int offs=0;
 		HashMap<Integer, Boolean> letCountHash = new HashMap<>();
@@ -114,32 +116,17 @@ public class ARMCodegen implements CodegenFacade {
 			}
 		}		
 
-		@Override
-		public void outAMethodFeature(AMethodFeature node) {
-			
+		public void outAMethodFeature(AMethodFeature node) {	
 			ST st;
 			st = templateGroup.getInstanceOf("methodDeclarations");
-			
-			//int nParameters = node.getFormal().size();
-//			int countMethod = lastResult.length();
-//			counterParameters =countMethod2;
-			
-			
-			stringTemplate.addAggr("methodsText.{klass, name, code, countParameters}", klass.getName().getText(), node.getObjectId().getText(), lastResult, node.getFormal().size());
-			
-			//st.add("countParameters", lastResult);
-//			n1 = getCurrentOffset();
-			//System.out.println(countParameters+"--------------");
-//			System.out.println(n1+"--------------");
-//			System.out.println(counterLets);
-			
-			
+			int nParameters = node.getFormal().size();
+			int totalStackSize = getCurrentOffset(nParameters);
+			stringTemplate.addAggr("methodsText.{klass, name, code, counterLV, outFramePointer, inFramePointer, lr}", klass.getName().getText(), node.getObjectId().getText(), lastResult, totalStackSize, totalStackSize-framePointer, totalStackSize-framePointer-4, totalStackSize-lr);
 		}
 
 		private HashMap<Integer, Boolean> extracted() {
 			return letCountHash;
 		}
-
 		
 		@Override
 		public void caseAEqExpr(AEqExpr node) {
@@ -278,7 +265,7 @@ public class ARMCodegen implements CodegenFacade {
 		
 		
 		
-		public int getCurrentOffset() {
+public int getCurrentOffset(int nParameters) {
 			int positionSelf;
 			int positionReturnAddress;
 			int positionParameters;
@@ -287,54 +274,22 @@ public class ARMCodegen implements CodegenFacade {
 			int positionStackPointer=0;
 			int stackSize=0;
 			
-			//positionStackPointer=positionFramePointer+positionLocalVariables;
 			positionLocalVariables=4*counterLets;
 			positionStackPointer=positionLocalVariables;
 			positionFramePointer = positionLocalVariables+4;
+			framePointer=positionLocalVariables;
 			positionStackPointer=positionFramePointer;
-			positionParameters=positionFramePointer+counterParameters*4;
+			positionParameters=positionFramePointer+nParameters*4;
 			positionStackPointer=positionParameters;
 			positionReturnAddress=positionParameters+4;
+			lr = positionReturnAddress;
 			positionStackPointer=positionReturnAddress;
 			positionSelf= positionReturnAddress+4;
 			positionStackPointer=positionSelf;
-			stackSize=positionSelf+4;
-			positionStackPointer=stackSize;
+			stackSize=positionSelf;
 			
-			return positionStackPointer;
-			
-//			int positionSelf;
-//			int positionReturnAddress;
-//			int[] arrParameters = new int[counterParameters];
-//			int positionParameters;
-//			int positionFramePointer=0;
-//			int[] arrLocalVariables = new int[counterLets];
-//			int positionLocalVariables=0;
-//			int positionStackPointer;
-//
-//			int size =4;
-//			int stackSize=0;
-//			
-//			positionStackPointer=positionFramePointer+positionLocalVariables;
-//			positionLocalVariables=4*counterLets;
-//			positionFramePointer = positionLocalVariables+4;
-//			positionParameters=positionFramePointer+counterParameters*4;
-//			positionReturnAddress=positionParameters+4;
-//			positionSelf= positionReturnAddress+4;
-//			
-//			for(positionStackPointer = 0; positionStackPointer<counterLets; positionStackPointer++) {
-//				positionLocalVariables+= size;
-//				positionFramePointer=positionLocalVariables;
-//				positionParameters=positionFramePointer+size;
-//				for(int j = 0; j<arrParameters.length; j++) {
-//					positionParameters+=size;
-//					positionReturnAddress=positionParameters;
-//					positionSelf=positionReturnAddress+size;
-//					stackSize=positionSelf+size;}				
-//			}
-//			return stackSize;
+			return stackSize;			
 		}
-	
 		
 		@Override
 		public void caseAWhileExpr(AWhileExpr node) {

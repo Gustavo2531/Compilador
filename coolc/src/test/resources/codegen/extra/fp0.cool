@@ -3,13 +3,12 @@ class Main {
      a : Int;
      b : Int;
      c : Int;
-     f (x:Int, y:Int, z:Int, w:Int) : Int {
-        
+     f (x:Int, y:Int, z:Int, w:Int, v:Int) : Int {       
          let
       		q:Int,
-      		r:Int <- 99
-      		
+      		r:Int <- 99,
+      		s:Int <- j
     		in
-      		q+r
+      		q+r+s
 	};
 };
