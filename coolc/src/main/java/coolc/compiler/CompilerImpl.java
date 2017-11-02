@@ -14,7 +14,7 @@ import coolc.compiler.autogen.parser.ParserException;
 import coolc.compiler.visitors.ASTPrinter;
 
 public class CompilerImpl implements Compiler {
-	public static String file = "src/test/resources/test2.cool";
+	public static String file = "src/test/resources/codegen/extra/isVoid0.cool";
 //	public static String file = "src/test/resources/codegen/input/while-val.cool";
 	public static String outFile = "src/test/resources/test.s";
 	
