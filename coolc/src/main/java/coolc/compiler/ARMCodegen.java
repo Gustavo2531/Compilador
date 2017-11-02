@@ -67,6 +67,8 @@ public class ARMCodegen implements CodegenFacade {
 		String lastResult;
 		int labelCounter = 0;
 		int counterLets=0;
+		int counterParameters=0;
+		int offs=0;
 		HashMap<Integer, Boolean> letCountHash = new HashMap<>();
 		@Override
 		public void inAIntExpr(AIntExpr node) {
@@ -100,6 +102,7 @@ public class ARMCodegen implements CodegenFacade {
 		}
 		
 		private AClassDecl klass;
+		private HashMap<Integer, Boolean> extracted;
 		@Override
 		public void caseAClassDecl(AClassDecl node) {
 			klass = node;
@@ -113,7 +116,17 @@ public class ARMCodegen implements CodegenFacade {
 
 		@Override
 		public void outAMethodFeature(AMethodFeature node) {
+			
+			int countMethod2 = (node.getObjectId().getPos())-1;
+			int countMethod = lastResult.length();
+			counterParameters =countMethod2;
+			
 			stringTemplate.addAggr("methodsText.{klass, name, code}", klass.getName().getText(), node.getObjectId().getText(), lastResult);
+			
+		}
+
+		private HashMap<Integer, Boolean> extracted() {
+			return letCountHash;
 		}
 
 		
@@ -200,9 +213,9 @@ public class ARMCodegen implements CodegenFacade {
 	            		//System.out.println("Para"+ node.getObjectId().toString());
 	                st.add("loadedExpr", lastResult);
 	                lastResult=st.render();
-	                if(letCountHash.get(node.hashCode()) == null || letCountHash.get(node.hashCode()) == false) {
+	                if(extracted().get(node.hashCode()) == null || extracted().get(node.hashCode()) == false) {
 						counterLets++;
-						letCountHash.put(node.hashCode(), true);
+						extracted().put(node.hashCode(), true);
 					}
 	            	}
 			}
@@ -212,6 +225,12 @@ public class ARMCodegen implements CodegenFacade {
 		public void getCountLet(int num) {
 			if(counterLets!=num) {
 				counterLets+=num;
+			}
+		}
+		
+		public void getParameters(int numP) {
+			if(counterParameters!=numP) {
+				counterParameters+=numP;
 			}
 		}
 	
@@ -244,6 +263,48 @@ public class ARMCodegen implements CodegenFacade {
 			labelCounter ++;
 			return s + labelCounter;
 		}
+		
+		
+		
+		
+		public void getCurrentOffset() {
+			int positionSelf;
+			int positionReturnAdress;
+			int[] arrParameters = new int[counterParameters];
+			int positionParameters;
+			int positionFramePointer;
+			int[] arrLocalVariables = new int[counterLets];
+			int positionLocalVariables=0;
+			int positionStackPointer;
+
+			int size = 4;
+			int stackSize;
+			
+			//offs =96;
+
+			//positionReturnAdress = positionSelf + size;			
+			for(positionStackPointer = 0; positionStackPointer<counterLets; positionStackPointer++) {
+				positionLocalVariables+= size;
+				//System.out.println("Aqui termina variable Local "+arrLocalVariables[positionStackPointer]+"  "+positionLocalVariables);
+				positionFramePointer=positionLocalVariables;
+				//System.out.println("Pos FP "+positionFramePointer);
+				positionParameters=positionFramePointer+size;
+				//System.out.println("Pos Parameters "+positionParameters);
+				for(int j = 0; j<arrParameters.length; j++) {
+					positionParameters+=size;
+					//System.out.println("Aqui termina parametro "+arrParameters[positionStackPointer]+"  "+positionParameters);
+					
+					positionReturnAdress=positionParameters;
+					//System.out.println("Position Return Address:  "+positionReturnAdress);
+					positionSelf=positionReturnAdress+size;
+					//System.out.println("Position Self:  "+positionSelf);
+					stackSize=positionSelf+size;
+					//System.out.println("Tamaño del Stack:  "+stackSize);
+
+				}				
+			}
+		}
+	
 		
 		@Override
 		public void caseAWhileExpr(AWhileExpr node) {
