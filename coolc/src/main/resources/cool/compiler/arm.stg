@@ -40,7 +40,8 @@ class_nameTab:
 class_objTab: 
 <baseObjects:objectTable()> 
 <! <methodsData:dispatchTables()> !>
-
+heap_start:
+    .word    0
     .text
 <!
  ___                                                                             
@@ -56,8 +57,7 @@ class_objTab:
     -- Charles Bukowski
     
 !>
-
-<! <globalsText:globalDataNames()> !>
+<globalsText:globalsDataNames()> 
 <! <constructors:classConstructors()> !>
 <methodsText:methodDeclarations()>
 >>

@@ -516,6 +516,10 @@ public class ARMCodegen implements CodegenFacade {
 		stringTemplate.addAggr("globalsData.{name}", "_string_tag");
 		
 		//Por aqui van los tags
+		stringTemplate.addAggr("tags.{name,value}", "int", 2);
+		stringTemplate.addAggr("tags.{name,value}", "bool", 3);
+		stringTemplate.addAggr("tags.{name,value}", "string", 4);
+
 		
 //		*** Constants
 //	    1. String literals
@@ -551,7 +555,7 @@ public class ARMCodegen implements CodegenFacade {
 //        1.1 The objects were already declared above
 //        1.2 The tag of each class is used for the offset from class_nameTab		
 		// TODO: Table of names of classes
-		 for (int x : new int[] {1,2,3,4,5,6,7,8,9}) {
+		 for (int x : new int[] {3,4,5,6,7,8}) { //Before: {1,2,3,4,5,6,7,8,9}
 			 stringTemplate.addAggr("classNames.{id}", x);
 		 }
 	
@@ -563,7 +567,7 @@ public class ARMCodegen implements CodegenFacade {
 			 stringTemplate.addAggr("baseObjects.{id}", s);
 		 }
 		
-//      3. dispTab fo reach class
+//      3. dispTab for each class
 //        3.1 Listing of the methods for each class considering inheritance
 		// TODO: Dispatch tables
 		/*
@@ -586,6 +590,13 @@ public class ARMCodegen implements CodegenFacade {
 //		.global    Bool_init
 //		.global    Main.main
 		// TODO: Global names of TEXT segment
+		stringTemplate.addAggr("globalsText.{name}", " Main_init");
+		stringTemplate.addAggr("globalsText.{name}", " Int_init");
+		stringTemplate.addAggr("globalsText.{name}", " String_init");
+		stringTemplate.addAggr("globalsText.{name}", " Bool_init");
+		stringTemplate.addAggr("globalsText.{name}", " Main.main");
+		
+
 		
 //		*** Constructors (init) for each class
 		// Rembember to use the next to save and restore:
