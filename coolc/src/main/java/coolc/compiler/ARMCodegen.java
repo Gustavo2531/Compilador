@@ -13,15 +13,20 @@ import coolc.compiler.autogen.node.AAtExpr;
 import coolc.compiler.autogen.node.ABoolExpr;
 import coolc.compiler.autogen.node.ACallExpr;
 import coolc.compiler.autogen.node.AClassDecl;
+import coolc.compiler.autogen.node.ADivExpr;
 import coolc.compiler.autogen.node.AEqExpr;
+import coolc.compiler.autogen.node.AIfExpr;
 import coolc.compiler.autogen.node.AIntExpr;
+import coolc.compiler.autogen.node.AIsvoidExpr;
 import coolc.compiler.autogen.node.ALeExpr;
 import coolc.compiler.autogen.node.ALetDecl;
 import coolc.compiler.autogen.node.ALetExpr;
 import coolc.compiler.autogen.node.AListExpr;
 import coolc.compiler.autogen.node.ALtExpr;
 import coolc.compiler.autogen.node.AMethodFeature;
+import coolc.compiler.autogen.node.AMinusExpr;
 import coolc.compiler.autogen.node.AMultExpr;
+import coolc.compiler.autogen.node.ANegExpr;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.autogen.node.AStrExpr;
 import coolc.compiler.autogen.node.AWhileExpr;
@@ -61,7 +66,12 @@ public class ARMCodegen implements CodegenFacade {
 	class MethodVisitor extends DepthFirstAdapter {
 		String lastResult;
 		int labelCounter = 0;
-		
+		int counterLets=0;
+		int counterParameters=0;
+		int offs=0;
+		HashMap<Integer, Boolean> letCountHash = new HashMap<>();
+		HashMap<String, Boolean> letExprHash = new HashMap<>();
+		HashMap<String, Integer> letExprHash2 = new HashMap<>();
 		@Override
 		public void inAIntExpr(AIntExpr node) {
 			ST st;
@@ -94,6 +104,7 @@ public class ARMCodegen implements CodegenFacade {
 		}
 		
 		private AClassDecl klass;
+		private HashMap<Integer, Boolean> extracted;
 		@Override
 		public void caseAClassDecl(AClassDecl node) {
 			klass = node;
@@ -107,22 +118,19 @@ public class ARMCodegen implements CodegenFacade {
 
 		@Override
 		public void outAMethodFeature(AMethodFeature node) {
+			
+			int countMethod2 = (node.getObjectId().getPos())-1;
+			int countMethod = lastResult.length();
+			counterParameters =countMethod2;
+			
 			stringTemplate.addAggr("methodsText.{klass, name, code}", klass.getName().getText(), node.getObjectId().getText(), lastResult);
+			
 		}
-		
-		@Override
-		public void caseAPlusExpr(APlusExpr node) {
-			ST st;
-			st = templateGroup.getInstanceOf("addExpr");
-			
-			node.getL().apply(this);
-			st.add("left", lastResult);
-			
-			node.getR().apply(this);
-			st.add("right", lastResult);
-			
-			lastResult = st.render();
+
+		private HashMap<Integer, Boolean> extracted() {
+			return letCountHash;
 		}
+
 		
 		@Override
 		public void caseAEqExpr(AEqExpr node) {
@@ -190,34 +198,70 @@ public class ARMCodegen implements CodegenFacade {
             lastResult=st.render();
 
         }
+
 		@Override
 		public void outALetDecl(ALetDecl node) {
 			// TODO Auto-generated method stub
 			//super.outALetDecl(node);
+			
 			ST st;
 			st = templateGroup.getInstanceOf("letDecl");
-			
-			if(node.getExpr() != null){
-	            if(!node.getTypeId().getText().equals("SELF_TYPE")){
-	            		node.getExpr().apply(this);
-	            		
-	                st.add("loadedExpr", lastResult);
-	                 
-	                lastResult=st.render();
+		
+			//System.out.println(node.getObjectId().toString()+node.getExpr().toString());
+			if(node.getExpr()!=null) {
+				
+	            if(!node.getTypeId().getText().equals("SELF_TYPE")){         
+	                if(letCountHash.get(node.hashCode()) == null || letCountHash.get(node.hashCode()) == false) {
+						counterLets++;
+						letCountHash.put(node.hashCode(), true);
+						//node.getObjectId().apply(this);
+					}
+	                String s=node.getObjectId().toString()+node.getExpr().toString();
+	                if(letExprHash.get(s)==null||letExprHash.get(s)==false) {
+	                		letExprHash.put(s, true);
+		           //     node.getObjectId().apply(this);
+	                } 
+	                else if(letExprHash2.get(s)==null||letExprHash2.get(s)==0) {
+	                		letExprHash2.put(s,1);
+		                	node.getExpr().apply(this);
+		            		//System.out.println("Para"+ node.getObjectId().toString());
+		                st.add("loadedExpr", lastResult);
+		                
+		                st.add("letName", node.getObjectId().toString());
+		                //node.getExpr().apply(this);
+		                
+						st.add("letWhatever", node.getExpr().toString() );
+		                lastResult = st.render();
+	                }
+	               
 	            	}
 			}
 		}
 		
-
+		
+		public void getCountLet(int num) {
+			if(counterLets!=num) {
+				counterLets+=num;
+			}
+		}
+		
+		public void getParameters(int numP) {
+			if(counterParameters!=numP) {
+				counterParameters+=numP;
+			}
+		}
+	
 		@Override
 		public void outALetExpr(ALetExpr node) {
 			//super.outALetExpr(node);
 			String r = "";
+			
+			
 			for (PLetDecl p : node.getLetDecl()) {
-				//System.out.println("printing node: " + p.toString());
 				p.apply(this);
-				r += lastResult; 
+				r += lastResult;
 			}
+			
 			
 			ST st;
 			st = templateGroup.getInstanceOf("letExpr");
@@ -225,20 +269,59 @@ public class ARMCodegen implements CodegenFacade {
 			st.add("resultExpr", lastResult);
 			r += st.render();
 			
-			for (PLetDecl p : node.getLetDecl()) {
-				//System.out.println("printing node: " + p.toString());
-				ST stPop;
-				stPop = templateGroup.getInstanceOf("popLetDecl");
-				r += stPop.render();
-			}
 			
 			lastResult = r;
 		}
 
+		 public void inALetExpr(ALetExpr node){
+		     
+		   }
 		String getLabel(String s){
 			labelCounter ++;
 			return s + labelCounter;
 		}
+		
+		
+		
+		
+		public void getCurrentOffset() {
+			int positionSelf;
+			int positionReturnAdress;
+			int[] arrParameters = new int[counterParameters];
+			int positionParameters;
+			int positionFramePointer;
+			int[] arrLocalVariables = new int[counterLets];
+			int positionLocalVariables=0;
+			int positionStackPointer;
+
+			int size = 4;
+			int stackSize;
+			
+			//offs =96;
+
+			//positionReturnAdress = positionSelf + size;			
+			for(positionStackPointer = 0; positionStackPointer<counterLets; positionStackPointer++) {
+				positionLocalVariables+= size;
+				//System.out.println("Aqui termina variable Local "+arrLocalVariables[positionStackPointer]+"  "+positionLocalVariables);
+				positionFramePointer=positionLocalVariables;
+				//System.out.println("Pos FP "+positionFramePointer);
+				positionParameters=positionFramePointer+size;
+				//System.out.println("Pos Parameters "+positionParameters);
+				for(int j = 0; j<arrParameters.length; j++) {
+					positionParameters+=size;
+					//System.out.println("Aqui termina parametro "+arrParameters[positionStackPointer]+"  "+positionParameters);
+					
+					positionReturnAdress=positionParameters;
+					//System.out.println("Position Return Address:  "+positionReturnAdress);
+					positionSelf=positionReturnAdress+size;
+					//System.out.println("Position Self:  "+positionSelf);
+					stackSize=positionSelf+size;
+					//System.out.println("Tamaño del Stack:  "+stackSize);
+
+				}				
+			}
+		}
+	
 		
 		@Override
 		public void caseAWhileExpr(AWhileExpr node) {
@@ -267,7 +350,7 @@ public class ARMCodegen implements CodegenFacade {
 		}
 		
 		@Override
-		public void outAPlusExpr(APlusExpr node) {
+		public void caseAPlusExpr(APlusExpr node) {
 			ST st;
 			st = templateGroup.getInstanceOf("addOperation");
 			
@@ -281,7 +364,7 @@ public class ARMCodegen implements CodegenFacade {
 		}
 		
 		@Override
-		public void outAMultExpr(AMultExpr node) {
+		public void caseAMultExpr(AMultExpr node) {
 			ST st;
 			st = templateGroup.getInstanceOf("mulOperation");
 			
@@ -294,6 +377,87 @@ public class ARMCodegen implements CodegenFacade {
 			lastResult = st.render();
 		}
 		
+		@Override
+		public void caseAMinusExpr(AMinusExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("minusOperation");
+			
+			node.getL().apply(this);
+			st.add("n1", lastResult);
+			
+			node.getR().apply(this);
+			st.add("n2", lastResult);
+			
+			lastResult = st.render();
+		}
+
+		@Override
+		public void caseADivExpr(ADivExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("divOperation");
+			
+			node.getL().apply(this);
+			st.add("n1", lastResult);
+			
+			node.getR().apply(this);
+			st.add("n2", lastResult);
+			
+			lastResult = st.render();
+		}
+		
+		@Override
+		public void caseANegExpr(ANegExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("negOperation");
+			
+			node.getExpr().apply(this);
+			st.add("n1", lastResult);
+			
+			node.setExpr(node);
+			st.add("n1", lastResult);
+			lastResult = st.render();
+		}
+
+		@Override
+		public void caseAIfExpr(AIfExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("ifOperation");
+			int labelCounter = 0;
+			
+			node.getTest().apply(this);
+			st.add("testExpression", lastResult);
+			
+			node.getTrue().apply(this);
+			st.add("trueExpression", lastResult);
+			
+			node.getFalse().apply(this);
+			st.add("falseExpression", lastResult);
+			
+			labelCounter++;
+			
+			st.add("nLabel", labelCounter);
+			
+			lastResult = st.render();
+		}
+		
+		@Override
+		public void caseAIsvoidExpr(AIsvoidExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("ifOperation");
+			int labelCounter = 0;
+			
+			node.getExpr().apply(this);
+			st.add("testExpression", lastResult);
+			
+			node.setExpr(node);
+			st.add("trueExpression", lastResult);
+			
+			labelCounter++;
+			
+			st.add("nLabel", labelCounter);
+			
+			lastResult = st.render();
+		}
 	}
 
 	private PrintStream out;

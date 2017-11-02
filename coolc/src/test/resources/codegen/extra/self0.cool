@@ -1,0 +1,6 @@
+(*Self basic implementation*)
+class Main {
+    main(): Object {
+		self
+     };
+};

@@ -1,0 +1,9 @@
+(* if implementation with varible declaration *)
+class Main  {
+	x : Int <- 0;
+	
+ 	main(): Object { 
+ 	 
+    		if x < 1 then 1
+    };
+};

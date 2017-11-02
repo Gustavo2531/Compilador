@@ -1,0 +1,6 @@
+(*Basic if implementation*)
+class Main  {
+ 	main(): Object {  
+    		if 1 then 1
+    };
+};

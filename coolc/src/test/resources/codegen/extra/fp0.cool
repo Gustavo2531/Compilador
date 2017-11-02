@@ -1,0 +1,11 @@
+(*Function protocol basic implementation*)
+class Main {
+	method(a: Type): Type{
+	}
+	
+    main(): Object {		
+		method()	
+     };
+};
+ 
+

@@ -1,0 +1,7 @@
+(*Dispatch first implementation*)
+class Main {
+		a : Class;
+    main(): Object {		
+		a.method(params)
+     };
+};

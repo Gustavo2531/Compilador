@@ -1,0 +1,6 @@
+(* Int assignment implementation *)
+class Main {
+    main(): Object {
+    		var : Int <- 1
+     };
+};

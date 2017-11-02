@@ -1,0 +1,7 @@
+(* not basic implementation with variable declaration *)
+class Main  {
+    	b : Bool <- true;
+    main() : Object {
+        not b
+    };
+};

@@ -1,0 +1,11 @@
+(*Self method implementation*)
+class Main {
+	method() : SELF_TYPE {
+      {
+        action;
+      }
+   };
+    main(): Object {
+		methodCall()
+     };
+};
