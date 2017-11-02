@@ -1,11 +1,15 @@
 (*Function protocol basic implementation*)
 class Main {
-	method(a: Type): Type{
-	}
-	
-    main(): Object {		
-		method()	
-     };
+     a : Int;
+     b : Int;
+     c : Int;
+     f (x:Int, y:Int, z:Int, w:Int) : Int {
+        
+         let
+      		q:Int,
+      		r:Int <- 99
+      		
+    		in
+      		q+r
+	};
 };
- 
-

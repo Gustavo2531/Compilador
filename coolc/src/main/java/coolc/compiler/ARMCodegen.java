@@ -70,8 +70,6 @@ public class ARMCodegen implements CodegenFacade {
 		int counterParameters=0;
 		int offs=0;
 		HashMap<Integer, Boolean> letCountHash = new HashMap<>();
-		HashMap<String, Boolean> letExprHash = new HashMap<>();
-		HashMap<String, Integer> letExprHash2 = new HashMap<>();
 		@Override
 		public void inAIntExpr(AIntExpr node) {
 			ST st;
@@ -107,7 +105,7 @@ public class ARMCodegen implements CodegenFacade {
 		private HashMap<Integer, Boolean> extracted;
 		@Override
 		public void caseAClassDecl(AClassDecl node) {
-			klass = node;
+			klass = node;	
 			
 			for (PFeature f : node.getFeature()) {
 				if (f instanceof AMethodFeature) {
@@ -119,11 +117,22 @@ public class ARMCodegen implements CodegenFacade {
 		@Override
 		public void outAMethodFeature(AMethodFeature node) {
 			
-			int countMethod2 = (node.getObjectId().getPos())-1;
-			int countMethod = lastResult.length();
-			counterParameters =countMethod2;
+			ST st;
+			st = templateGroup.getInstanceOf("methodDeclarations");
 			
-			stringTemplate.addAggr("methodsText.{klass, name, code}", klass.getName().getText(), node.getObjectId().getText(), lastResult);
+			//int nParameters = node.getFormal().size();
+//			int countMethod = lastResult.length();
+//			counterParameters =countMethod2;
+			
+			
+			stringTemplate.addAggr("methodsText.{klass, name, code, countParameters}", klass.getName().getText(), node.getObjectId().getText(), lastResult, node.getFormal().size());
+			
+			//st.add("countParameters", lastResult);
+//			n1 = getCurrentOffset();
+			//System.out.println(countParameters+"--------------");
+//			System.out.println(n1+"--------------");
+//			System.out.println(counterLets);
+			
 			
 		}
 
@@ -207,33 +216,18 @@ public class ARMCodegen implements CodegenFacade {
 			ST st;
 			st = templateGroup.getInstanceOf("letDecl");
 		
-			//System.out.println(node.getObjectId().toString()+node.getExpr().toString());
-			if(node.getExpr()!=null) {
+			
+			if(node.getExpr() != null){
 				
-	            if(!node.getTypeId().getText().equals("SELF_TYPE")){         
-	                if(letCountHash.get(node.hashCode()) == null || letCountHash.get(node.hashCode()) == false) {
+	            if(!node.getTypeId().getText().equals("SELF_TYPE")){
+	            		node.getExpr().apply(this);
+	            		//System.out.println("Para"+ node.getObjectId().toString());
+	                st.add("loadedExpr", lastResult);
+	                lastResult=st.render();
+	                if(extracted().get(node.hashCode()) == null || extracted().get(node.hashCode()) == false) {
 						counterLets++;
-						letCountHash.put(node.hashCode(), true);
-						//node.getObjectId().apply(this);
+						extracted().put(node.hashCode(), true);
 					}
-	                String s=node.getObjectId().toString()+node.getExpr().toString();
-	                if(letExprHash.get(s)==null||letExprHash.get(s)==false) {
-	                		letExprHash.put(s, true);
-		           //     node.getObjectId().apply(this);
-	                } 
-	                else if(letExprHash2.get(s)==null||letExprHash2.get(s)==0) {
-	                		letExprHash2.put(s,1);
-		                	node.getExpr().apply(this);
-		            		//System.out.println("Para"+ node.getObjectId().toString());
-		                st.add("loadedExpr", lastResult);
-		                
-		                st.add("letName", node.getObjectId().toString());
-		                //node.getExpr().apply(this);
-		                
-						st.add("letWhatever", node.getExpr().toString() );
-		                lastResult = st.render();
-	                }
-	               
 	            	}
 			}
 		}
@@ -284,42 +278,61 @@ public class ARMCodegen implements CodegenFacade {
 		
 		
 		
-		public void getCurrentOffset() {
+		public int getCurrentOffset() {
 			int positionSelf;
-			int positionReturnAdress;
-			int[] arrParameters = new int[counterParameters];
+			int positionReturnAddress;
 			int positionParameters;
-			int positionFramePointer;
-			int[] arrLocalVariables = new int[counterLets];
+			int positionFramePointer=0;
 			int positionLocalVariables=0;
-			int positionStackPointer;
-
-			int size = 4;
-			int stackSize;
+			int positionStackPointer=0;
+			int stackSize=0;
 			
-			//offs =96;
-
-			//positionReturnAdress = positionSelf + size;			
-			for(positionStackPointer = 0; positionStackPointer<counterLets; positionStackPointer++) {
-				positionLocalVariables+= size;
-				//System.out.println("Aqui termina variable Local "+arrLocalVariables[positionStackPointer]+"  "+positionLocalVariables);
-				positionFramePointer=positionLocalVariables;
-				//System.out.println("Pos FP "+positionFramePointer);
-				positionParameters=positionFramePointer+size;
-				//System.out.println("Pos Parameters "+positionParameters);
-				for(int j = 0; j<arrParameters.length; j++) {
-					positionParameters+=size;
-					//System.out.println("Aqui termina parametro "+arrParameters[positionStackPointer]+"  "+positionParameters);
-					
-					positionReturnAdress=positionParameters;
-					//System.out.println("Position Return Address:  "+positionReturnAdress);
-					positionSelf=positionReturnAdress+size;
-					//System.out.println("Position Self:  "+positionSelf);
-					stackSize=positionSelf+size;
-					//System.out.println("Tamaño del Stack:  "+stackSize);
-
-				}				
-			}
+			//positionStackPointer=positionFramePointer+positionLocalVariables;
+			positionLocalVariables=4*counterLets;
+			positionStackPointer=positionLocalVariables;
+			positionFramePointer = positionLocalVariables+4;
+			positionStackPointer=positionFramePointer;
+			positionParameters=positionFramePointer+counterParameters*4;
+			positionStackPointer=positionParameters;
+			positionReturnAddress=positionParameters+4;
+			positionStackPointer=positionReturnAddress;
+			positionSelf= positionReturnAddress+4;
+			positionStackPointer=positionSelf;
+			stackSize=positionSelf+4;
+			positionStackPointer=stackSize;
+			
+			return positionStackPointer;
+			
+//			int positionSelf;
+//			int positionReturnAddress;
+//			int[] arrParameters = new int[counterParameters];
+//			int positionParameters;
+//			int positionFramePointer=0;
+//			int[] arrLocalVariables = new int[counterLets];
+//			int positionLocalVariables=0;
+//			int positionStackPointer;
+//
+//			int size =4;
+//			int stackSize=0;
+//			
+//			positionStackPointer=positionFramePointer+positionLocalVariables;
+//			positionLocalVariables=4*counterLets;
+//			positionFramePointer = positionLocalVariables+4;
+//			positionParameters=positionFramePointer+counterParameters*4;
+//			positionReturnAddress=positionParameters+4;
+//			positionSelf= positionReturnAddress+4;
+//			
+//			for(positionStackPointer = 0; positionStackPointer<counterLets; positionStackPointer++) {
+//				positionLocalVariables+= size;
+//				positionFramePointer=positionLocalVariables;
+//				positionParameters=positionFramePointer+size;
+//				for(int j = 0; j<arrParameters.length; j++) {
+//					positionParameters+=size;
+//					positionReturnAddress=positionParameters;
+//					positionSelf=positionReturnAddress+size;
+//					stackSize=positionSelf+size;}				
+//			}
+//			return stackSize;
 		}
 	
 		
@@ -408,7 +421,7 @@ public class ARMCodegen implements CodegenFacade {
 		@Override
 		public void caseANegExpr(ANegExpr node) {
 			ST st;
-			st = templateGroup.getInstanceOf("negOperation");
+			st = templateGroup.getInstanceOf("negExpr");
 			
 			node.getExpr().apply(this);
 			st.add("n1", lastResult);
@@ -422,7 +435,6 @@ public class ARMCodegen implements CodegenFacade {
 		public void caseAIfExpr(AIfExpr node) {
 			ST st;
 			st = templateGroup.getInstanceOf("ifOperation");
-			int labelCounter = 0;
 			
 			node.getTest().apply(this);
 			st.add("testExpression", lastResult);
@@ -433,10 +445,6 @@ public class ARMCodegen implements CodegenFacade {
 			node.getFalse().apply(this);
 			st.add("falseExpression", lastResult);
 			
-			labelCounter++;
-			
-			st.add("nLabel", labelCounter);
-			
 			lastResult = st.render();
 		}
 		
@@ -444,7 +452,6 @@ public class ARMCodegen implements CodegenFacade {
 		public void caseAIsvoidExpr(AIsvoidExpr node) {
 			ST st;
 			st = templateGroup.getInstanceOf("ifOperation");
-			int labelCounter = 0;
 			
 			node.getExpr().apply(this);
 			st.add("testExpression", lastResult);
@@ -452,12 +459,10 @@ public class ARMCodegen implements CodegenFacade {
 			node.setExpr(node);
 			st.add("trueExpression", lastResult);
 			
-			labelCounter++;
-			
-			st.add("nLabel", labelCounter);
-			
 			lastResult = st.render();
 		}
+	
+
 	}
 
 	private PrintStream out;
