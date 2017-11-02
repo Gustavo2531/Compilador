@@ -1,0 +1,7 @@
+(* neg implementation with variable *)
+class Main inherits IO {
+    a : Int <- 10;
+    main() : Object {
+        ~ a
+    };
+};

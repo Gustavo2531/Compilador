@@ -1,0 +1,9 @@
+(*Let basic implementation with assignment*)
+Class Main {
+	
+	main() : Object{
+		let x : Int <- 6 in 5
+	};
+	
+	
+};

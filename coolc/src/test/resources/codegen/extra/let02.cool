@@ -1,0 +1,8 @@
+(*Let basic implementation with same variable*)
+class Main {
+    
+    main(): Object {
+        let x: Int in x        
+	};
+
+};

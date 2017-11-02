@@ -1,0 +1,6 @@
+(*neg implementation with number comparison *)
+class Main  {
+    main() : Object {
+       ~ 10 
+    };
+};
