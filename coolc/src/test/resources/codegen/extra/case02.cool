@@ -1,0 +1,10 @@
+(*Case basic implementation with variable assignment and out_string method *)
+class Main inherits IO {
+    x:Bool <- true;
+ 	main(): Object {  
+    	case x of 
+        a : Bool => out_string("Bool");
+       		
+        esac
+    };
+};
