@@ -408,7 +408,7 @@ public class ARMCodegen implements CodegenFacade {
 		@Override
 		public void caseANegExpr(ANegExpr node) {
 			ST st;
-			st = templateGroup.getInstanceOf("negExpr");
+			st = templateGroup.getInstanceOf("negOperation");
 			
 			node.getExpr().apply(this);
 			st.add("n1", lastResult);
@@ -422,6 +422,7 @@ public class ARMCodegen implements CodegenFacade {
 		public void caseAIfExpr(AIfExpr node) {
 			ST st;
 			st = templateGroup.getInstanceOf("ifOperation");
+			int labelCounter = 0;
 			
 			node.getTest().apply(this);
 			st.add("testExpression", lastResult);
@@ -432,6 +433,10 @@ public class ARMCodegen implements CodegenFacade {
 			node.getFalse().apply(this);
 			st.add("falseExpression", lastResult);
 			
+			labelCounter++;
+			
+			st.add("nLabel", labelCounter);
+			
 			lastResult = st.render();
 		}
 		
@@ -439,12 +444,17 @@ public class ARMCodegen implements CodegenFacade {
 		public void caseAIsvoidExpr(AIsvoidExpr node) {
 			ST st;
 			st = templateGroup.getInstanceOf("ifOperation");
+			int labelCounter = 0;
 			
 			node.getExpr().apply(this);
 			st.add("testExpression", lastResult);
 			
 			node.setExpr(node);
 			st.add("trueExpression", lastResult);
+			
+			labelCounter++;
+			
+			st.add("nLabel", labelCounter);
 			
 			lastResult = st.render();
 		}
