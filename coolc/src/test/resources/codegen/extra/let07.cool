@@ -1,0 +1,11 @@
+class Main {
+    x:Int;
+    main(): Object {
+         main2(2)   
+	};
+    
+    main2(x:Int): Object {
+        let x: Int in x     
+	};
+
+};

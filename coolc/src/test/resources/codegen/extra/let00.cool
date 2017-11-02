@@ -1,0 +1,9 @@
+(*Let basic implementation*)
+Class Main {
+	
+	main() : Object{
+		let x : Int in 5
+	};
+	
+	
+};
