@@ -1,0 +1,10 @@
+(*Init method implementation*)
+class Main inherits Class{
+    main(): Object {		
+		ClassObject.init(attr1,attr2)
+     };
+};
+
+class Class{
+}
+

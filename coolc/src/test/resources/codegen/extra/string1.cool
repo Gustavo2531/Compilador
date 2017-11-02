@@ -1,0 +1,7 @@
+(* String, assignment, variables implementation *)
+class Main  {
+ 	a : String <- "hola";
+ 	main(): Object {  
+    		a
+    };
+};

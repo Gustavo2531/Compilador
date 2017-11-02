@@ -9,31 +9,41 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 
 import coolc.compiler.autogen.analysis.DepthFirstAdapter;
+import coolc.compiler.autogen.node.AAtExpr;
+import coolc.compiler.autogen.node.ABoolExpr;
+import coolc.compiler.autogen.node.ACallExpr;
 import coolc.compiler.autogen.node.AClassDecl;
+import coolc.compiler.autogen.node.ADivExpr;
+import coolc.compiler.autogen.node.AEqExpr;
+import coolc.compiler.autogen.node.AIfExpr;
 import coolc.compiler.autogen.node.AIntExpr;
+import coolc.compiler.autogen.node.AIsvoidExpr;
+import coolc.compiler.autogen.node.ALeExpr;
 import coolc.compiler.autogen.node.ALetDecl;
 import coolc.compiler.autogen.node.ALetExpr;
 import coolc.compiler.autogen.node.AListExpr;
+import coolc.compiler.autogen.node.ALtExpr;
 import coolc.compiler.autogen.node.AMethodFeature;
+import coolc.compiler.autogen.node.AMinusExpr;
 import coolc.compiler.autogen.node.AMultExpr;
+import coolc.compiler.autogen.node.ANegExpr;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.autogen.node.AStrExpr;
 import coolc.compiler.autogen.node.AWhileExpr;
-import coolc.compiler.autogen.node.AWhileExpr;
-import coolc.compiler.autogen.node.AAtExpr;
-import coolc.compiler.autogen.node.ACallExpr;
 import coolc.compiler.autogen.node.Node;
 import coolc.compiler.autogen.node.PExpr;
 import coolc.compiler.autogen.node.PFeature;
 import coolc.compiler.autogen.node.PLetDecl;
 import coolc.compiler.autogen.node.Start;
 import coolc.compiler.util.Util;
+import coolc.compiler.visitors.DeclarationVisitor;
 
 public class ARMCodegen implements CodegenFacade {
 	private Map<Node, Integer> literalIdx;
 	private Integer lidx;
 	
 	class SweepConstants extends DepthFirstAdapter {
+		
 		
 		@Override
 		public void inAStrExpr(AStrExpr node) {
@@ -42,7 +52,10 @@ public class ARMCodegen implements CodegenFacade {
 			int int32size = ( (s.length() + 1 + 3) & ~0x03 )/4 ;
 			stringTemplate.addAggr("strings.{idx,size,sizeIdx,value}", lidx, int32size+3, lidx-1, Util.escapeString(s));
 			literalIdx.put(node, lidx++);
-		}
+		}	
+		
+		
+		
 		@Override
 		public void inAIntExpr(AIntExpr node) {
 			stringTemplate.addAggr("ints.{idx,value}", lidx, node.getIntConst().getText());
@@ -53,21 +66,36 @@ public class ARMCodegen implements CodegenFacade {
 	class MethodVisitor extends DepthFirstAdapter {
 		String lastResult;
 		int labelCounter = 0;
-		
+		int counterLets=0;
+		HashMap<Integer, Boolean> letCountHash = new HashMap<>();
 		@Override
 		public void inAIntExpr(AIntExpr node) {
 			ST st;
 			st = templateGroup.getInstanceOf("intExpr");
-			// TODO: Here you need to put some way that the constant know
-			// its name in assembly, for example maybe "34" is int_const3
-			// st.add("e", node.getIntConst().codeRef());
-			// or
-			// st.add("e", node.getIntConst().codeRef());
-			// NEWS!!!! I made your homework
-			// whatever, for the example I will let it fixed
-			
 			st.add("e", "int_const" + literalIdx.get(node));
 			
+			lastResult = st.render();
+		}
+
+		@Override
+		public void inAStrExpr(AStrExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("strExpr");
+			st.add("e", "str_const" + literalIdx.get(node));
+			
+			lastResult = st.render();
+		}
+
+		@Override
+		public void inABoolExpr(ABoolExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("boolExpr");
+			if(node.getBoolConst().getText().toLowerCase().equals("true")) {
+				st.add("e", "bool_const1");
+			}else {
+				st.add("e", "bool_const0");
+
+			}
 			lastResult = st.render();
 		}
 		
@@ -82,16 +110,17 @@ public class ARMCodegen implements CodegenFacade {
 				}
 			}
 		}		
-		
+
 		@Override
 		public void outAMethodFeature(AMethodFeature node) {
 			stringTemplate.addAggr("methodsText.{klass, name, code}", klass.getName().getText(), node.getObjectId().getText(), lastResult);
 		}
+
 		
 		@Override
-		public void caseAPlusExpr(APlusExpr node) {
+		public void caseAEqExpr(AEqExpr node) {
 			ST st;
-			st = templateGroup.getInstanceOf("addExpr");
+			st = templateGroup.getInstanceOf("eqExpr");
 			
 			node.getL().apply(this);
 			st.add("left", lastResult);
@@ -101,6 +130,42 @@ public class ARMCodegen implements CodegenFacade {
 			
 			lastResult = st.render();
 		}
+		
+		@Override
+		public void caseALtExpr(ALtExpr node) {
+			
+
+			ST st;
+			st = templateGroup.getInstanceOf("ltExpr");
+			
+			st.add("x", getLabel("x"));
+
+			node.getL().apply(this);
+			st.add("left", lastResult);
+			
+			node.getR().apply(this);
+			st.add("right", lastResult);
+						
+			lastResult = st.render();
+		}
+
+		@Override
+		public void caseALeExpr(ALeExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("leExpr");
+			
+			st.add("x", getLabel("x"));
+
+			node.getL().apply(this);
+			st.add("left", lastResult);
+			
+			node.getR().apply(this);
+			st.add("right", lastResult);
+			
+			
+			lastResult = st.render();
+		}
+
 		@Override
 		public void outAAtExpr(AAtExpr node) {
             ST st;
@@ -118,34 +183,49 @@ public class ARMCodegen implements CodegenFacade {
             lastResult=st.render();
 
         }
+
 		@Override
 		public void outALetDecl(ALetDecl node) {
 			// TODO Auto-generated method stub
 			//super.outALetDecl(node);
+			
 			ST st;
 			st = templateGroup.getInstanceOf("letDecl");
+		
 			
 			if(node.getExpr() != null){
+				
 	            if(!node.getTypeId().getText().equals("SELF_TYPE")){
 	            		node.getExpr().apply(this);
-	            		
+	            		//System.out.println("Para"+ node.getObjectId().toString());
 	                st.add("loadedExpr", lastResult);
-	                 
 	                lastResult=st.render();
+	                if(letCountHash.get(node.hashCode()) == null || letCountHash.get(node.hashCode()) == false) {
+						counterLets++;
+						letCountHash.put(node.hashCode(), true);
+					}
 	            	}
 			}
 		}
 		
-
+		
+		public void getCountLet(int num) {
+			if(counterLets!=num) {
+				counterLets+=num;
+			}
+		}
+	
 		@Override
 		public void outALetExpr(ALetExpr node) {
 			//super.outALetExpr(node);
 			String r = "";
+			
+			
 			for (PLetDecl p : node.getLetDecl()) {
-				//System.out.println("printing node: " + p.toString());
 				p.apply(this);
-				r += lastResult; 
+				r += lastResult;
 			}
+			
 			
 			ST st;
 			st = templateGroup.getInstanceOf("letExpr");
@@ -153,16 +233,13 @@ public class ARMCodegen implements CodegenFacade {
 			st.add("resultExpr", lastResult);
 			r += st.render();
 			
-			for (PLetDecl p : node.getLetDecl()) {
-				//System.out.println("printing node: " + p.toString());
-				ST stPop;
-				stPop = templateGroup.getInstanceOf("popLetDecl");
-				r += stPop.render();
-			}
 			
 			lastResult = r;
 		}
 
+		 public void inALetExpr(ALetExpr node){
+		     
+		   }
 		String getLabel(String s){
 			labelCounter ++;
 			return s + labelCounter;
@@ -195,7 +272,7 @@ public class ARMCodegen implements CodegenFacade {
 		}
 		
 		@Override
-		public void outAPlusExpr(APlusExpr node) {
+		public void caseAPlusExpr(APlusExpr node) {
 			ST st;
 			st = templateGroup.getInstanceOf("addOperation");
 			
@@ -209,7 +286,7 @@ public class ARMCodegen implements CodegenFacade {
 		}
 		
 		@Override
-		public void outAMultExpr(AMultExpr node) {
+		public void caseAMultExpr(AMultExpr node) {
 			ST st;
 			st = templateGroup.getInstanceOf("mulOperation");
 			
@@ -222,6 +299,77 @@ public class ARMCodegen implements CodegenFacade {
 			lastResult = st.render();
 		}
 		
+		@Override
+		public void caseAMinusExpr(AMinusExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("minusOperation");
+			
+			node.getL().apply(this);
+			st.add("n1", lastResult);
+			
+			node.getR().apply(this);
+			st.add("n2", lastResult);
+			
+			lastResult = st.render();
+		}
+
+		@Override
+		public void caseADivExpr(ADivExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("divOperation");
+			
+			node.getL().apply(this);
+			st.add("n1", lastResult);
+			
+			node.getR().apply(this);
+			st.add("n2", lastResult);
+			
+			lastResult = st.render();
+		}
+		
+		@Override
+		public void caseANegExpr(ANegExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("negExpr");
+			
+			node.getExpr().apply(this);
+			st.add("n1", lastResult);
+			
+			node.setExpr(node);
+			st.add("n1", lastResult);
+			lastResult = st.render();
+		}
+
+		@Override
+		public void caseAIfExpr(AIfExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("ifOperation");
+			
+			node.getTest().apply(this);
+			st.add("testExpression", lastResult);
+			
+			node.getTrue().apply(this);
+			st.add("trueExpression", lastResult);
+			
+			node.getFalse().apply(this);
+			st.add("falseExpression", lastResult);
+			
+			lastResult = st.render();
+		}
+		
+		@Override
+		public void caseAIsvoidExpr(AIsvoidExpr node) {
+			ST st;
+			st = templateGroup.getInstanceOf("ifOperation");
+			
+			node.getExpr().apply(this);
+			st.add("testExpression", lastResult);
+			
+			node.setExpr(node);
+			st.add("trueExpression", lastResult);
+			
+			lastResult = st.render();
+		}
 	}
 
 	private PrintStream out;
@@ -254,6 +402,7 @@ public class ARMCodegen implements CodegenFacade {
 	}
 	
 	private void dataSegment() {
+
 //		*** Global Declarations, example:
 //		.globl    class_nameTab
 //		.globl    Main_protObj
@@ -300,7 +449,7 @@ public class ARMCodegen implements CodegenFacade {
 
 		// TODO: Replace by global constants
 		// Note this is like instance some type of inner class to hold the values
-//		st.addAggr("strings.{idx,tag,size,sizeIdx,value}", 1, 5, 8, 0, "String 1");
+//		stringTemplate.addAggr("strings.{idx,tag,size,sizeIdx,value}", 1, 5, 8, 0, "String 1");
 //		st.addAggr("strings.{idx,tag,size,sizeIdx,value}", 2, 5, 11, 0, "Hello World");
 //		st.addAggr("strings.{idx,tag,size,sizeIdx,value}", 3, 5, 16, 0, "Cool compiler");
 		
@@ -314,10 +463,17 @@ public class ARMCodegen implements CodegenFacade {
 //        1.1 The objects were already declared above
 //        1.2 The tag of each class is used for the offset from class_nameTab		
 		// TODO: Table of names of classes
+		 for (int x : new int[] {1,2,3,4,5,6,7,8,9}) {
+			 stringTemplate.addAggr("classNames.{id}", x);
+		 }
+	
 		
 //      2. class_objTab: prototypes and constructors for each object
 //        2.1 Indexed by tag: 2*tag -> protObj, 2*tag+1 -> init
 		// TODO: Table of objects and constructors
+		 for (String s : new String[] {"Klass1", "Klass2", "Klass3"}) {
+			 stringTemplate.addAggr("baseObjects.{id}", s);
+		 }
 		
 //      3. dispTab fo reach class
 //        3.1 Listing of the methods for each class considering inheritance

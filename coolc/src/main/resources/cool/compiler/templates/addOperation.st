@@ -1,14 +1,10 @@
 addOperation(n1, n2) ::= <<
-<!
-I assume r0 was pushed into the stack on entry to this method, 
-so I can overwrite it here so the standard is that subexpressions
-leave result in r0
-!>
 <n1>
-    mov r0, inst_constant5
+    mov r1, r0
 <n2>
     jl Object.copy
-    mov r1, inst_constant4
-    add r0, r0, r1
-    bx lr 
+    ldr r1, [r1, #12]
+    ldr r2, [r0, #12]
+    add r0, r1, r2
+    str r0, [r0, #12]
 >>

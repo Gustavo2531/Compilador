@@ -1,0 +1,8 @@
+(*Dispatch second implementation*)
+class Main {
+		methodDeclaration(params){
+		}
+    main(): Object {		
+		method(params)
+     };
+};

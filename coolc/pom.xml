@@ -50,17 +50,26 @@
 		</dependency>
 
 		<dependency>
-		    <groupId>org.apache.commons</groupId>
-		    <artifactId>commons-exec</artifactId>
-		    <version>1.2</version>
-		    <scope>test</scope>
-		</dependency>	
-<!-- https://mvnrepository.com/artifact/org.antlr/stringtemplate -->
-		<dependency>
-		    <groupId>org.antlr</groupId>
-		    <artifactId>stringtemplate</artifactId>
-		    <version>4.0.2</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-exec</artifactId>
+			<version>1.2</version>
+			<scope>test</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.antlr/stringtemplate -->
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>stringtemplate</artifactId>
+			<version>4.0.2</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.google.guava/guava-collections -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava-collections</artifactId>
+			<version>r03</version>
+		</dependency>
+
+
 	</dependencies>
 
 
@@ -95,46 +104,47 @@
 							<goal>run</goal>
 						</goals>
 					</execution>
-					
+
 					<execution>
 						<id>id.process-resources</id>
 						<phase>process-resources</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
-												
+
 						<configuration>
 							<tasks>
 								<echo>Copiando archivos dat</echo>
 								<copy overwrite="true" todir="${project.build.outputDirectory}">
 									<fileset dir="${basedir}/src/main/java">
-										<include name="**/*.dat" />									
-								 	</fileset>
+										<include name="**/*.dat" />
+									</fileset>
 								</copy>
 							</tasks>
 						</configuration>
-					</execution>		
-					
+					</execution>
+
 					<execution>
 						<id>id.process-sources</id>
 						<phase>process-sources</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
-												
+
 						<configuration>
 							<tasks>
 								<echo>Sobreescribiendo clases modificadas</echo>
-								<copy overwrite="true" todir="${basedir}/src/main/java/cool/compiler/autogen/node">
+								<copy overwrite="true"
+									todir="${basedir}/src/main/java/cool/compiler/autogen/node">
 									<fileset dir="${basedir}/src/main/resources/modified/">
-										<include name="**/*.java" />									
-								 	</fileset>
+										<include name="**/*.java" />
+									</fileset>
 								</copy>
 							</tasks>
 						</configuration>
 					</execution>
-			
-					
+
+
 				</executions>
 			</plugin>
 
