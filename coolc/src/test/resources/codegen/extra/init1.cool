@@ -1,0 +1,11 @@
+(*Asignment method implementation*)
+class Main {
+	method(a:Type):Type{
+	}
+
+    main(): Object {		
+		method(params)    
+     };
+};
+ 
+
