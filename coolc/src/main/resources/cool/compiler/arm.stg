@@ -39,7 +39,7 @@ class_nameTab:
 
 class_objTab: 
 <baseObjects:objectTable()> 
-<! <methodsData:dispatchTables()> !>
+<methodsData:dispatchTables()>
 heap_start:
     .word    0
     .text
