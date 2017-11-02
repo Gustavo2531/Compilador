@@ -41,6 +41,7 @@ import coolc.compiler.visitors.DeclarationVisitor;
 public class ARMCodegen implements CodegenFacade {
 	private Map<Node, Integer> literalIdx;
 	private Integer lidx;
+	public Object n1;
 	
 	class SweepConstants extends DepthFirstAdapter {
 		
@@ -118,13 +119,21 @@ public class ARMCodegen implements CodegenFacade {
 
 		@Override
 		public void outAMethodFeature(AMethodFeature node) {
+			ST st;
+			st = templateGroup.getInstanceOf("methodDeclarations");
 			
-			int countMethod2 = (node.getObjectId().getPos())-1;
-			int countMethod = lastResult.length();
-			counterParameters =countMethod2;
+			//int nParameters = node.getFormal().size();
+//			int countMethod = lastResult.length();
+//			counterParameters =countMethod2;
 			
-			stringTemplate.addAggr("methodsText.{klass, name, code}", klass.getName().getText(), node.getObjectId().getText(), lastResult);
 			
+			stringTemplate.addAggr("methodsText.{klass, name, code, countParameters}", klass.getName().getText(), node.getObjectId().getText(), lastResult, node.getFormal().size());
+			
+			//st.add("countParameters", lastResult);
+//			n1 = getCurrentOffset();
+			//System.out.println(countParameters+"--------------");
+//			System.out.println(n1+"--------------");
+//			System.out.println(counterLets);
 		}
 
 		private HashMap<Integer, Boolean> extracted() {
@@ -284,42 +293,63 @@ public class ARMCodegen implements CodegenFacade {
 		
 		
 		
-		public void getCurrentOffset() {
+		public int getCurrentOffset() {
 			int positionSelf;
-			int positionReturnAdress;
-			int[] arrParameters = new int[counterParameters];
+			int positionReturnAddress;
 			int positionParameters;
-			int positionFramePointer;
-			int[] arrLocalVariables = new int[counterLets];
+			int positionFramePointer=0;
 			int positionLocalVariables=0;
-			int positionStackPointer;
-
-			int size = 4;
-			int stackSize;
+			int positionStackPointer=0;
+			int stackSize=0;
 			
-			//offs =96;
+			//positionStackPointer=positionFramePointer+positionLocalVariables;
+			positionLocalVariables=4*counterLets;
+			positionStackPointer=positionLocalVariables;
+			positionFramePointer = positionLocalVariables+4;
+			positionStackPointer=positionFramePointer;
+			positionParameters=positionFramePointer+counterParameters*4;
+			positionStackPointer=positionParameters;
+			positionReturnAddress=positionParameters+4;
+			positionStackPointer=positionReturnAddress;
+			positionSelf= positionReturnAddress+4;
+			positionStackPointer=positionSelf;
+			stackSize=positionSelf+4;
+			positionStackPointer=stackSize;
+			
+			return positionStackPointer;
+			
+//			int positionSelf;
+//			int positionReturnAddress;
+//			int[] arrParameters = new int[counterParameters];
+//			int positionParameters;
+//			int positionFramePointer=0;
+//			int[] arrLocalVariables = new int[counterLets];
+//			int positionLocalVariables=0;
+//			int positionStackPointer;
+//
+//			int size =4;
+//			int stackSize=0;
+//			
+//			positionStackPointer=positionFramePointer+positionLocalVariables;
+//			positionLocalVariables=4*counterLets;
+//			positionFramePointer = positionLocalVariables+4;
+//			positionParameters=positionFramePointer+counterParameters*4;
+//			positionReturnAddress=positionParameters+4;
+//			positionSelf= positionReturnAddress+4;
+//			
+//			for(positionStackPointer = 0; positionStackPointer<counterLets; positionStackPointer++) {
+//				positionLocalVariables+= size;
+//				positionFramePointer=positionLocalVariables;
+//				positionParameters=positionFramePointer+size;
+//				for(int j = 0; j<arrParameters.length; j++) {
+//					positionParameters+=size;
+//					positionReturnAddress=positionParameters;
+//					positionSelf=positionReturnAddress+size;
+//					stackSize=positionSelf+size;}				
+//			}
+//			return stackSize;
+		} 
 
-			//positionReturnAdress = positionSelf + size;			
-			for(positionStackPointer = 0; positionStackPointer<counterLets; positionStackPointer++) {
-				positionLocalVariables+= size;
-				//System.out.println("Aqui termina variable Local "+arrLocalVariables[positionStackPointer]+"  "+positionLocalVariables);
-				positionFramePointer=positionLocalVariables;
-				//System.out.println("Pos FP "+positionFramePointer);
-				positionParameters=positionFramePointer+size;
-				//System.out.println("Pos Parameters "+positionParameters);
-				for(int j = 0; j<arrParameters.length; j++) {
-					positionParameters+=size;
-					//System.out.println("Aqui termina parametro "+arrParameters[positionStackPointer]+"  "+positionParameters);
-					
-					positionReturnAdress=positionParameters;
-					//System.out.println("Position Return Address:  "+positionReturnAdress);
-					positionSelf=positionReturnAdress+size;
-					//System.out.println("Position Self:  "+positionSelf);
-					stackSize=positionSelf+size;
-					//System.out.println("Tamaño del Stack:  "+stackSize);
-
-				}				
-			}
 		}
 	
 		
