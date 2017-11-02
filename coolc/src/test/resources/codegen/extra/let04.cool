@@ -1,0 +1,9 @@
+(*Let basic implementation with if*)
+class Main {
+    main(): Object {
+        let x: Int <- 5
+        in {
+            if x < 0 then 1 else 0 fi;
+        }
+    };
+};

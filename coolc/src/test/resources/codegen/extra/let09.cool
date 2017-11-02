@@ -1,0 +1,6 @@
+class Main {
+    main(): Object {
+        let x: Int <- (New A).method(3,4) in 5        
+	};
+
+};

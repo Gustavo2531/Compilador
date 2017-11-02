@@ -35,6 +35,7 @@ import coolc.compiler.autogen.node.PExpr;
 import coolc.compiler.autogen.node.PFeature;
 import coolc.compiler.autogen.node.PLetDecl;
 import coolc.compiler.autogen.node.Start;
+import coolc.compiler.autogen.node.TObjectId;
 import coolc.compiler.util.Util;
 import coolc.compiler.visitors.DeclarationVisitor;
 
@@ -155,6 +156,7 @@ public class ARMCodegen implements CodegenFacade {
 			lastResult = st.render();
 		}
 		
+		//---------------------------------------------------------
 		@Override
 		public void caseALtExpr(ALtExpr node) {
 			
@@ -172,6 +174,18 @@ public class ARMCodegen implements CodegenFacade {
 						
 			lastResult = st.render();
 		}
+		//Para regresar la posición del self en el stack
+		//Actualmente regresa 0
+		@Override
+		public void caseTObjectId(TObjectId node) {
+			ST st;
+			st = templateGroup.getInstanceOf("");
+			
+			//Despues se implementará bien con el offset del self por el momento regresa 0
+			//st.add("e", getCurrentOffset());
+			st.add("e", 0);	
+		}
+		//------------------------------------------------
 
 		@Override
 		public void caseALeExpr(ALeExpr node) {
