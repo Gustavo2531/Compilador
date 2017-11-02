@@ -68,6 +68,8 @@ public class ARMCodegen implements CodegenFacade {
 		int labelCounter = 0;
 		int counterLets=0;
 		HashMap<Integer, Boolean> letCountHash = new HashMap<>();
+		HashMap<String, Boolean> letExprHash = new HashMap<>();
+		HashMap<String, Integer> letExprHash2 = new HashMap<>();
 		@Override
 		public void inAIntExpr(AIntExpr node) {
 			ST st;
@@ -192,18 +194,35 @@ public class ARMCodegen implements CodegenFacade {
 			ST st;
 			st = templateGroup.getInstanceOf("letDecl");
 		
-			
-			if(node.getExpr() != null){
+			//System.out.println(node.getObjectId().toString()+node.getExpr().toString());
+			if(node.getExpr()!=null) {
 				
 	            if(!node.getTypeId().getText().equals("SELF_TYPE")){
-	            		node.getExpr().apply(this);
-	            		//System.out.println("Para"+ node.getObjectId().toString());
-	                st.add("loadedExpr", lastResult);
-	                lastResult=st.render();
+	            		
+	                
 	                if(letCountHash.get(node.hashCode()) == null || letCountHash.get(node.hashCode()) == false) {
 						counterLets++;
 						letCountHash.put(node.hashCode(), true);
+						//node.getObjectId().apply(this);
 					}
+	                String s=node.getObjectId().toString()+node.getExpr().toString();
+	                if(letExprHash.get(s)==null||letExprHash.get(s)==false) {
+	                		letExprHash.put(s, true);
+		           //     node.getObjectId().apply(this);
+	                } 
+	                else if(letExprHash2.get(s)==null||letExprHash2.get(s)==0) {
+	                		letExprHash2.put(s,1);
+		                	node.getExpr().apply(this);
+		            		//System.out.println("Para"+ node.getObjectId().toString());
+		                st.add("loadedExpr", lastResult);
+		                
+		                st.add("letName", node.getObjectId().toString());
+		                //node.getExpr().apply(this);
+		                
+						st.add("letWhatever", node.getExpr().toString() );
+		                lastResult = st.render();
+	                }
+	               
 	            	}
 			}
 		}
