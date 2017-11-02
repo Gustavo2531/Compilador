@@ -41,7 +41,6 @@ import coolc.compiler.visitors.DeclarationVisitor;
 public class ARMCodegen implements CodegenFacade {
 	private Map<Node, Integer> literalIdx;
 	private Integer lidx;
-	public Object n1;
 	
 	class SweepConstants extends DepthFirstAdapter {
 		
@@ -71,8 +70,6 @@ public class ARMCodegen implements CodegenFacade {
 		int counterParameters=0;
 		int offs=0;
 		HashMap<Integer, Boolean> letCountHash = new HashMap<>();
-		HashMap<String, Boolean> letExprHash = new HashMap<>();
-		HashMap<String, Integer> letExprHash2 = new HashMap<>();
 		@Override
 		public void inAIntExpr(AIntExpr node) {
 			ST st;
@@ -108,7 +105,7 @@ public class ARMCodegen implements CodegenFacade {
 		private HashMap<Integer, Boolean> extracted;
 		@Override
 		public void caseAClassDecl(AClassDecl node) {
-			klass = node;
+			klass = node;	
 			
 			for (PFeature f : node.getFeature()) {
 				if (f instanceof AMethodFeature) {
@@ -119,6 +116,7 @@ public class ARMCodegen implements CodegenFacade {
 
 		@Override
 		public void outAMethodFeature(AMethodFeature node) {
+			
 			ST st;
 			st = templateGroup.getInstanceOf("methodDeclarations");
 			
@@ -134,6 +132,8 @@ public class ARMCodegen implements CodegenFacade {
 			//System.out.println(countParameters+"--------------");
 //			System.out.println(n1+"--------------");
 //			System.out.println(counterLets);
+			
+			
 		}
 
 		private HashMap<Integer, Boolean> extracted() {
@@ -216,33 +216,18 @@ public class ARMCodegen implements CodegenFacade {
 			ST st;
 			st = templateGroup.getInstanceOf("letDecl");
 		
-			//System.out.println(node.getObjectId().toString()+node.getExpr().toString());
-			if(node.getExpr()!=null) {
+			
+			if(node.getExpr() != null){
 				
-	            if(!node.getTypeId().getText().equals("SELF_TYPE")){         
-	                if(letCountHash.get(node.hashCode()) == null || letCountHash.get(node.hashCode()) == false) {
+	            if(!node.getTypeId().getText().equals("SELF_TYPE")){
+	            		node.getExpr().apply(this);
+	            		//System.out.println("Para"+ node.getObjectId().toString());
+	                st.add("loadedExpr", lastResult);
+	                lastResult=st.render();
+	                if(extracted().get(node.hashCode()) == null || extracted().get(node.hashCode()) == false) {
 						counterLets++;
-						letCountHash.put(node.hashCode(), true);
-						//node.getObjectId().apply(this);
+						extracted().put(node.hashCode(), true);
 					}
-	                String s=node.getObjectId().toString()+node.getExpr().toString();
-	                if(letExprHash.get(s)==null||letExprHash.get(s)==false) {
-	                		letExprHash.put(s, true);
-		           //     node.getObjectId().apply(this);
-	                } 
-	                else if(letExprHash2.get(s)==null||letExprHash2.get(s)==0) {
-	                		letExprHash2.put(s,1);
-		                	node.getExpr().apply(this);
-		            		//System.out.println("Para"+ node.getObjectId().toString());
-		                st.add("loadedExpr", lastResult);
-		                
-		                st.add("letName", node.getObjectId().toString());
-		                //node.getExpr().apply(this);
-		                
-						st.add("letWhatever", node.getExpr().toString() );
-		                lastResult = st.render();
-	                }
-	               
 	            	}
 			}
 		}
@@ -348,8 +333,6 @@ public class ARMCodegen implements CodegenFacade {
 //					stackSize=positionSelf+size;}				
 //			}
 //			return stackSize;
-		} 
-
 		}
 	
 		
@@ -438,7 +421,7 @@ public class ARMCodegen implements CodegenFacade {
 		@Override
 		public void caseANegExpr(ANegExpr node) {
 			ST st;
-			st = templateGroup.getInstanceOf("negOperation");
+			st = templateGroup.getInstanceOf("negExpr");
 			
 			node.getExpr().apply(this);
 			st.add("n1", lastResult);
@@ -452,7 +435,6 @@ public class ARMCodegen implements CodegenFacade {
 		public void caseAIfExpr(AIfExpr node) {
 			ST st;
 			st = templateGroup.getInstanceOf("ifOperation");
-			int labelCounter = 0;
 			
 			node.getTest().apply(this);
 			st.add("testExpression", lastResult);
@@ -463,10 +445,6 @@ public class ARMCodegen implements CodegenFacade {
 			node.getFalse().apply(this);
 			st.add("falseExpression", lastResult);
 			
-			labelCounter++;
-			
-			st.add("nLabel", labelCounter);
-			
 			lastResult = st.render();
 		}
 		
@@ -474,7 +452,6 @@ public class ARMCodegen implements CodegenFacade {
 		public void caseAIsvoidExpr(AIsvoidExpr node) {
 			ST st;
 			st = templateGroup.getInstanceOf("ifOperation");
-			int labelCounter = 0;
 			
 			node.getExpr().apply(this);
 			st.add("testExpression", lastResult);
@@ -482,12 +459,10 @@ public class ARMCodegen implements CodegenFacade {
 			node.setExpr(node);
 			st.add("trueExpression", lastResult);
 			
-			labelCounter++;
-			
-			st.add("nLabel", labelCounter);
-			
 			lastResult = st.render();
 		}
+	
+
 	}
 
 	private PrintStream out;
