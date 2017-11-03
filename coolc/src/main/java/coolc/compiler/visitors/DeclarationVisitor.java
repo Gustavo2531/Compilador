@@ -1,6 +1,8 @@
 package coolc.compiler.visitors;
 
 
+import java.util.LinkedList;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -13,7 +15,9 @@ import coolc.compiler.autogen.node.AFormal;
 import coolc.compiler.autogen.node.ALetDecl;
 import coolc.compiler.autogen.node.AMethodFeature;
 import coolc.compiler.autogen.node.AObjectExpr;
+import coolc.compiler.autogen.node.Node;
 import coolc.compiler.autogen.node.PExpr;
+import coolc.compiler.autogen.node.PFormal;
 
 public class DeclarationVisitor extends DepthFirstAdapter{
 	/*
@@ -23,7 +27,7 @@ public class DeclarationVisitor extends DepthFirstAdapter{
 	
 	//attributes, parameters, local values 
 	private int level =0; 
-	Multimap<String, PExpr> map= ArrayListMultimap.create(); 
+	Multimap<String, Node> map= ArrayListMultimap.create(); 
 	public int getLevel(){
 		return this.level;
 	}
@@ -46,7 +50,10 @@ public class DeclarationVisitor extends DepthFirstAdapter{
 	@Override 
 	public void inAMethodFeature(AMethodFeature node){
 		this.level++;
-		map.put("Parameter", node.getExpr());
+		LinkedList <PFormal> fea = node.getFormal(); 
+		for( PFormal x : fea){
+			map.put("Parameter",x); 
+		}
 	}
 	@Override 
 	public void outAMethodFeature(AMethodFeature node){
@@ -59,7 +66,11 @@ public class DeclarationVisitor extends DepthFirstAdapter{
 	@Override 
 	public void inAAssignExpr (AAssignExpr node){
 		this.level++; 
-		map.put("Local Variable", node.getExpr()); 
+		if(getLevel()>2){
+			map.put("Local Variable", node.getExpr()); 
+		}else{
+			map.put("Attribute", node.getExpr()); 
+		}
 	}
 	@Override 
 	public void outAAssignExpr(AAssignExpr node){
@@ -96,8 +107,12 @@ public class DeclarationVisitor extends DepthFirstAdapter{
 	 */
 	@Override 
 	public void inALetDecl(ALetDecl node){
-		this.level++; 
-		map.put("Local Variable", node.getExpr()); 
+		this.level++;
+		if(getLevel()>2){
+			map.put("Local Variable", node.getExpr()); 
+		}else{
+			map.put("Attribute", node.getExpr()); 
+		}
 	}
 	@Override 
 	public void outALetDecl(ALetDecl node){
@@ -122,6 +137,11 @@ public class DeclarationVisitor extends DepthFirstAdapter{
 	@Override
 	public void inAFormal (AFormal node){
 		this.level++; 
+		if(getLevel()>2){
+			map.put("Local Variable", node); 
+		}else{
+			map.put("Attribute", node); 
+		}
 	}
 	@Override 
 	public void outAFormal(AFormal node){
