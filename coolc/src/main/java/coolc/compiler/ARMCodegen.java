@@ -226,8 +226,8 @@ public class ARMCodegen implements CodegenFacade {
 		                	node.getExpr().apply(this);
 		            		//System.out.println("Para"+ node.getObjectId().toString());
 		                st.add("loadedExpr", lastResult);
-		                
-		                st.add("letName", node.getObjectId().toString());
+		                node.getObjectId().apply(this);
+		                st.add("letName", lastResult);
 		                //node.getExpr().apply(this);
 		                
 						st.add("letWhatever", node.getExpr().toString() );
