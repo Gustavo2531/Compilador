@@ -73,6 +73,8 @@ public class ARMCodegen implements CodegenFacade {
 		int counterParameters=0;
 		int offs=0;
 		HashMap<Integer, Boolean> letCountHash = new HashMap<>();
+		HashMap<String, Boolean> letExprHash = new HashMap<>();
+		HashMap<String, Integer> letExprHash2 = new HashMap<>();
 		@Override
 		public void inAIntExpr(AIntExpr node) {
 			ST st;
@@ -229,6 +231,26 @@ public class ARMCodegen implements CodegenFacade {
 						counterLets++;
 						extracted().put(node.hashCode(), true);
 					}
+	                
+	                String s=node.getObjectId().toString()+node.getExpr().toString();
+	                if(letExprHash.get(s)==null||letExprHash.get(s)==false) {
+	                		letExprHash.put(s, true);
+		           //     node.getObjectId().apply(this);
+	                } 
+	                else if(letExprHash2.get(s)==null||letExprHash2.get(s)==0) {
+	                		letExprHash2.put(s,1);
+		                	node.getExpr().apply(this);
+		            		//System.out.println("Para"+ node.getObjectId().toString());
+		                st.add("loadedExpr", lastResult);
+		                node.getObjectId().apply(this);
+		                st.add("letName", lastResult);
+		                //node.getExpr().apply(this);
+		                
+						st.add("letWhatever", node.getExpr().toString() );
+		                lastResult = st.render();
+	                }
+	               
+
 	            	}
 			}
 		}
