@@ -1,0 +1,7 @@
+(*Let inside let with same vairable*)
+class Main {
+    main(): Object {
+        let x: Int in let y: Int in x        
+	};
+
+};

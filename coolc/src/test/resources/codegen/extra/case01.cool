@@ -1,0 +1,9 @@
+(*Case basic implementation with variable assignment *)
+class Main  {
+    x:Int <- 3;
+ 	main(): Object {  
+    	case x<10 of
+        	x:Int => 5;
+        esac
+    };
+};

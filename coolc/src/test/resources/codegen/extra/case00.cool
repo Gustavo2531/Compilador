@@ -1,0 +1,8 @@
+(*Case basic implementation*)
+class Main  {
+ 	main(): Object {  
+    	case 5 of
+        	x:Int => 5;
+        esac
+    };
+};
