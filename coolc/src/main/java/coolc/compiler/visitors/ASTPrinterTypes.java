@@ -1,15 +1,20 @@
 package coolc.compiler.visitors;
 
 import java.io.PrintStream;
+import java.util.Map;
 
+import coolc.compiler.autogen.node.AClassDecl;
 import coolc.compiler.autogen.node.Node;
 import coolc.compiler.autogen.node.PExpr;
 
 
 public class ASTPrinterTypes extends ASTPrinter {
 
-	public ASTPrinterTypes(PrintStream out) {
+	private Map<Node, AClassDecl> map;
+
+	public ASTPrinterTypes(Map<Node, AClassDecl> map, PrintStream out) {
 		super(out);
+		this.map = map;
 	}
 
 	public void defaultOut(Node node) {
