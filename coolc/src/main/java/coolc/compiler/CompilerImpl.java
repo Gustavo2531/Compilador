@@ -1,7 +1,6 @@
 package coolc.compiler;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -9,21 +8,19 @@ import java.io.PushbackReader;
 import java.util.Map;
 import java.util.Set;
 
-import coolc.compiler.CoolSemantic;
-import coolc.compiler.ErrorManager;
-import coolc.compiler.visitors.ASTPrinterTypes;
-import coolc.compiler.exceptions.SemanticException;
-import coolc.compiler.util.Error;
 import coolc.compiler.autogen.lexer.LexerException;
 import coolc.compiler.autogen.node.AClassDecl;
 import coolc.compiler.autogen.node.Node;
 import coolc.compiler.autogen.node.Start;
 import coolc.compiler.autogen.parser.Parser;
 import coolc.compiler.autogen.parser.ParserException;
+import coolc.compiler.exceptions.SemanticException;
+import coolc.compiler.util.Error;
 import coolc.compiler.visitors.ASTPrinter;
+import coolc.compiler.visitors.ASTPrinterTypes;
 
 public class CompilerImpl implements Compiler {
-	public static String file = "src/test/resources/semantic/input/redefinedobject.cool";
+	public static String file = "src/test/resources/test.cool";
 	//public static String file = "src/test/resources/codegen/input/while-val.cool";
 
 	public static String outFile = "src/test/resources/test.s";
@@ -45,10 +42,7 @@ public class CompilerImpl implements Compiler {
 		if (args.length > 0) {
 			file = args[0];
 		}
-		
-//		Instantiate YOUR concrete classes here!
-//		If codegen is null, you will only get NullPointerException
-//		Example:
+
 		compiler.setup(new CoolSemantic(), new ARMCodegen());		
 		
 		try {
@@ -61,7 +55,6 @@ public class CompilerImpl implements Compiler {
 			System.exit(-1);
 		}
 		
-
 		start.apply(new ASTPrinter(System.out));
 		ErrorManager.getInstance().setOut(System.err);
 		ErrorManager.getInstance().reset();

@@ -30,7 +30,7 @@ public class ASTPrinterTypes extends ASTPrinter {
 						.getName()
 						.substring(
 								node.getClass().getName().lastIndexOf('.') + 1)
-				+ ((node instanceof PExpr)?":"+((WithPrintableType)node).getTypeAsString():"")
+				+ ((node instanceof PExpr)?":"+map.get(node).getName().getText():"")
 				+ "\n" + output;
 
 		// replace any ` with a |
