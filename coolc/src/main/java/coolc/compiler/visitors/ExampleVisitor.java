@@ -22,7 +22,10 @@ public class ExampleVisitor extends DepthFirstAdapter {
 	
 	@Override
 	public void outAProgram(AProgram node) {
-
+		if(!hasMain){
+    		ErrorManager.getInstance().getErrors().add(Error.NO_MAIN);
+    		ErrorManager.getInstance().semanticError("Coolc.semant.noMain");
+		}
 	}
 
 	/*
