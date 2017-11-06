@@ -246,7 +246,7 @@ public class SemanticTest {
 	}
 	@Test
 	public void testBad18() throws LexerException, IOException, ParserException, SemanticException {
-		genericBad("inheritsselftype.cool", EnumSet.of(Error.INHERIT_SELF_TYPE, Error.NO_MAIN));
+		genericBad("inheritsselftype.cool", EnumSet.of(Error.INHERIT_SELF_TYPE));
 	}
 	@Test
 	public void testBad19() throws LexerException, IOException, ParserException, SemanticException {
