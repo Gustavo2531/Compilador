@@ -68,6 +68,8 @@ public class ARMCodegen implements CodegenFacade {
 		String lastResult;
 		int labelCounter = 0;
 		int counterLets=0;
+		int framePointer =0;
+		int lr=0;
 		int counterParameters=0;
 		int offs=0;
 		HashMap<Integer, Boolean> letCountHash = new HashMap<>();
@@ -117,32 +119,17 @@ public class ARMCodegen implements CodegenFacade {
 			}
 		}		
 
-		@Override
-		public void outAMethodFeature(AMethodFeature node) {
-			
+		public void outAMethodFeature(AMethodFeature node) {	
 			ST st;
 			st = templateGroup.getInstanceOf("methodDeclarations");
-			
-			//int nParameters = node.getFormal().size();
-//			int countMethod = lastResult.length();
-//			counterParameters =countMethod2;
-			
-			
-			stringTemplate.addAggr("methodsText.{klass, name, code, countParameters}", klass.getName().getText(), node.getObjectId().getText(), lastResult, node.getFormal().size());
-			
-			//st.add("countParameters", lastResult);
-//			n1 = getCurrentOffset();
-			//System.out.println(countParameters+"--------------");
-//			System.out.println(n1+"--------------");
-//			System.out.println(counterLets);
-			
-			
+			int nParameters = node.getFormal().size();
+			int totalStackSize = getCurrentOffset(nParameters);
+			stringTemplate.addAggr("methodsText.{klass, name, code, counterLV, outFramePointer, inFramePointer, lr}", klass.getName().getText(), node.getObjectId().getText(), lastResult, totalStackSize, totalStackSize-framePointer, totalStackSize-framePointer-4, totalStackSize-lr);
 		}
 
 		private HashMap<Integer, Boolean> extracted() {
 			return letCountHash;
 		}
-
 		
 		@Override
 		public void caseAEqExpr(AEqExpr node) {
@@ -314,7 +301,7 @@ public class ARMCodegen implements CodegenFacade {
 		
 		
 		
-		public int getCurrentOffset() {
+public int getCurrentOffset(int nParameters) {
 			int positionSelf;
 			int positionReturnAddress;
 			int positionParameters;
@@ -323,54 +310,22 @@ public class ARMCodegen implements CodegenFacade {
 			int positionStackPointer=0;
 			int stackSize=0;
 			
-			//positionStackPointer=positionFramePointer+positionLocalVariables;
 			positionLocalVariables=4*counterLets;
 			positionStackPointer=positionLocalVariables;
 			positionFramePointer = positionLocalVariables+4;
+			framePointer=positionLocalVariables;
 			positionStackPointer=positionFramePointer;
-			positionParameters=positionFramePointer+counterParameters*4;
+			positionParameters=positionFramePointer+nParameters*4;
 			positionStackPointer=positionParameters;
 			positionReturnAddress=positionParameters+4;
+			lr = positionReturnAddress;
 			positionStackPointer=positionReturnAddress;
 			positionSelf= positionReturnAddress+4;
 			positionStackPointer=positionSelf;
-			stackSize=positionSelf+4;
-			positionStackPointer=stackSize;
+			stackSize=positionSelf;
 			
-			return positionStackPointer;
-			
-//			int positionSelf;
-//			int positionReturnAddress;
-//			int[] arrParameters = new int[counterParameters];
-//			int positionParameters;
-//			int positionFramePointer=0;
-//			int[] arrLocalVariables = new int[counterLets];
-//			int positionLocalVariables=0;
-//			int positionStackPointer;
-//
-//			int size =4;
-//			int stackSize=0;
-//			
-//			positionStackPointer=positionFramePointer+positionLocalVariables;
-//			positionLocalVariables=4*counterLets;
-//			positionFramePointer = positionLocalVariables+4;
-//			positionParameters=positionFramePointer+counterParameters*4;
-//			positionReturnAddress=positionParameters+4;
-//			positionSelf= positionReturnAddress+4;
-//			
-//			for(positionStackPointer = 0; positionStackPointer<counterLets; positionStackPointer++) {
-//				positionLocalVariables+= size;
-//				positionFramePointer=positionLocalVariables;
-//				positionParameters=positionFramePointer+size;
-//				for(int j = 0; j<arrParameters.length; j++) {
-//					positionParameters+=size;
-//					positionReturnAddress=positionParameters;
-//					positionSelf=positionReturnAddress+size;
-//					stackSize=positionSelf+size;}				
-//			}
-//			return stackSize;
+			return stackSize;			
 		}
-	
 		
 		@Override
 		public void caseAWhileExpr(AWhileExpr node) {
@@ -557,6 +512,10 @@ public class ARMCodegen implements CodegenFacade {
 		stringTemplate.addAggr("globalsData.{name}", "_string_tag");
 		
 		//Por aqui van los tags
+		stringTemplate.addAggr("tags.{name,value}", "int", 2);
+		stringTemplate.addAggr("tags.{name,value}", "bool", 3);
+		stringTemplate.addAggr("tags.{name,value}", "string", 4);
+
 		
 //		*** Constants
 //	    1. String literals
@@ -592,7 +551,11 @@ public class ARMCodegen implements CodegenFacade {
 //        1.1 The objects were already declared above
 //        1.2 The tag of each class is used for the offset from class_nameTab		
 		// TODO: Table of names of classes
-		 for (int x : new int[] {1,2,3,4,5,6,7,8,9}) {
+		 /* int counter = 0;
+		 for (Klass k : set) { //the set is missing declaration lol
+			 stringTemplate.addAggr("classNames.{id}", counter++); //the counter serves as an idx increment
+		 }*/
+		 for (int x : new int[] {3,4,5,6,7,8}) { //Before: {1,2,3,4,5,6,7,8,9}
 			 stringTemplate.addAggr("classNames.{id}", x);
 		 }
 	
@@ -600,17 +563,18 @@ public class ARMCodegen implements CodegenFacade {
 //      2. class_objTab: prototypes and constructors for each object
 //        2.1 Indexed by tag: 2*tag -> protObj, 2*tag+1 -> init
 		// TODO: Table of objects and constructors
-		 for (String s : new String[] {"Klass1", "Klass2", "Klass3"}) {
+		
+		 for (String s : new String[] {"Object", "IO", "Int", "Bool", "String","Main"}) {
 			 stringTemplate.addAggr("baseObjects.{id}", s);
 		 }
 		
-//      3. dispTab fo reach class
+//      3. dispTab for each class
 //        3.1 Listing of the methods for each class considering inheritance
 		// TODO: Dispatch tables
-		/*
+		
 		String [] s = new String[] {"a", "b"};
 		stringTemplate.addAggr("methodsData.{name, methods}", "className", s);
-		*/
+		
 
 //		*** protObjs
 //		Attributes, also consider inherited ones.
@@ -627,6 +591,11 @@ public class ARMCodegen implements CodegenFacade {
 //		.global    Bool_init
 //		.global    Main.main
 		// TODO: Global names of TEXT segment
+		stringTemplate.addAggr("globalsText.{name}", " Main_init");
+		stringTemplate.addAggr("globalsText.{name}", " Int_init");
+		stringTemplate.addAggr("globalsText.{name}", " String_init");
+		stringTemplate.addAggr("globalsText.{name}", " Bool_init");
+		stringTemplate.addAggr("globalsText.{name}", " Main.main");
 		
 //		*** Constructors (init) for each class
 		// Rembember to use the next to save and restore:
@@ -638,6 +607,11 @@ public class ARMCodegen implements CodegenFacade {
 		
 //		*** Methods
 		// TODO: code for methods *mainly all expressions*
+	}
+	class Klass{
+		String name, parent;
+		int tag;
+		int int32size = ((name.length() + 1 + 3) & ~0x03) / 4;
 	}
 
 	

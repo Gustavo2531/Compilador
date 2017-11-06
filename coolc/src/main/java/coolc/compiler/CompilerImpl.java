@@ -1,27 +1,26 @@
 package coolc.compiler;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PushbackReader;
+import java.util.Map;
+import java.util.Set;
 
 import coolc.compiler.autogen.lexer.LexerException;
+import coolc.compiler.autogen.node.AClassDecl;
+import coolc.compiler.autogen.node.Node;
 import coolc.compiler.autogen.node.Start;
 import coolc.compiler.autogen.parser.Parser;
 import coolc.compiler.autogen.parser.ParserException;
+import coolc.compiler.exceptions.SemanticException;
+import coolc.compiler.util.Error;
 import coolc.compiler.visitors.ASTPrinter;
+import coolc.compiler.visitors.ASTPrinterTypes;
 
 public class CompilerImpl implements Compiler {
-
-
-	//public static String file = "src/test/resources/codegen/extra/isVoid0.cool";
-//	public static String file = "src/test/resources/codegen/input/while-val.cool";
-	
-
-
-	public static String file = "src/test/resources/codegen/extra/add0.cool";
+	public static String file = "src/test/resources/test.cool";
 	//public static String file = "src/test/resources/codegen/input/while-val.cool";
 
 	public static String outFile = "src/test/resources/test.s";
@@ -29,6 +28,8 @@ public class CompilerImpl implements Compiler {
 	private CoolcLexer lexer;
 	private Parser parser;
 	private CodegenFacade codegen;
+
+	private SemanticFacade semantic;
 	
 	public CoolcLexer getLexer() {
 		return lexer;
@@ -41,11 +42,8 @@ public class CompilerImpl implements Compiler {
 		if (args.length > 0) {
 			file = args[0];
 		}
-		
-//		Instantiate YOUR concrete classes here!
-//		If codegen is null, you will only get NullPointerException
-//		Example:
-		compiler.setup(new ARMCodegen());		
+
+		compiler.setup(new CoolSemantic(), new ARMCodegen());		
 		
 		try {
 			start = compiler.lexAndParse(new File(file), System.err);
@@ -57,13 +55,23 @@ public class CompilerImpl implements Compiler {
 			System.exit(-1);
 		}
 		
-
 		start.apply(new ASTPrinter(System.out));
+		ErrorManager.getInstance().setOut(System.err);
+		ErrorManager.getInstance().reset();
+		
+		try {
+			compiler.semanticCheck(start, System.err);
+		} catch (SemanticException e) {
+			System.err.format("Compilation halted due to semantic errors.\n");			
+			System.exit(-1);
+		}
+		
+		start.apply(new ASTPrinterTypes(compiler.getTypes(), System.out));
 		
 		// When generating code, uncomment this:
-		PrintStream out = new PrintStream(new FileOutputStream(outFile));
-		//compiler.genCode(start, out);
-		compiler.genCode(start, System.out);
+		// PrintStream out = new PrintStream(new FileOutputStream(outFile));
+		// compiler.genCode(start, out);
+		// compiler.genCode(start, System.out);
 		
 	}
 	
@@ -84,8 +92,25 @@ public class CompilerImpl implements Compiler {
 	}
 
 	@Override
-	public void setup(CodegenFacade c) {
+	public void setup(SemanticFacade s, CodegenFacade c) {
+		semantic = s;
 		codegen = c;		
+	}
+
+	@Override
+	public void semanticCheck(Start node, PrintStream output) throws SemanticException {
+		semantic.setup(node, output);
+		semantic.check();
+	}
+
+	@Override
+	public Set<Error> getErrors() {
+		return semantic.getErrors();
+	}
+
+	@Override
+	public Map<Node, AClassDecl> getTypes() {
+		return semantic.getTypes();
 	}
 
 }
