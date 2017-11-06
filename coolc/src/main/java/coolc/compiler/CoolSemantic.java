@@ -1,6 +1,7 @@
 package coolc.compiler;
 
 import java.io.PrintStream;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,23 +25,59 @@ import coolc.compiler.autogen.node.AIntExpr;
 import coolc.compiler.autogen.node.Node;
 import coolc.compiler.autogen.node.Start;
 import coolc.compiler.exceptions.SemanticException;
+
 import coolc.compiler.util.Error;
+import coolc.compiler.visitors.ExampleVisitor;
+
+
 
 public class CoolSemantic implements SemanticFacade {
-	private Map<Node, AClassDecl> types;
+	private Map<Node, AClassDecl> types = new HashMap<Node, AClassDecl>();
 	private Start start;
 	private PrintStream out;
 	
 
+	class TypeChecker extends DepthFirstAdapter {
+		public void outAIntExpr(AIntExpr node){
+	        types.put(node, basicClasses().get("Int"));
+	    }
+		
+		public void outAStrExpr(AStrExpr node){
+	        types.put(node, basicClasses().get("String"));
+	    }
+		
+		
+		
+	}
+	
+	
 	@Override
 	public void setup(Start start, PrintStream out) {
 		this.start = start;
 		this.out = out;
 	}
 
+	
 	@Override
 	public void check() throws SemanticException {
+		start.apply(new ExampleVisitor());
 
+		if(ErrorManager.getInstance().getErrors().size() > 0){
+			throw new SemanticException();
+		}
+		
+		this.start.apply(new TypeChecker());
+		if(ErrorManager.getInstance().getErrors().size() > 0){
+			throw new SemanticException();
+		}
+		/**start.apply(new NewVisitor(out));
+		
+
+		
+		// The visitors may have added erros to the set
+		if(ErrorManager.getInstance().getErrors().size() > 0){
+			throw new SemanticException();
+		}**/
 	}
 
 	@Override

@@ -1,0 +1,6 @@
+class Main{
+a:Int<-1;
+main():Object{
+"Hello"
+};
+};
