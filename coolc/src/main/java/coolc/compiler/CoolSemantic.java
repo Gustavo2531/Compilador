@@ -39,6 +39,7 @@ public class CoolSemantic implements SemanticFacade {
 	private Map<Node, AClassDecl> types = new HashMap<Node, AClassDecl>();
 	private Start start;
 	private PrintStream out;
+	//private boolean hasSelfTypeParameterPosition = false;
 	
 
 	class TypeChecker extends DepthFirstAdapter {
@@ -52,16 +53,34 @@ public class CoolSemantic implements SemanticFacade {
 		
 		
 
-		public void inAMethodFeature(AMethodFeature node){
+		/*public void inAMethodFeature(AMethodFeature node){
 		    //	String myType = node.getTypeId().getText();
 				String myType = node.getTypeId().getText();
 		    		if(!myType.equals("SELF_TYPE")){
-			    	if(!TableClass.getInstance().getClasses().containsKey(myType)){
-			    		ErrorManager.getInstance().getErrors().add(Error.TYPE_NOT_FOUND);
-			    		ErrorManager.getInstance().semanticError("Coolc.semant.typeNotFound", node.getObjectId(),node.getTypeId());
-			    	}
-		    	}
-		}
+		    			if(!TableClass.getInstance().getClasses().containsKey(myType)){
+		    				ErrorManager.getInstance().getErrors().add(Error.TYPE_NOT_FOUND);
+		    				ErrorManager.getInstance().semanticError("Coolc.semant.typeNotFound", node.getObjectId(),node.getTypeId());
+		    			}
+		    		}
+		    		
+		}*/
+		
+		/*@Override
+		public void outAMethodFeature(AMethodFeature node) {
+			hasSelfTypeParameterPosition = false;
+			for (PFormal f : node.getFormal()) {
+				//f.apply(this);
+			}
+			if(hasSelfTypeParameterPosition) {
+				ErrorManager.getInstance().getErrors().add(Error.SELF_TYPE_FORMAL);
+				ErrorManager.getInstance().semanticError("Coolc.semant.selfTypeFormal", node.getObjectId(),node.getTypeId());
+			}
+			hasSelfTypeParameterPosition = false;
+		}*/
+		
+		
+		
+		/*@Override
 	
 		public void inAClassDecl(AClassDecl node) {
 			
@@ -74,8 +93,7 @@ public class CoolSemantic implements SemanticFacade {
 					ErrorManager.getInstance().semanticError("Coolc.semant.cannotInherit",node.getName().getText());
 				}
 			}
-		}
-		
+		}*/
 		
 	}
 	
@@ -90,12 +108,13 @@ public class CoolSemantic implements SemanticFacade {
 	@Override
 	public void check() throws SemanticException {
 		start.apply(new ExampleVisitor());
-
+		
 		if(ErrorManager.getInstance().getErrors().size() > 0){
 			throw new SemanticException();
 		}
 		
-		this.start.apply(new TypeChecker());
+		start.apply(new TypeChecker());
+
 		//if(ErrorManager.getInstance().getErrors().size() > 0){
 			//throw new SemanticException();
 		//}

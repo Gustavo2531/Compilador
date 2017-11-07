@@ -34,6 +34,15 @@ public class ExampleVisitor extends DepthFirstAdapter {
 	 * outAProgram is the last node visited, so we check here if there was no main method
 	 */
 	
+	@Override
+	public void outAFormal(AFormal node) {
+		if(node.getTypeId().getText().equals("SELF_TYPE")) {
+			ErrorManager.getInstance().getErrors().add(Error.SELF_TYPE_FORMAL);
+			ErrorManager.getInstance().getErrors().add(Error.UNDECL_IDENTIFIER);
+			ErrorManager.getInstance().semanticError("Coolc.semant.selfTypeFormal", node.getObjectId());
+			ErrorManager.getInstance().semanticError("Coolc.semant.undeclIdentifier", node.getObjectId());
+		}
+	}
 	
 	@Override
 	public void outAProgram(AProgram node) {

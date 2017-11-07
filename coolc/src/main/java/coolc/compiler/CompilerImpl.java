@@ -20,7 +20,7 @@ import coolc.compiler.visitors.ASTPrinter;
 import coolc.compiler.visitors.ASTPrinterTypes;
 
 public class CompilerImpl implements Compiler {
-	public static String file = "src/test/resources/test.cool";
+	public static String file = "src/test/resources/semantic/input/selftypeparameterposition.cool";
 	//public static String file = "src/test/resources/codegen/input/while-val.cool";
 	//public static String file = "src/test/resources/semantic/input/redefinedobject.cool";
 	public static String outFile = "src/test/resources/test.s";
