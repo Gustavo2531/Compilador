@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import coolc.compiler.ErrorManager;
 
 import coolc.compiler.autogen.analysis.DepthFirstAdapter;
+import coolc.compiler.autogen.node.AAssignExpr;
 import coolc.compiler.autogen.node.AAttributeFeature;
 import coolc.compiler.autogen.node.AClassDecl;
 import coolc.compiler.autogen.node.ALetDecl;
@@ -143,6 +144,16 @@ public class ExampleVisitor extends DepthFirstAdapter {
         		ErrorManager.getInstance().getErrors().add(Error.SELF_ATTR);
         		ErrorManager.getInstance().semanticError("Coolc.semant.selfAttr");
         }
+	}
+	
+	public void outAAssignExpr(AAssignExpr node){
+    	String s = node.getObjectId().getText();
+    	if(s.equals("self")){
+    		ErrorManager.getInstance().getErrors().add(Error.ASSIGN_SELF);
+    		ErrorManager.getInstance().getErrors().add(Error.BAD_INFERRED);
+    		ErrorManager.getInstance().semanticError("Coolc.semant.assignSelf");
+    		return;
+    		}
 	}
 	
 }
