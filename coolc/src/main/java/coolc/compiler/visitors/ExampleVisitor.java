@@ -1,5 +1,7 @@
 package coolc.compiler.visitors;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 
@@ -9,13 +11,16 @@ import coolc.compiler.autogen.analysis.DepthFirstAdapter;
 import coolc.compiler.autogen.node.AAssignExpr;
 import coolc.compiler.autogen.node.AAttributeFeature;
 import coolc.compiler.autogen.node.AClassDecl;
+import coolc.compiler.autogen.node.AFormal;
 import coolc.compiler.autogen.node.ALetDecl;
 import coolc.compiler.autogen.node.ALetExpr;
 import coolc.compiler.autogen.node.AMethodFeature;
 import coolc.compiler.autogen.node.AProgram;
+import coolc.compiler.autogen.node.PFormal;
 import coolc.compiler.autogen.node.PLetDecl;
 import coolc.compiler.autogen.node.TTypeId;
 import coolc.compiler.util.TableClass;
+
 import coolc.compiler.util.Error;
 
 import coolc.compiler.util.TableClass;
@@ -56,6 +61,28 @@ public class ExampleVisitor extends DepthFirstAdapter {
 		  }
 
 	public void inAMethodFeature(AMethodFeature node){
+		
+	LinkedList<PFormal> params = node.getFormal();
+    	ArrayList<String> repeated = new ArrayList<>();
+    	boolean redefined = false;
+   
+		//System.out.println(depth+clase + node.getObjectId().getText());
+
+   
+    	for(int i = 0; i < params.size(); i++){
+    		AFormal p = (AFormal) params.get(i);
+    		if(!repeated.contains(p.getObjectId().getText())){
+    			repeated.add(p.getObjectId().getText());
+    		}else{
+    			redefined = true;
+    		}
+    		if(p.getObjectId().getText().equals("self")){
+    			ErrorManager.getInstance().getErrors().add(Error.SELF_FORMAL);
+    		}
+    	}
+    	if(redefined){
+    		ErrorManager.getInstance().getErrors().add(Error.FORMAL_REDEFINITION);
+    	}
     //	String myType = node.getTypeId().getText();
 		/**String myType = node.getTypeId().getText();
     		if(!myType.equals("SELF_TYPE")){
