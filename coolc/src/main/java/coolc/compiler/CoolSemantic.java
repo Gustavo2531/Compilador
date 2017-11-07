@@ -51,50 +51,6 @@ public class CoolSemantic implements SemanticFacade {
 	        types.put(node, basicClasses().get("String"));
 	    }
 		
-		
-
-		/*public void inAMethodFeature(AMethodFeature node){
-		    //	String myType = node.getTypeId().getText();
-				String myType = node.getTypeId().getText();
-		    		if(!myType.equals("SELF_TYPE")){
-		    			if(!TableClass.getInstance().getClasses().containsKey(myType)){
-		    				ErrorManager.getInstance().getErrors().add(Error.TYPE_NOT_FOUND);
-		    				ErrorManager.getInstance().semanticError("Coolc.semant.typeNotFound", node.getObjectId(),node.getTypeId());
-		    			}
-		    		}
-		    		
-		}*/
-		
-		/*@Override
-		public void outAMethodFeature(AMethodFeature node) {
-			hasSelfTypeParameterPosition = false;
-			for (PFormal f : node.getFormal()) {
-				//f.apply(this);
-			}
-			if(hasSelfTypeParameterPosition) {
-				ErrorManager.getInstance().getErrors().add(Error.SELF_TYPE_FORMAL);
-				ErrorManager.getInstance().semanticError("Coolc.semant.selfTypeFormal", node.getObjectId(),node.getTypeId());
-			}
-			hasSelfTypeParameterPosition = false;
-		}*/
-		
-		
-		
-		/*@Override
-	
-		public void inAClassDecl(AClassDecl node) {
-			
-			
-			
-			
-			if(!TableClass.getInstance().getClasses().containsKey(node.getInherits().getText())){
-				if(!node.getInherits().getText().equals("Object")){
-					ErrorManager.getInstance().getErrors().add(Error.CANNOT_INHERIT);
-					ErrorManager.getInstance().semanticError("Coolc.semant.cannotInherit",node.getName().getText());
-				}
-			}
-		}*/
-		
 	}
 	
 	
@@ -114,18 +70,6 @@ public class CoolSemantic implements SemanticFacade {
 		}
 		
 		start.apply(new TypeChecker());
-
-		//if(ErrorManager.getInstance().getErrors().size() > 0){
-			//throw new SemanticException();
-		//}
-		/**start.apply(new NewVisitor(out));
-		
-
-		
-		// The visitors may have added erros to the set
-		if(ErrorManager.getInstance().getErrors().size() > 0){
-			throw new SemanticException();
-		}**/
 	}
 
 	@Override
