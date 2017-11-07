@@ -43,9 +43,7 @@ public class ExampleVisitor extends DepthFirstAdapter {
 	public void outAFormal(AFormal node) {
 		if(node.getTypeId().getText().equals("SELF_TYPE")) {
 			ErrorManager.getInstance().getErrors().add(Error.SELF_TYPE_FORMAL);
-			ErrorManager.getInstance().getErrors().add(Error.UNDECL_IDENTIFIER);
 			ErrorManager.getInstance().semanticError("Coolc.semant.selfTypeFormal", node.getObjectId());
-			ErrorManager.getInstance().semanticError("Coolc.semant.undeclIdentifier", node.getObjectId());
 		}
 	}
 	
