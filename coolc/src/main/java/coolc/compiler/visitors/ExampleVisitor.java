@@ -31,6 +31,7 @@ public class ExampleVisitor extends DepthFirstAdapter {
 	private HashMap<String, Boolean> classDeclMap = new HashMap<>();
 	AClassDecl currentClass = null;
 	String currentMethod = "";
+	private LinkedList<String> missingClasses = new LinkedList<>();
 	
 	
 	/*
@@ -49,14 +50,24 @@ public class ExampleVisitor extends DepthFirstAdapter {
 	
 	@Override
 	public void outAProgram(AProgram node) {
-		classDeclMap = new HashMap<>();
 		if(!hasMain){
     		ErrorManager.getInstance().getErrors().add(Error.NO_MAIN);
     		ErrorManager.getInstance().semanticError("Coolc.semant.noMain");
 		}
+		
+		for(int i = 0; i < missingClasses.size(); i += 2) {
+			String className = missingClasses.get(i);
+			String inheritClass = missingClasses.get(i+1);
+			if( classDeclMap.get(inheritClass) == null || classDeclMap.get(inheritClass) == false ) {
+				ErrorManager.getInstance().getErrors().add(Error.CANNOT_INHERIT);
+				ErrorManager.getInstance().semanticError("Coolc.semant.undefined", className, inheritClass);
+			}
+		}
+		
+		
+		classDeclMap = new HashMap<>();
+		missingClasses = new LinkedList<>();
 	}
-	
-	
 	
 	 public void outALetExpr(ALetExpr node){
 		    
@@ -134,15 +145,10 @@ public class ExampleVisitor extends DepthFirstAdapter {
 	 */
 	@Override
 	public void inAClassDecl(AClassDecl node) {
-		
-	
-	
-		
-		
-	
-		//currentClass = node;
+		//System.out.println("Placing: " + node.getName().getText());
 		
 	}
+	
 
 	public void outAClassDecl(AClassDecl node){
 		
@@ -176,13 +182,20 @@ public class ExampleVisitor extends DepthFirstAdapter {
 			ErrorManager.getInstance().semanticError("Coolc.semant.redefBasic",node.getName().getText());
 		}
 		
-			
 		if( classDeclMap.get(node.getName().getText()) == null ||  classDeclMap.get(node.getName().getText()) == false ) {
 			classDeclMap.put(node.getName().getText(), true);
 		} else {
 			ErrorManager.getInstance().getErrors().add(Error.REDEFINED);
 			ErrorManager.getInstance().semanticError("Coolc.semant.redefined", node.getName().getText());
 		}
+		
+		//System.out.println("Checking in out: " + node.getName().getText());
+		if( !(node.getInherits().getText().equals("Object") || node.getInherits().getText().equals("Bool") || node.getInherits().getText().equals("Int") || node.getInherits().getText().equals("String")) ) {
+			missingClasses.add(node.getName().getText());
+			missingClasses.add(node.getInherits().getText());
+		}
+		
+		
 	}
 	public void outAAttributeFeature(AAttributeFeature node){
 		
