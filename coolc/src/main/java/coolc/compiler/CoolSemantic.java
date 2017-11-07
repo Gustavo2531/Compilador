@@ -27,6 +27,7 @@ import coolc.compiler.autogen.node.Start;
 import coolc.compiler.exceptions.SemanticException;
 
 import coolc.compiler.util.Error;
+import coolc.compiler.util.TableClass;
 import coolc.compiler.visitors.ExampleVisitor;
 
 
@@ -45,7 +46,29 @@ public class CoolSemantic implements SemanticFacade {
 		public void outAStrExpr(AStrExpr node){
 	        types.put(node, basicClasses().get("String"));
 	    }
-		
+		public void inAMethodFeature(AMethodFeature node){
+		    //	String myType = node.getTypeId().getText();
+				String myType = node.getTypeId().getText();
+		    		if(!myType.equals("SELF_TYPE")){
+			    	if(!TableClass.getInstance().getClasses().containsKey(myType)){
+			    		ErrorManager.getInstance().getErrors().add(Error.TYPE_NOT_FOUND);
+			    		ErrorManager.getInstance().semanticError("Coolc.semant.typeNotFound", node.getObjectId(),node.getTypeId());
+			    	}
+		    	}
+		}
+	
+		public void inAClassDecl(AClassDecl node) {
+			
+			
+			
+			
+			if(!TableClass.getInstance().getClasses().containsKey(node.getInherits().getText())){
+				if(!node.getInherits().getText().equals("Object")){
+					ErrorManager.getInstance().getErrors().add(Error.CANNOT_INHERIT);
+					ErrorManager.getInstance().semanticError("Coolc.semant.cannotInherit",node.getName().getText());
+				}
+			}
+		}
 		
 		
 	}
@@ -67,9 +90,9 @@ public class CoolSemantic implements SemanticFacade {
 		}
 		
 		this.start.apply(new TypeChecker());
-		if(ErrorManager.getInstance().getErrors().size() > 0){
-			throw new SemanticException();
-		}
+		//if(ErrorManager.getInstance().getErrors().size() > 0){
+			//throw new SemanticException();
+		//}
 		/**start.apply(new NewVisitor(out));
 		
 

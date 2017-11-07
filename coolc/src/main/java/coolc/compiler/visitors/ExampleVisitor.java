@@ -1,20 +1,26 @@
 package coolc.compiler.visitors;
 
+import java.util.LinkedList;
+
+
 import coolc.compiler.ErrorManager;
 
 import coolc.compiler.autogen.analysis.DepthFirstAdapter;
 import coolc.compiler.autogen.node.AAttributeFeature;
 import coolc.compiler.autogen.node.AClassDecl;
+import coolc.compiler.autogen.node.AMethodFeature;
 import coolc.compiler.autogen.node.AProgram;
 import coolc.compiler.autogen.node.TTypeId;
 import coolc.compiler.util.TableClass;
 import coolc.compiler.util.Error;
+
 import coolc.compiler.util.TableClass;
 
 
 public class ExampleVisitor extends DepthFirstAdapter {
 	private boolean hasMain = false;
-	
+	AClassDecl currentClass = null;
+	String currentMethod = "";
 	/*
 	 * outAProgram is the last node visited, so we check here if there was no main method
 	 */
@@ -26,8 +32,42 @@ public class ExampleVisitor extends DepthFirstAdapter {
     		ErrorManager.getInstance().getErrors().add(Error.NO_MAIN);
     		ErrorManager.getInstance().semanticError("Coolc.semant.noMain");
 		}
+		
 	}
 
+
+	public void inAMethodFeature(AMethodFeature node){
+    //	String myType = node.getTypeId().getText();
+		/**String myType = node.getTypeId().getText();
+    		if(!myType.equals("SELF_TYPE")){
+	    	if(!TableClass.getInstance().getClasses().containsKey(myType)){
+	    		ErrorManager.getInstance().getErrors().add(Error.TYPE_NOT_FOUND);
+	    		ErrorManager.getInstance().semanticError("Coolc.semant.typeNotFound", node.getObjectId(),node.getTypeId());
+	    	}
+    	}
+    	if(!myType.equals("SELF_TYPE")){
+	    	if(!TableClass.getInstance().getClasses().containsKey(myType)){
+	    		ErrorManager.getInstance().getErrors().add(Error.TYPE_NOT_FOUND);
+	    	}
+    	}
+    //	ind++;
+    	currentMethod = node.getObjectId().getText();
+    	String cClass = currentClass.getName().getText();
+
+    	LinkedList<PFormal> params = node.getFormal();
+    	
+    	for(int i = 0; i < params.size(); i++){
+    		AFormal p = (AFormal) params.get(i);**/
+		/**if(node.getTypeId().getText().equals("SELF_TYPE")){
+			ErrorManager.getInstance().getErrors().add(Error.SELF_TYPE_FORMAL);
+			ErrorManager.getInstance().getErrors().add(Error.UNDECL_IDENTIFIER);
+			ErrorManager.getInstance().semanticError("Coolc.semant.selfTypeFormal", node.getTypeId().getText());
+			//SymbolTable.getInstance().getAuxiliar(ind+cClass+currentMethod).getCertainClass(cClass).getTypes().remove(p.getObjectId().getText());
+			
+		}**/
+    	
+    }
+	
 	/*
 	 * When visiting every Class, we check if it is called Main.
 	 */
@@ -37,14 +77,9 @@ public class ExampleVisitor extends DepthFirstAdapter {
 	
 	
 		
-	/*	if(!TableClass.getInstance().getClasses().containsKey(node.getInherits().getText())){
-			if(!node.getInherits().getText().equals("Object")){
-				ErrorManager.getInstance().getErrors().add(Error.CANNOT_INHERIT);
-				ErrorManager.getInstance().semanticError("Coolc.semant.cannotInherit",node.getName().getText());
-			}
-		}
-	 * 
-	 * */
+		
+	
+		//currentClass = node;
 		
 	}
 
