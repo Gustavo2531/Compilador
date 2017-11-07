@@ -28,8 +28,11 @@ import coolc.compiler.util.TableClass;
 
 public class ExampleVisitor extends DepthFirstAdapter {
 	private boolean hasMain = false;
+	private HashMap<String, Boolean> classDeclMap = new HashMap<>();
 	AClassDecl currentClass = null;
 	String currentMethod = "";
+	
+	
 	/*
 	 * outAProgram is the last node visited, so we check here if there was no main method
 	 */
@@ -46,12 +49,15 @@ public class ExampleVisitor extends DepthFirstAdapter {
 	
 	@Override
 	public void outAProgram(AProgram node) {
+		classDeclMap = new HashMap<>();
 		if(!hasMain){
     		ErrorManager.getInstance().getErrors().add(Error.NO_MAIN);
     		ErrorManager.getInstance().semanticError("Coolc.semant.noMain");
 		}
-		
 	}
+	
+	
+	
 	 public void outALetExpr(ALetExpr node){
 		    
 			// types.put(node, basicClasses().get(key))
@@ -171,7 +177,12 @@ public class ExampleVisitor extends DepthFirstAdapter {
 		}
 		
 			
-	
+		if( classDeclMap.get(node.getName().getText()) == null ||  classDeclMap.get(node.getName().getText()) == false ) {
+			classDeclMap.put(node.getName().getText(), true);
+		} else {
+			ErrorManager.getInstance().getErrors().add(Error.REDEFINED);
+			ErrorManager.getInstance().semanticError("Coolc.semant.redefined", node.getName().getText());
+		}
 	}
 	public void outAAttributeFeature(AAttributeFeature node){
 		
