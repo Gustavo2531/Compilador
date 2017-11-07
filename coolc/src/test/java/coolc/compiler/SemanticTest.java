@@ -246,7 +246,7 @@ public class SemanticTest {
 	}
 	@Test
 	public void testBad18() throws LexerException, IOException, ParserException, SemanticException {
-		genericBad("inheritsselftype.cool", EnumSet.of(Error.INHERIT_SELF_TYPE, Error.NO_MAIN));
+		genericBad("inheritsselftype.cool", EnumSet.of(Error.INHERIT_SELF_TYPE));
 	}
 	@Test
 	public void testBad19() throws LexerException, IOException, ParserException, SemanticException {
@@ -306,7 +306,7 @@ public class SemanticTest {
 	}
 	@Test
 	public void testBad33() throws LexerException, IOException, ParserException, SemanticException {
-		genericBad("selftypeparameterposition.cool", EnumSet.of(Error.SELF_TYPE_FORMAL, Error.UNDECL_IDENTIFIER));
+		genericBad("selftypeparameterposition.cool", EnumSet.of(Error.SELF_TYPE_FORMAL));
 	}
 	@Test
 	public void testBad34() throws LexerException, IOException, ParserException, SemanticException {
