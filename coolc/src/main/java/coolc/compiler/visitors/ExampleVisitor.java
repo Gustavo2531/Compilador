@@ -32,6 +32,7 @@ public class ExampleVisitor extends DepthFirstAdapter {
 	AClassDecl currentClass = null;
 	String currentMethod = "";
 	private LinkedList<String> missingClasses = new LinkedList<>();
+	private LinkedList<String> missingMethodReturnTypes = new LinkedList<>();
 	
 	
 	/*
@@ -64,9 +65,19 @@ public class ExampleVisitor extends DepthFirstAdapter {
 			}
 		}
 		
+		for( int i = 0; i < missingMethodReturnTypes.size(); i += 2 ) {
+			String className = missingMethodReturnTypes.get(i);
+			String returnType = missingMethodReturnTypes.get(i+1);
+			if ( classDeclMap.get(returnType) == null || classDeclMap.get(returnType) == false ) {
+				ErrorManager.getInstance().getErrors().add(Error.TYPE_NOT_FOUND);
+				ErrorManager.getInstance().semanticError("Coolc.semant.typeNotFound", className, returnType);
+			} 
+		}
+		
 		
 		classDeclMap = new HashMap<>();
 		missingClasses = new LinkedList<>();
+		missingMethodReturnTypes = new LinkedList<>();
 	}
 	
 	 public void outALetExpr(ALetExpr node){
@@ -85,6 +96,15 @@ public class ExampleVisitor extends DepthFirstAdapter {
 		    	}
 			  
 		  }
+	 
+	@Override
+	public void outAMethodFeature(AMethodFeature node) {
+		//System.out.println("Checking in out: " + node.getName().getText());
+		if( !(node.getTypeId().getText().equals("Object") || node.getTypeId().getText().equals("Bool") || node.getTypeId().getText().equals("Int") || node.getTypeId().getText().equals("String")) ) {
+			missingMethodReturnTypes.add(node.getObjectId().getText());
+			missingMethodReturnTypes.add(node.getTypeId().getText());
+		}	
+	}
 
 	public void inAMethodFeature(AMethodFeature node){
 		
