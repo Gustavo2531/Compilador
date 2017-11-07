@@ -28,7 +28,10 @@ import coolc.compiler.exceptions.SemanticException;
 
 import coolc.compiler.util.Error;
 import coolc.compiler.util.TableClass;
+import coolc.compiler.autogen.node.ALetDecl;
+import coolc.compiler.autogen.node.ALetExpr;
 import coolc.compiler.visitors.ExampleVisitor;
+import coolc.compiler.autogen.node.PLetDecl;
 
 
 
@@ -46,6 +49,9 @@ public class CoolSemantic implements SemanticFacade {
 		public void outAStrExpr(AStrExpr node){
 	        types.put(node, basicClasses().get("String"));
 	    }
+		
+		
+
 		public void inAMethodFeature(AMethodFeature node){
 		    //	String myType = node.getTypeId().getText();
 				String myType = node.getTypeId().getText();

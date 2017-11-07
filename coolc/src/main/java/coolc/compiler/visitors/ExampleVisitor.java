@@ -8,8 +8,11 @@ import coolc.compiler.ErrorManager;
 import coolc.compiler.autogen.analysis.DepthFirstAdapter;
 import coolc.compiler.autogen.node.AAttributeFeature;
 import coolc.compiler.autogen.node.AClassDecl;
+import coolc.compiler.autogen.node.ALetDecl;
+import coolc.compiler.autogen.node.ALetExpr;
 import coolc.compiler.autogen.node.AMethodFeature;
 import coolc.compiler.autogen.node.AProgram;
+import coolc.compiler.autogen.node.PLetDecl;
 import coolc.compiler.autogen.node.TTypeId;
 import coolc.compiler.util.TableClass;
 import coolc.compiler.util.Error;
@@ -34,7 +37,22 @@ public class ExampleVisitor extends DepthFirstAdapter {
 		}
 		
 	}
-
+	 public void outALetExpr(ALetExpr node){
+		    
+			// types.put(node, basicClasses().get(key))
+			 //ind--;
+		    	LinkedList<PLetDecl> params = node.getLetDecl();
+		    	for(int i = 0; i < params.size(); i++){
+		    		ALetDecl p = (ALetDecl) params.get(i);
+		    		if(p.getObjectId().getText().equals("self")){
+		    			ErrorManager.getInstance().getErrors().add(Error.SELF_IN_LET);
+		    			ErrorManager.getInstance().semanticError("Coolc.semant.selfInLet");
+		    			//types.put(node, basicClasses().get("Let"));
+		    			
+		    		}
+		    	}
+			  
+		  }
 
 	public void inAMethodFeature(AMethodFeature node){
     //	String myType = node.getTypeId().getText();
