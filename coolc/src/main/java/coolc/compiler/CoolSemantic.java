@@ -3,6 +3,7 @@ package coolc.compiler;
 import java.io.PrintStream;
 
 
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import coolc.compiler.autogen.node.AAssignExpr;
 import coolc.compiler.autogen.node.AFormal;
 import coolc.compiler.autogen.node.AMethodFeature;
 import coolc.compiler.autogen.node.AMinusExpr;
@@ -42,6 +44,7 @@ import coolc.compiler.autogen.node.ALtExpr;
 import coolc.compiler.autogen.node.AMultExpr;
 import coolc.compiler.autogen.node.ANegExpr;
 import coolc.compiler.autogen.node.APlusExpr;
+
 import coolc.compiler.visitors.ExampleVisitor;
 import coolc.compiler.visitors.OtherVisitor;
 
@@ -156,8 +159,28 @@ public class CoolSemantic implements SemanticFacade {
 	    	return false;
 	    }
 		
+		  
+			public boolean isSubType2(String obj, String second){
+		    	if(obj.equals(second)){
+		    		return true;
+		    		}
+		    	while(!second.contains("Object")){
+		    		AClassDecl cClass = TableClass.getInstance().getClasses().get(second);
+		    		
+		    		if(cClass==null) {
+		    			return false;
+		    		}else {
+		    			second = cClass.getInherits().getText();
+		    		}
+		    		if(second.equals(obj))
+		    			return true;
+		    		}
+		    		
+		    	return false;
+		    }
+		
 		 public void outAAssignExpr(AAtExpr node){
-			
+
 		    	String s = node.getTypeId().toString();
 		    	String Obj = node.getObjectId().toString();
 		 
@@ -166,7 +189,7 @@ public class CoolSemantic implements SemanticFacade {
 		    		ErrorManager.getInstance().semanticError("Coolc.semant.assignSelf");
 		    		return;
 		    	}
-		    	if(isSubType(s, types.get(node.getExpr()).getName().toString())){
+		    	if(isSubType(s, node.toString())){
 		    		//node.setType(node.getExpr().getTypeAsString());
 		    	}else{
 		    		ErrorManager.getInstance().getErrors().add(Error.BAD_ASSIGNMENT);
@@ -174,7 +197,26 @@ public class CoolSemantic implements SemanticFacade {
 		    		//node.setType("minor");
 		    	}
 		    }
-		
+		 public void outAAssignExpr(AAssignExpr node){
+		    	String s = node.getObjectId().getText();
+		    	
+		   String typeObj = node.getExpr().toString();
+		 
+		    	if(s.contains("self")){
+		    		ErrorManager.getInstance().getErrors().add(Error.ASSIGN_SELF);
+		    
+		    		//node.setType("major");
+		    		return;
+		    	}
+		    	
+		    	if(isSubType(typeObj, node.toString())){
+		    		//node.setType(node.getExpr().getTypeAsString());
+		    	}else{
+		    		ErrorManager.getInstance().getErrors().add(Error.BAD_ASSIGNMENT);
+		    		//node.setType("minor");
+		    	}
+		    }
+
 		public void inALetExpr(ALetExpr node){
 	        ind++;
 	    }
