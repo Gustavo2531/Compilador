@@ -216,7 +216,7 @@ public class CoolSemantic implements SemanticFacade {
 	    	if(node.getExpr() != null){
 	    		if(!node.getTypeId().getText().equals("SELF_TYPE")){
 	    			
-		    		String s = (types.get(node.getExpr())).getInherits().getText();
+		    		String s = node.getTypeId().getText();
 		    		if(!isSubType(node.getTypeId().getText(), s)){
 		    			ErrorManager.getInstance().getErrors().add(Error.BAD_LET_INIT);
 		    			ErrorManager.getInstance().semanticError("Coolc.semant.badLetInit");
