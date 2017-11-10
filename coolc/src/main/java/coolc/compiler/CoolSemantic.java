@@ -278,13 +278,10 @@ public class CoolSemantic implements SemanticFacade {
 				);
 		
 		public void outAMinusExpr(AMinusExpr node){
-			if(types.get(node.getL()).equals(error)||types.get(node.getR()).equals(error)){
-				types.put(node,error);
-    			return;
-			}
+		
 		
 	
-			if(!types.get(node.getL()).getName().getText().equals("Int") || !types.get(node.getR()).getName().getText().equals("Int")){
+			if(!node.getL().toString().contains("Int") || !node.getR().toString().contains("Int")){
 	    			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
 	    			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
 	    			types.put(node,error);
@@ -298,98 +295,63 @@ public class CoolSemantic implements SemanticFacade {
 	    }
 		
 		public void outAPlusExpr(APlusExpr node){
-			if(types.get(node.getL())==null||types.get(node.getR())==null){
-				types.put(node,error);
+			if(!node.getL().toString().contains("Int") || !node.getR().toString().contains("Int")){
+    			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
+    			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
+    			types.put(node,error);
     			return;
-			}
+    		//node.setType("minor");
+    		}else{
+    		//node.setType("Int");
+    		}
 		
-			if(node.getL()==null||node.getR()==null){
-				//ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
-    			//ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
-				types.put(node,error);
-    				return;
-			}else {
-			if(!types.get(node.getL()).getName().getText().equals("Int") || !types.get(node.getR()).getName().getText().equals("Int")){
-	    			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
-	    			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
-	    			types.put(node,null);
-	    			return;
-	    		//node.setType("minor");
-	    		}else{
-	    		//node.setType("Int");
-	    		}
-			}
-			types.put(node, basicClasses().get("Int"));
+		types.put(node, basicClasses().get("Int"));
 	    }
 
 	    public void outAMultExpr(AMultExpr node){
-	    	if(types.get(node.getL()).equals(error)||types.get(node.getR()).equals(error)){
-				types.put(node,error);
+	    	if(!node.getL().toString().contains("Int") || !node.getR().toString().contains("Int")){
+    			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
+    			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
+    			types.put(node,error);
     			return;
-			}
+    		//node.setType("minor");
+    		}else{
+    		//node.setType("Int");
+    		}
 		
-	
-			if(!types.get(node.getL()).getName().getText().equals("Int") || !types.get(node.getR()).getName().getText().equals("Int")){
-	    			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
-	    			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
-	    			types.put(node,error);
-	    			return;
-	    		//node.setType("minor");
-	    		}else{
-	    		//node.setType("Int");
-	    		}
-			
-			types.put(node, basicClasses().get("Int"));
+		types.put(node, basicClasses().get("Int"));
 	    }
 
 	    public void outADivExpr(ADivExpr node){
-	    	if(types.get(node.getL()).equals(error)||types.get(node.getR()).equals(error)){
-				types.put(node,error);
+	    	if(!node.getL().toString().contains("Int") || !node.getR().toString().contains("Int")){
+    			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
+    			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
+    			types.put(node,error);
     			return;
-			}
+    		//node.setType("minor");
+    		}else{
+    		//node.setType("Int");
+    		}
 		
-	
-			if(!types.get(node.getL()).getName().getText().equals("Int") || !types.get(node.getR()).getName().getText().equals("Int")){
-	    			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
-	    			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
-	    			types.put(node,error);
-	    			return;
-	    		//node.setType("minor");
-	    		}else{
-	    		//node.setType("Int");
-	    		}
-			
-			types.put(node, basicClasses().get("Int"));
+		types.put(node, basicClasses().get("Int"));
 	    }
 
 	    public void outALtExpr(ALtExpr node){
-	    	if(types.get(node.getL()).equals(error)||types.get(node.getR()).equals(error)){
-				types.put(node,error);
+	    	if(!node.getL().toString().contains("Int") || !node.getR().toString().contains("Int")){
+    			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
+    			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
+    			types.put(node,error);
     			return;
-			}
+    		//node.setType("minor");
+    		}else{
+    		//node.setType("Int");
+    		}
 		
-	
-			if(!types.get(node.getL()).getName().getText().equals("Int") || !types.get(node.getR()).getName().getText().equals("Int")){
-	    			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
-	    			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
-	    			types.put(node,error);
-	    			return;
-	    		//node.setType("minor");
-	    		}else{
-	    		//node.setType("Int");
-	    		}
-			
-			types.put(node, basicClasses().get("Int"));
+		types.put(node, basicClasses().get("Int"));
 	    }
 	    
 	    public void outALeExpr(ALeExpr node){	
-	    	if(types.get(node.getL()).equals(error)||types.get(node.getR()).equals(error)){
-			types.put(node,error);
-			return;
-		}
-	
-
-		if(!types.get(node.getL()).getName().getText().equals("Int") || !types.get(node.getR()).getName().getText().equals("Int")){
+	    	if(!node.getL().toString().contains("Int") || !node.getR().toString().contains("Int")){
     			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
     			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
     			types.put(node,error);
@@ -403,9 +365,8 @@ public class CoolSemantic implements SemanticFacade {
     }
 
 	    public void outANegExpr(ANegExpr node){
-	    	AClassDecl c;
-			c=types.get(node.getExpr());
-	    	if(c.getName().toString().equals("Int")){
+	    	
+	    	if(node.getExpr().toString().contains("Int")){
 	    		//node.setType("Int");
 	    	}else{
 	    		ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
