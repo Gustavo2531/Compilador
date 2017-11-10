@@ -1,6 +1,7 @@
 package coolc.compiler.visitors;
 
 import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -10,17 +11,22 @@ import coolc.compiler.ErrorManager;
 import coolc.compiler.autogen.analysis.DepthFirstAdapter;
 import coolc.compiler.autogen.node.AAssignExpr;
 import coolc.compiler.autogen.node.AAttributeFeature;
+import coolc.compiler.autogen.node.ABranch;
+import coolc.compiler.autogen.node.ACaseExpr;
 import coolc.compiler.autogen.node.AClassDecl;
 import coolc.compiler.autogen.node.AFormal;
 import coolc.compiler.autogen.node.ALetDecl;
 import coolc.compiler.autogen.node.ALetExpr;
 import coolc.compiler.autogen.node.AMethodFeature;
 import coolc.compiler.autogen.node.AProgram;
+import coolc.compiler.autogen.node.PBranch;
 import coolc.compiler.autogen.node.PFormal;
 import coolc.compiler.autogen.node.PLetDecl;
 import coolc.compiler.autogen.node.TTypeId;
 import coolc.compiler.util.TableClass;
-
+import coolc.compiler.util.TableSymbol;
+import coolc.compiler.util.Auxiliar;
+import coolc.compiler.util.CClass;
 import coolc.compiler.util.Error;
 
 import coolc.compiler.util.TableClass;
@@ -33,6 +39,9 @@ public class ExampleVisitor extends DepthFirstAdapter {
 	String currentMethod = "";
 	private LinkedList<String> missingClasses = new LinkedList<>();
 	private LinkedList<String> missingMethodReturnTypes = new LinkedList<>();
+	String clase = "";
+	String metodo = "";
+	int depth = 0;
 	
 	
 	/*
@@ -233,5 +242,36 @@ public class ExampleVisitor extends DepthFirstAdapter {
     		return;
     		}
 	}
+	
+	 public void inACaseExpr(ACaseExpr node){
+	        depth++;
+	        LinkedList<PBranch> params = node.getBranch();
+	    	boolean redefined = false;
+	    	ArrayList<String> repeated = new ArrayList<>();
+	    	
+	    	Auxiliar vartemp = new Auxiliar(depth+clase+metodo, new ArrayList<CClass>());
+	    	CClass curry = new CClass(clase,new HashMap<String,TTypeId>());
+	   TableSymbol.getInstance().getVariables().add(vartemp);
+			TableSymbol.getInstance().getAuxiliar(depth+clase+metodo).getLista().add(curry);
+			for(int i = 0; i < params.size(); i++){
+	    		ABranch p = (ABranch) params.get(i);
+	    		if(!repeated.contains(p.getTypeId().getText())){
+	    			repeated.add(p.getTypeId().getText());
+	    		}else{
+	    			redefined = true;
+	    		}
+	    	}
+	    	if(redefined){
+	    		ErrorManager.getInstance().getErrors().add(Error.DUPLICATE_BRANCH);
+	    	}else{
+		    	for(int i = 0; i < params.size(); i++){
+		    		ABranch p = (ABranch) params.get(i);
+		    		TableSymbol.getInstance().getAuxiliar(depth+clase+metodo).getCertainClass(clase).getTypes().put(p.getObjectId().getText(), p.getTypeId());
+		    	}
+	    	}
+	    }
+	    public void outACaseExpr(ACaseExpr node){
+	        depth--;
+	    }
 	
 }

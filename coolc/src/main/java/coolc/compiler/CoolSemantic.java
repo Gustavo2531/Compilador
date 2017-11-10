@@ -45,6 +45,7 @@ import coolc.compiler.autogen.node.AMultExpr;
 import coolc.compiler.autogen.node.ANegExpr;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.autogen.node.AWhileExpr;
+import coolc.compiler.autogen.node.AEqExpr;
 import coolc.compiler.visitors.ExampleVisitor;
 import coolc.compiler.visitors.OtherVisitor;
 
@@ -374,6 +375,44 @@ public class CoolSemantic implements SemanticFacade {
 	    		//node.setType("minor");
 	    	}
 	    	types = new HashMap<Node, AClassDecl>();
+	    }
+	    
+	    public void outAEqExpr(AEqExpr node){
+	    	String h="";
+	    	String h2="";
+	    	if(node.getL().toString().contains("Int") ||
+	    			node.getL().toString().contains("Bool") ||
+	    			node.getL().toString().contains("String")){
+	    		if(node.getL().toString().contains("Int")) {
+	    			h="Int";
+	    		}else if (node.getL().toString().contains("Bool")) {
+	    			h="Bool";
+	    		}else {
+	    			 h="String";
+	    		}
+	    		
+	    		if(node.getR().toString().contains("Int")) {
+	    			h2="Int";
+	    		}else if (node.getR().toString().contains("Bool")) {
+	    			h2="Bool";
+	    		}else {
+	    			 h2="String";
+	    		}
+	    		
+	    		
+	  
+	    	
+	    		if(!h.equals(h2)){
+	    			ErrorManager.getInstance().getErrors().add(Error.BASIC_COMPARE);
+	    			ErrorManager.getInstance().semanticError("Coolc.semant.basicCompare");
+	    			//node.setType("minor");
+	    			return;
+	    		}else{
+	    			//node.setType("Bool");
+	    		}
+	    	}else{
+	    		//node.setType("Bool");
+	    	}
 	    }
 	}
 	class TypeChecker extends DepthFirstAdapter {
