@@ -55,7 +55,8 @@ public class CoolSemantic implements SemanticFacade {
 		int ind = 0;
 		AClassDecl currentClass;
 		  public void outAAtExpr(AAtExpr node){
-				String theClass = types.get(node.getExpr()).getInherits().getText();
+			  
+				String theClass = node.getTypeId().toString();
 				if(theClass.contains("SELF_TYPE")){
 					theClass = currentClass.getName().getText();
 				}
@@ -81,10 +82,16 @@ public class CoolSemantic implements SemanticFacade {
 	    		}
 	    	while(!second.equals("Object")){
 	    		AClassDecl cClass = TableClass.getInstance().getClasses().get(second);
-	    		second = cClass.getInherits().getText();
+	    		
+	    		if(cClass==null) {
+	    			return false;
+	    		}else {
+	    			second = cClass.getInherits().getText();
+	    		}
 	    		if(second.equals(obj))
 	    			return true;
 	    		}
+	    		
 	    	return false;
 	    }
 		
@@ -147,9 +154,11 @@ public class CoolSemantic implements SemanticFacade {
 	    public void outALetDecl(ALetDecl node){
 	    	if(node.getExpr() != null){
 	    		if(!node.getTypeId().getText().equals("SELF_TYPE")){
-		    		String s = types.get(node.getExpr()).getName().toString();
+	    			
+		    		String s = (types.get(node.getExpr())).getInherits().getText();
 		    		if(!isSubType(node.getTypeId().getText(), s)){
 		    			ErrorManager.getInstance().getErrors().add(Error.BAD_LET_INIT);
+		    			ErrorManager.getInstance().semanticError("Coolc.semant.badLetInit");
 		    		}
 	    		}
 	    		
