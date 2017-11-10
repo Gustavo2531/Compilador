@@ -174,22 +174,6 @@ public class CoolSemantic implements SemanticFacade {
 		    		//node.setType("minor");
 		    	}
 		    }
-		public void outAMinusExpr(AMinusExpr node){
-			AClassDecl c;
-			AClassDecl c2;
-			c=types.get(node.getL());
-			c2=types.get(node.getR());
-	    	if(!c.getName().toString().equals("Int") ||
-	    			!c2.getName().toString().equals("Int")){
-	    		ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
-	    		ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
-	    		
-	    		//node.setType("minor");
-	    	}else{
-	    		//node.setType("Int");
-	    		}
-	    types = new HashMap<Node, AClassDecl>();
-	    }
 		
 		public void inALetExpr(ALetExpr node){
 	        ind++;
@@ -228,86 +212,147 @@ public class CoolSemantic implements SemanticFacade {
 	    		types = new HashMap<Node, AClassDecl>();
 	    }
 		
-		public void outAPlusExpr(APlusExpr node){
-			AClassDecl c;
-			AClassDecl c2;
-			c=types.get(node.getL());
-			c2=types.get(node.getR());
-	    	if(!c.getName().toString().equals("Int") ||
-	    			!c2.getName().toString().equals("Int")){
-	    		ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
-	    		ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
+		
+	    
+
+	}
+	
+	class P2 extends DepthFirstAdapter{
+		
+		
+		
+		
+		LinkedList<PFeature> featList= new LinkedList<PFeature>();
+		AClassDecl error = new AClassDecl(
+				new TTypeId("error"),
+				new TTypeId("_no_class"),
+				featList
+				);
+		
+		public void outAMinusExpr(AMinusExpr node){
+			if(types.get(node.getL()).equals(error)||types.get(node.getR()).equals(error)){
+				types.put(node,error);
+    			return;
+			}
+		
+	
+			if(!types.get(node.getL()).getName().getText().equals("Int") || !types.get(node.getR()).getName().getText().equals("Int")){
+	    			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
+	    			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
+	    			types.put(node,error);
+	    			return;
 	    		//node.setType("minor");
-	    	}else{
+	    		}else{
 	    		//node.setType("Int");
-	    	}
-	    	types = new HashMap<Node, AClassDecl>();
+	    		}
+			
+			types.put(node, basicClasses().get("Int"));
+	    }
+		
+		public void outAPlusExpr(APlusExpr node){
+			if(types.get(node.getL())==null||types.get(node.getR())==null){
+				types.put(node,error);
+    			return;
+			}
+		
+			if(node.getL()==null||node.getR()==null){
+				//ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
+    			//ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
+				types.put(node,error);
+    				return;
+			}else {
+			if(!types.get(node.getL()).getName().getText().equals("Int") || !types.get(node.getR()).getName().getText().equals("Int")){
+	    			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
+	    			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
+	    			types.put(node,null);
+	    			return;
+	    		//node.setType("minor");
+	    		}else{
+	    		//node.setType("Int");
+	    		}
+			}
+			types.put(node, basicClasses().get("Int"));
 	    }
 
 	    public void outAMultExpr(AMultExpr node){
-	    	AClassDecl c;
-			AClassDecl c2;
-			c=types.get(node.getL());
-			c2=types.get(node.getR());
-	    	if(!c.getName().toString().equals("Int") ||
-	    			!c2.getName().toString().equals("Int")){
-	    		ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
-	    		ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
-	    		
-	    	}else{
-	    	
+	    	if(types.get(node.getL()).equals(error)||types.get(node.getR()).equals(error)){
+				types.put(node,error);
+    			return;
+			}
+		
+	
+			if(!types.get(node.getL()).getName().getText().equals("Int") || !types.get(node.getR()).getName().getText().equals("Int")){
+	    			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
+	    			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
+	    			types.put(node,error);
+	    			return;
+	    		//node.setType("minor");
+	    		}else{
+	    		//node.setType("Int");
 	    		}
-	    	types = new HashMap<Node, AClassDecl>();
+			
+			types.put(node, basicClasses().get("Int"));
 	    }
 
 	    public void outADivExpr(ADivExpr node){
-	    	AClassDecl c;
-			AClassDecl c2;
-			c=types.get(node.getL());
-			c2=types.get(node.getR());
-	    	if(!c.getName().toString().equals("Int") ||
-	    			!c2.getName().toString().equals("Int")){
-	    		ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
-	    		ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
-	    		
-	    		
-	    	}else{
-	    		
-	    	}
-	    	types = new HashMap<Node, AClassDecl>();
+	    	if(types.get(node.getL()).equals(error)||types.get(node.getR()).equals(error)){
+				types.put(node,error);
+    			return;
+			}
+		
+	
+			if(!types.get(node.getL()).getName().getText().equals("Int") || !types.get(node.getR()).getName().getText().equals("Int")){
+	    			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
+	    			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
+	    			types.put(node,error);
+	    			return;
+	    		//node.setType("minor");
+	    		}else{
+	    		//node.setType("Int");
+	    		}
+			
+			types.put(node, basicClasses().get("Int"));
 	    }
 
 	    public void outALtExpr(ALtExpr node){
-	    	AClassDecl c;
-			AClassDecl c2;
-			c=types.get(node.getL());
-			c2=types.get(node.getR());
-	    	if(!c.getName().toString().equals("Int") ||
-	    			!c2.getName().toString().equals("Int")){
-	    		ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
-	    		ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
+	    	if(types.get(node.getL()).equals(error)||types.get(node.getR()).equals(error)){
+				types.put(node,error);
+    			return;
+			}
+		
+	
+			if(!types.get(node.getL()).getName().getText().equals("Int") || !types.get(node.getR()).getName().getText().equals("Int")){
+	    			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
+	    			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
+	    			types.put(node,error);
+	    			return;
 	    		//node.setType("minor");
-	    	}else{
-	    		//node.setType("Bool");
-	    	}
-	    	types = new HashMap<Node, AClassDecl>();
-	    }
-
-	    public void outALeExpr(ALeExpr node){
-	     	AClassDecl c;
-			AClassDecl c2;
-			c=types.get(node.getL());
-			c2=types.get(node.getR());
-	    	if(!c.getName().toString().equals("Int") ||
-	    			!c2.getName().toString().equals("Int")){
-	    		ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
-	    		ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
-	    		//node.setType("minor");
-	    	}else{
-	    		//node.setType("Bool");
+	    		}else{
+	    		//node.setType("Int");
 	    		}
-	    		
+			
+			types.put(node, basicClasses().get("Int"));
 	    }
+	    
+	    public void outALeExpr(ALeExpr node){	
+	    	if(types.get(node.getL()).equals(error)||types.get(node.getR()).equals(error)){
+			types.put(node,error);
+			return;
+		}
+	
+
+		if(!types.get(node.getL()).getName().getText().equals("Int") || !types.get(node.getR()).getName().getText().equals("Int")){
+    			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
+    			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
+    			types.put(node,error);
+    			return;
+    		//node.setType("minor");
+    		}else{
+    		//node.setType("Int");
+    		}
+		
+		types.put(node, basicClasses().get("Int"));
+    }
 
 	    public void outANegExpr(ANegExpr node){
 	    	AClassDecl c;
@@ -321,10 +366,7 @@ public class CoolSemantic implements SemanticFacade {
 	    	}
 	    	types = new HashMap<Node, AClassDecl>();
 	    }
-	    
-
 	}
-	
 	class TypeChecker extends DepthFirstAdapter {
 		public void outAIntExpr(AIntExpr node){
 	        types.put(node, basicClasses().get("Int"));
@@ -353,6 +395,11 @@ public class CoolSemantic implements SemanticFacade {
 		}
 		
 		start.apply(new Pass1());
+		if(ErrorManager.getInstance().getErrors().size() > 0){
+			throw new SemanticException();
+		}
+		
+		start.apply(new P2());
 		if(ErrorManager.getInstance().getErrors().size() > 0){
 			throw new SemanticException();
 		}
