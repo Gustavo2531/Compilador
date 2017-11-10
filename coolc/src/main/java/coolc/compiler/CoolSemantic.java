@@ -44,7 +44,7 @@ import coolc.compiler.autogen.node.ALtExpr;
 import coolc.compiler.autogen.node.AMultExpr;
 import coolc.compiler.autogen.node.ANegExpr;
 import coolc.compiler.autogen.node.APlusExpr;
-
+import coolc.compiler.autogen.node.AWhileExpr;
 import coolc.compiler.visitors.ExampleVisitor;
 import coolc.compiler.visitors.OtherVisitor;
 
@@ -61,6 +61,14 @@ public class CoolSemantic implements SemanticFacade {
 	class Pass1 extends DepthFirstAdapter {
 		int ind = 0;
 		AClassDecl currentClass;
+		 public void outAWhileExpr(AWhileExpr node){
+		    	if(!node.getTest().toString().contains("Bool")){
+		    		ErrorManager.getInstance().getErrors().add(Error.BAD_LOOP);
+		    		//node.setType("minor");
+		    	}else{
+		    		//node.setType("Object");
+		    	}
+		   }
 		  public void outAAtExpr(AAtExpr node){
 			  
 				String theClass = node.getExpr().toString();
@@ -101,7 +109,7 @@ public class CoolSemantic implements SemanticFacade {
 					theMethod = TableSymbol.getInstance().getMethod("Object").getFeatures().get(f);
 				}
 				if(theMethod != null){
-					LinkedList<coolc.compiler.autogen.node.PExpr> tries = node.getList();
+					LinkedList<PExpr> tries = node.getList();
 					LinkedList<PFormal> params = theMethod.getFormal();
 					if(tries.size() != params.size()){
 						ErrorManager.getInstance().getErrors().add(Error.FORMALS_FAILED_LONG);
@@ -116,7 +124,7 @@ public class CoolSemantic implements SemanticFacade {
 								String[] parts = t.split(" ");
 								t = parts[parts.length - 1];
 							}
-							if(!isSubType(p, t)){
+							if(!isSubType2(p, t)){
 								ErrorManager.getInstance().getErrors().add(Error.FORMALS_FAILED_LONG);
 								//node.setType("minor");
 								return;
@@ -167,11 +175,9 @@ public class CoolSemantic implements SemanticFacade {
 		    	while(!second.contains("Object")){
 		    		AClassDecl cClass = TableClass.getInstance().getClasses().get(second);
 		    		
-		    		if(cClass==null) {
-		    			return false;
-		    		}else {
+		    	
 		    			second = cClass.getInherits().getText();
-		    		}
+		    		
 		    		if(second.equals(obj))
 		    			return true;
 		    		}
