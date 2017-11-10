@@ -18,6 +18,7 @@ import coolc.compiler.autogen.node.ANoExpr;
 import coolc.compiler.autogen.node.AStrExpr;
 import coolc.compiler.autogen.node.PFeature;
 import coolc.compiler.autogen.node.PFormal;
+import coolc.compiler.autogen.node.PExpr;
 import coolc.compiler.autogen.node.TObjectId;
 import coolc.compiler.autogen.node.TTypeId;
 import coolc.compiler.autogen.analysis.DepthFirstAdapter;
@@ -30,7 +31,9 @@ import coolc.compiler.autogen.node.Start;
 import coolc.compiler.exceptions.SemanticException;
 
 import coolc.compiler.util.Error;
+
 import coolc.compiler.util.TableClass;
+import coolc.compiler.util.TableSymbol;
 import coolc.compiler.autogen.node.ALetDecl;
 import coolc.compiler.autogen.node.ALetExpr;
 import coolc.compiler.autogen.node.ADivExpr;
@@ -41,6 +44,7 @@ import coolc.compiler.autogen.node.ANegExpr;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.visitors.ExampleVisitor;
 import coolc.compiler.visitors.OtherVisitor;
+
 import coolc.compiler.autogen.node.PLetDecl;
 
 
@@ -56,7 +60,7 @@ public class CoolSemantic implements SemanticFacade {
 		AClassDecl currentClass;
 		  public void outAAtExpr(AAtExpr node){
 			  
-				String theClass = node.getTypeId().toString();
+				String theClass = node.getExpr().toString();
 				if(theClass.contains("SELF_TYPE")){
 					theClass = currentClass.getName().getText();
 				}
@@ -73,6 +77,63 @@ public class CoolSemantic implements SemanticFacade {
 		    			return;
 		    		}
 		    	}
+		    	boolean found = false;
+				AMethodFeature theMethod = null;
+				String f = node.getObjectId().getText();
+				while(!theClass.equals("Object")){
+					if(TableSymbol.getInstance().getMethod(theClass).getFeatures().containsKey(f)){
+						theMethod = TableSymbol.getInstance().getMethod(theClass).getFeatures().get(f);
+						found = true;
+						break;
+					}
+					AClassDecl aux = TableClass.getInstance().getClasses().get(theClass);
+					if(aux==null) {
+						break;
+					}else {
+						theClass =aux.getInherits().getText() ;
+					}
+					
+				}
+				if(!found){
+					theMethod = TableSymbol.getInstance().getMethod("Object").getFeatures().get(f);
+				}
+				if(theMethod != null){
+					LinkedList<coolc.compiler.autogen.node.PExpr> tries = node.getList();
+					LinkedList<PFormal> params = theMethod.getFormal();
+					if(tries.size() != params.size()){
+						ErrorManager.getInstance().getErrors().add(Error.FORMALS_FAILED_LONG);
+						//node.setType("minor");
+						return;
+					}else{
+						for(int i = 0; i < params.size(); i++){
+							String t = tries.get(i).toString();
+							AFormal pf = (AFormal) params.get(i);
+							String p = pf.getTypeId().getText();
+							if(t.contains("SELF_TYPE")){
+								String[] parts = t.split(" ");
+								t = parts[parts.length - 1];
+							}
+							if(!isSubType(p, t)){
+								ErrorManager.getInstance().getErrors().add(Error.FORMALS_FAILED_LONG);
+								//node.setType("minor");
+								return;
+							}
+						}
+						if(theMethod.getTypeId().getText().equals("SELF_TYPE")){
+							theClass = node.getTypeId().toString();
+							if(theClass.contains("SELF_TYPE")){
+								theClass = currentClass.getName().getText();
+							}
+							//node.setType(theClass);
+						}else{
+							//node.setType(theMethod.getTypeId().getText());
+						}
+					}
+				}else{
+					ErrorManager.getInstance().getErrors().add(Error.DISPATCH_UNDEFINED);
+					//node.setType("minor");
+					return;
+				}
 		  }
 		  
 		  
