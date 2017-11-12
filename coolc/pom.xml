@@ -123,28 +123,6 @@
 							</tasks>
 						</configuration>
 					</execution>
-
-					<execution>
-						<id>id.process-sources</id>
-						<phase>process-sources</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-
-						<configuration>
-							<tasks>
-								<echo>Sobreescribiendo clases modificadas</echo>
-								<copy overwrite="true"
-									todir="${basedir}/src/main/java/cool/compiler/autogen/node">
-									<fileset dir="${basedir}/src/main/resources/modified/">
-										<include name="**/*.java" />
-									</fileset>
-								</copy>
-							</tasks>
-						</configuration>
-					</execution>
-
-
 				</executions>
 			</plugin>
 

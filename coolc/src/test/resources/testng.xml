@@ -2,11 +2,17 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite verbose="0" name="Test set for the Cool compiler">
 
-  <test name="Semantic" enabled="true">
+  <test name="Semantic" enabled="false">
   	<parameter name="semanticFacade" value="coolc.compiler.CoolSemantic" />
     <classes>
       <class name="coolc.compiler.SemanticTest" />
     </classes>    
+  </test>
+  
+  <test name="SymbolTable" enabled="true">
+  	<classes>
+  	 <class name="coolc.compiler.SymbolTableTest" />
+  	</classes>
   </test>
   
 </suite>
