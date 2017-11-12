@@ -11,7 +11,7 @@ public class TableSymbol {
 	private ArrayList<Auxiliar> variables;
 	private ArrayList<Method> metodos;
 
-	private TableSymbol(){
+	public TableSymbol(){
 		variables = new ArrayList<>();
 		metodos = new ArrayList<>();
 	}

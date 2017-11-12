@@ -245,6 +245,7 @@ public class CoolSemantic implements SemanticFacade {
 		    //node.setType(myType);
 	    }
 
+	   
 	    public void outALetDecl(ALetDecl node){
 	    	if(node.getExpr() != null){
 	    		if(!node.getTypeId().getText().equals("SELF_TYPE")){
