@@ -10,7 +10,6 @@ import java.util.Stack;
 import coolc.compiler.exceptions.SemanticException;
 
 public class MySymbolTable<K,V> implements SymbolTable<K,V>{
-
 	private Stack<HashMap<K, V>> layers;
 	
 	public MySymbolTable() {
@@ -19,7 +18,6 @@ public class MySymbolTable<K,V> implements SymbolTable<K,V>{
 	public void openScope() {
 		layers.push(new HashMap<K, V>());
 	}
-	
 
 	public boolean isEmpty() {
 		return layers.size() == 1 && layers.peek().isEmpty();

@@ -70,6 +70,41 @@ public class CoolSemantic implements SemanticFacade {
 		    		//node.setType("Object");
 		    	}
 		   }
+		 public boolean isSubType3(String obj, String second){
+		    	if(second.contains(obj)){
+		    		return true;
+		    		}
+		    	while(!second.contains("Object")){
+		    		AClassDecl cClass = TableClass.getInstance().getClasses().get(second);
+		    		
+		    		if(cClass==null) {
+		    			return false;
+		    		}else {
+		    			second = cClass.getInherits().getText();
+		    		}
+		    		if(second.equals(obj))
+		    			return true;
+		    		}
+		    		
+		    	return false;
+		    }
+		 
+		 public void outAEqExpr(AEqExpr node){
+		    	if(!node.getL().toString().contains("Bool") | !node.getR().toString().contains("Bool")){
+		    		ErrorManager.getInstance().getErrors().add(Error.BASIC_COMPARE);
+	    			ErrorManager.getInstance().semanticError("Coolc.semant.basicCompare");
+		    	}else {
+		    		types.put(node, basicClasses().get("Bool"));
+		    	}
+		    	if(!node.getL().toString().contains("String") | !node.getR().toString().contains("String")) {
+		    		ErrorManager.getInstance().getErrors().add(Error.BASIC_COMPARE);
+	    			ErrorManager.getInstance().semanticError("Coolc.semant.basicCompare");
+		    	}else {
+		    		types.put(node, basicClasses().get("String"));
+		    		}
+		    }
+		 
+		 
 		  public void outAAtExpr(AAtExpr node){
 			  
 				String theClass = node.getExpr().toString();
@@ -253,16 +288,15 @@ public class CoolSemantic implements SemanticFacade {
 	    public void outALetDecl(ALetDecl node){
 	    	if(node.getExpr() != null){
 	    		if(!node.getTypeId().getText().equals("SELF_TYPE")){
-	    			
-		    		String s = node.getTypeId().getText();
-		    		if(!isSubType(node.getTypeId().getText(), s)){
+		    		String s = node.getExpr().toString();
+		    		if(!isSubType3(node.getTypeId().getText(), s)){
 		    			ErrorManager.getInstance().getErrors().add(Error.BAD_LET_INIT);
 		    			ErrorManager.getInstance().semanticError("Coolc.semant.badLetInit");
 		    		}
 	    		}
-	    		
-	    		
-	    		}
+	    	}
+	    	
+	    	
 	    		types = new HashMap<Node, AClassDecl>();
 	    }
 		
@@ -454,6 +488,8 @@ public class CoolSemantic implements SemanticFacade {
 	
 	@Override
 	public void check() throws SemanticException {
+		start.apply(new OtherVisitor());
+		
 		start.apply(new ExampleVisitor());
 		
 		if(ErrorManager.getInstance().getErrors().size() > 0){
