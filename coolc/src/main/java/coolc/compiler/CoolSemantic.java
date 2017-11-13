@@ -4,6 +4,7 @@ import java.io.PrintStream;
 
 
 
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,8 +35,9 @@ import coolc.compiler.autogen.node.Start;
 import coolc.compiler.exceptions.SemanticException;
 import coolc.compiler.util.Auxiliar;
 import coolc.compiler.util.CClass;
-import coolc.compiler.util.Error;
 
+import coolc.compiler.util.Error;
+import coolc.compiler.util.SymbolTable;
 import coolc.compiler.util.TableClass;
 import coolc.compiler.util.TableSymbol;
 import coolc.compiler.autogen.node.ALetDecl;
@@ -48,6 +50,7 @@ import coolc.compiler.autogen.node.ANegExpr;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.autogen.node.AWhileExpr;
 import coolc.compiler.autogen.node.AEqExpr;
+import coolc.compiler.autogen.node.ACallExpr;
 import coolc.compiler.visitors.ExampleVisitor;
 import coolc.compiler.visitors.OtherVisitor;
 
@@ -65,6 +68,12 @@ public class CoolSemantic implements SemanticFacade {
 		int ind = 0;
 		AClassDecl currentClass;
 		String currentMethod="";
+		String clase = "";
+		String hereda = "";
+		boolean need = false;
+		
+		
+	    
 		 public void outAWhileExpr(AWhileExpr node){
 		    	if(!node.getTest().toString().contains("Bool")){
 		    		ErrorManager.getInstance().getErrors().add(Error.BAD_LOOP);
@@ -132,7 +141,14 @@ public class CoolSemantic implements SemanticFacade {
 		            	}
 		    		}else{
 		            	AClassDecl cAux = currentClass;
-		    	    	String aux = cAux.getName().getText();
+		            	String aux;
+		            	String lastAux="";
+		            	if(cAux == null) {
+		            		aux=lastAux;
+		            	}else {
+		            		aux = cAux.getName().getText();
+		            		lastAux=aux;
+		            	}
 		            	while(!aux.equals("Object")){
 		            		
 		            		Auxiliar mVars = TableSymbol.getInstance().getAuxiliar(i+aux+currentMethod);
@@ -151,8 +167,14 @@ public class CoolSemantic implements SemanticFacade {
 		            		if(exists){
 		            			break;
 		            		}
-		            		aux = cAux.getInherits().getText();
-		            		cAux = TableClass.getInstance().getClasses().get(aux);
+		            	 	if(cAux == null) {
+		            	 		aux= "ni idea";
+		            	 		break;
+		            	 	}else {
+		            	 		aux = cAux.getInherits().getText();
+			            		
+		            	 	}
+		            	 	cAux = TableClass.getInstance().getClasses().get(aux);
 		            	}
 		    		}
 		    		if(exists){
@@ -235,11 +257,11 @@ public class CoolSemantic implements SemanticFacade {
 							String t = tries.get(i).toString();
 							AFormal pf = (AFormal) params.get(i);
 							String p = pf.getTypeId().getText();
-							if(t.contains("SELF_TYPE")){
+							/**if(t.contains("SELF_TYPE")){
 								String[] parts = t.split(" ");
 								t = parts[parts.length - 1];
-							}
-							if(!isSubType2(p, t)){
+							}**/
+							if(!isSubType3(p, t)){
 								ErrorManager.getInstance().getErrors().add(Error.FORMALS_FAILED_LONG);
 								//node.setType("minor");
 								return;
