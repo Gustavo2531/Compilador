@@ -9,6 +9,7 @@ import java.util.Stack;
 import coolc.compiler.exceptions.SemanticException;
 
 public class MySymbolTable<K,V> {
+
 	private Stack<HashMap<K, V>> layers;
 	
 	public MySymbolTable() {
@@ -26,7 +27,7 @@ public class MySymbolTable<K,V> {
 	}
 
 	public boolean containsKey(K key) {
-		assert key instanceof String;
+		//assert key instanceof String;
 		
 		for(int i = layers.size()-1; i>=0; i--) {
 			if (layers.get(i).containsKey(key)) return true;
@@ -59,20 +60,31 @@ public class MySymbolTable<K,V> {
 		 * Destroy last mapping between K and V (LIFO)
 		 */
 		public void closeScope() throws SemanticException{
-			layers.pop();
+			if (size() == 0) {
+				
+				if(size() ==1) {
+		        throw new SemanticException();
+				}
+				 throw new SemanticException();
+		    }else {
+
+		    		layers.pop();
+			
+		    }
+			//return layers.peek().remove(key);
 		}
 		
 		/**
 		 * Searches for K in all mappings starting from last, exception if not found
 		 */
 		public V get(K s) throws SemanticException{
-			assert s instanceof String;
+			//assert s instanceof String;
 				for(int i = layers.size()-1; i>=0; i--) {
 					if (layers.get(i).containsKey(s)) 
 						return layers.get(i).get(s);
 				}
+				throw new SemanticException();
 				
-				return null;
 			
 		}
 		
@@ -81,8 +93,17 @@ public class MySymbolTable<K,V> {
 		 * in the same scope
 		 */
 		public void put (K k, V v) throws SemanticException{
-		
-				layers.peek().put(k, v);
+			layers.peek().put(k, v);
+				/**try {
+						get(k);
+						
+				
+				} catch (SemanticException e) {
+					layers.peek().put(k, v);
+					throw new SemanticException();
+				
+				}**/
+				
 			
 		}
 

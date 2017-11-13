@@ -185,7 +185,8 @@ public class CoolSemantic implements SemanticFacade {
 		    		
 		    	return false;
 		    }
-		
+		//assignnoconform.cool
+		//TestBad 2
 		 public void outAAssignExpr(AAtExpr node){
 
 		    	String s = node.getTypeId().toString();
@@ -196,6 +197,8 @@ public class CoolSemantic implements SemanticFacade {
 		    		ErrorManager.getInstance().semanticError("Coolc.semant.assignSelf");
 		    		return;
 		    	}
+		    	/**assignnoconform.cool
+				//TestBad 2**/
 		    	if(isSubType(s, node.toString())){
 		    		//node.setType(node.getExpr().getTypeAsString());
 		    	}else{
@@ -215,7 +218,8 @@ public class CoolSemantic implements SemanticFacade {
 		    		//node.setType("major");
 		    		return;
 		    	}
-		    	
+		    	/**assignnoconform.cool
+				//TestBad 2**/
 		    	if(isSubType(typeObj, node.toString())){
 		    		//node.setType(node.getExpr().getTypeAsString());
 		    	}else{
@@ -281,8 +285,8 @@ public class CoolSemantic implements SemanticFacade {
 		
 		public void outAMinusExpr(AMinusExpr node){
 		
-		
-	
+			/**badarith.cool
+			//TestBad 6**/
 			if(!node.getL().toString().contains("Int") || !node.getR().toString().contains("Int")){
 	    			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
 	    			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
@@ -297,6 +301,9 @@ public class CoolSemantic implements SemanticFacade {
 	    }
 		
 		public void outAPlusExpr(APlusExpr node){
+			
+			/**badarith.cool
+			//TestBad 6**/
 			if(!node.getL().toString().contains("Int") || !node.getR().toString().contains("Int")){
     			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
     			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
@@ -311,6 +318,8 @@ public class CoolSemantic implements SemanticFacade {
 	    }
 
 	    public void outAMultExpr(AMultExpr node){
+	    	/**badarith.cool
+			//TestBad 6**/
 	    	if(!node.getL().toString().contains("Int") || !node.getR().toString().contains("Int")){
     			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
     			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
@@ -325,6 +334,8 @@ public class CoolSemantic implements SemanticFacade {
 	    }
 
 	    public void outADivExpr(ADivExpr node){
+	    	/**badarith.cool
+			//TestBad 6**/
 	    	if(!node.getL().toString().contains("Int") || !node.getR().toString().contains("Int")){
     			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
     			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
@@ -339,6 +350,8 @@ public class CoolSemantic implements SemanticFacade {
 	    }
 
 	    public void outALtExpr(ALtExpr node){
+	    	/**badarith.cool
+			//TestBad 6**/
 	    	if(!node.getL().toString().contains("Int") || !node.getR().toString().contains("Int")){
     			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
     			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
@@ -353,6 +366,8 @@ public class CoolSemantic implements SemanticFacade {
 	    }
 	    
 	    public void outALeExpr(ALeExpr node){	
+	    	/**badarith.cool
+			//TestBad 6**/
 	    	if(!node.getL().toString().contains("Int") || !node.getR().toString().contains("Int")){
     			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
     			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
@@ -371,6 +386,8 @@ public class CoolSemantic implements SemanticFacade {
 	    	if(node.getExpr().toString().contains("Int")){
 	    		//node.setType("Int");
 	    	}else{
+	    		/**badarith.cool
+				//TestBad 6**/
 	    		ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
 	    		ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getExpr().toString());
 	    		//node.setType("minor");
