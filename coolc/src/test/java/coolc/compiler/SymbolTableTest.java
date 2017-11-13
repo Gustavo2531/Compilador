@@ -14,7 +14,7 @@ public class SymbolTableTest {
 		 * class Main { main(key : value): Object { key }; };
 		 * mplements SymbolTable<K,V>
 		 */
-		MySymbolTable<String, String> table = new MySymbolTable<String, String>();
+		SymbolTable<String, String> table = new MySymbolTable<String, String>();
 		table.openScope();
 			table.put("key", "value");
 			assert "value".equals(table.get("key"));
@@ -25,7 +25,7 @@ public class SymbolTableTest {
 		/*
 		 * class Main { main(key : value, key : value): Object { key }; };
 		 */
-		MySymbolTable<String, String> table = new MySymbolTable<String, String>();
+		SymbolTable<String, String> table = new MySymbolTable<String, String>();
 		table.openScope();
 			table.put("key", "value");
 			table.put("key", "value");
@@ -36,7 +36,7 @@ public class SymbolTableTest {
 		/*
 		 * class Main { key : value; main(): Object { key }; };
 		 */
-		MySymbolTable<String, String> table = new MySymbolTable<String, String>();
+		SymbolTable<String, String> table = new MySymbolTable<String, String>();
 		table.openScope();
 			table.put("key", "value");
 			table.openScope();
@@ -48,7 +48,7 @@ public class SymbolTableTest {
 		/*
 		 * class Main { key : value; main(key2 : value2): Object { key }; };
 		 */
-		MySymbolTable<String, String> table = new MySymbolTable<String, String>();
+		SymbolTable<String, String> table = new MySymbolTable<String, String>();
 		table.openScope();
 			table.put("key", "value");
 			table.openScope();
@@ -61,7 +61,7 @@ public class SymbolTableTest {
 		/*
 		 * class Main { key : value; main(): Object { let ?:? in key }; };
 		 */
-		MySymbolTable<String, String> table = new MySymbolTable<String, String>();
+		SymbolTable<String, String> table = new MySymbolTable<String, String>();
 		table.openScope();
 			table.put("key", "value");
 			table.openScope();
@@ -74,7 +74,7 @@ public class SymbolTableTest {
 		/*
 		 * class Main { key : value; main(): Object { let key2:value2 in key }; };
 		 */
-		MySymbolTable<String, String> table = new MySymbolTable<String, String>();
+		SymbolTable<String, String> table = new MySymbolTable<String, String>();
 		table.openScope();
 			table.put("key", "value");
 			table.openScope();
@@ -90,7 +90,7 @@ public class SymbolTableTest {
 		 * class A { key : value }
 		 * class Main { key : value; main(): Object { key }; };
 		 */
-		MySymbolTable<String, String> table = new MySymbolTable<String, String>();
+		SymbolTable<String, String> table = new MySymbolTable<String, String>();
 		table.openScope();
 			table.put("key", "value");
 		table.closeScope();
@@ -106,7 +106,7 @@ public class SymbolTableTest {
 		 * class A { key : value }
 		 * class Main { main(): Object { key }; };
 		 */
-		MySymbolTable<String, String> table = new MySymbolTable<String, String>();
+		SymbolTable<String, String> table = new MySymbolTable<String, String>();
 		table.openScope();
 			table.put("key", "value");
 		table.closeScope();
@@ -120,7 +120,7 @@ public class SymbolTableTest {
 		/*
 		 * class Main { key : value; main(key : newvalue): Object { key }; };
 		 */
-		MySymbolTable<String, String> table = new MySymbolTable<String, String>();
+		SymbolTable<String, String> table = new MySymbolTable<String, String>();
 		table.openScope();
 			table.put("key", "value");
 			table.openScope();
@@ -134,7 +134,7 @@ public class SymbolTableTest {
 		/*
 		 * class Main { key : value; main(key : newvalue): Object { key }; other(): Object { key }; };
 		 */
-		MySymbolTable<String, String> table = new MySymbolTable<String, String>();
+		SymbolTable<String, String> table = new MySymbolTable<String, String>();
 		table.openScope();
 			table.put("key", "value");
 			table.openScope();
@@ -146,7 +146,7 @@ public class SymbolTableTest {
 	
 	@Test(expectedExceptions = SemanticException.class)
 	public void test() throws SemanticException {
-		MySymbolTable<String, String> table = new MySymbolTable<String, String>();
+		SymbolTable<String, String> table = new MySymbolTable<String, String>();
 		table.closeScope();
 	}
 }

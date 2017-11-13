@@ -8,7 +8,7 @@ import java.util.Stack;
 
 import coolc.compiler.exceptions.SemanticException;
 
-public class MySymbolTable<K,V> {
+public class MySymbolTable<K,V> implements SymbolTable<K,V>{
 
 	private Stack<HashMap<K, V>> layers;
 	
