@@ -1,6 +1,7 @@
 package coolc.compiler.util;
 
 import java.util.Collection;
+import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -18,9 +19,7 @@ public class MySymbolTable<K,V> implements SymbolTable<K,V>{
 	public void openScope() {
 		layers.push(new HashMap<K, V>());
 	}
-	public int size() {		
-		return layers.peek().size();
-	}
+	
 
 	public boolean isEmpty() {
 		return layers.size() == 1 && layers.peek().isEmpty();
@@ -60,11 +59,9 @@ public class MySymbolTable<K,V> implements SymbolTable<K,V>{
 		 * Destroy last mapping between K and V (LIFO)
 		 */
 		public void closeScope() throws SemanticException{
-			if (size() == 0) {
+			
+			if (layers.size() <= 0) {
 				
-				if(size() ==1) {
-		        throw new SemanticException();
-				}
 				 throw new SemanticException();
 		    }else {
 
@@ -93,7 +90,12 @@ public class MySymbolTable<K,V> implements SymbolTable<K,V>{
 		 * in the same scope
 		 */
 		public void put (K k, V v) throws SemanticException{
-			layers.peek().put(k, v);
+			
+			if(layers.peek().get(k) != null) {
+				throw new SemanticException();
+			} else {
+				layers.peek().put(k, v);
+			}
 				/**try {
 						get(k);
 						
@@ -103,8 +105,6 @@ public class MySymbolTable<K,V> implements SymbolTable<K,V>{
 					throw new SemanticException();
 				
 				}**/
-				
-			
 		}
 
 		
