@@ -17,6 +17,7 @@ import coolc.compiler.autogen.node.AFormal;
 import coolc.compiler.autogen.node.AMethodFeature;
 import coolc.compiler.autogen.node.AMinusExpr;
 import coolc.compiler.autogen.node.ANoExpr;
+import coolc.compiler.autogen.node.AObjectExpr;
 import coolc.compiler.autogen.node.AStrExpr;
 import coolc.compiler.autogen.node.PFeature;
 import coolc.compiler.autogen.node.PFormal;
@@ -31,7 +32,8 @@ import coolc.compiler.autogen.node.AIntExpr;
 import coolc.compiler.autogen.node.Node;
 import coolc.compiler.autogen.node.Start;
 import coolc.compiler.exceptions.SemanticException;
-
+import coolc.compiler.util.Auxiliar;
+import coolc.compiler.util.CClass;
 import coolc.compiler.util.Error;
 
 import coolc.compiler.util.TableClass;
@@ -62,6 +64,7 @@ public class CoolSemantic implements SemanticFacade {
 	class Pass1 extends DepthFirstAdapter {
 		int ind = 0;
 		AClassDecl currentClass;
+		String currentMethod="";
 		 public void outAWhileExpr(AWhileExpr node){
 		    	if(!node.getTest().toString().contains("Bool")){
 		    		ErrorManager.getInstance().getErrors().add(Error.BAD_LOOP);
@@ -88,7 +91,84 @@ public class CoolSemantic implements SemanticFacade {
 		    		
 		    	return false;
 		    }
-		 
+		 public void outAObjectExpr(AObjectExpr node){
+		    	boolean exists = false;
+				if(node.getObjectId().getText().equals("self")){
+				//	node.setType("SELF_TYPE of " + currentClass.getName().getText());
+					return;
+				}
+		    	for(int i = ind; i > -1; i--){
+		    		if(i == 0){
+		            	AClassDecl cAux = currentClass;
+		            	String aux;
+		            	String lastAux="";
+		            	if(cAux == null) {
+		            		aux=lastAux;
+		            	}else {
+		            		aux = cAux.getName().getText();
+		            		lastAux=aux;
+		            	}
+		            	while(!aux.equals("Object")){
+		            		
+		            		if (TableSymbol.getInstance().getAuxiliar(i+aux).getCertainClass(aux) == null) {
+		            			aux = "ni idea";
+		            			break;
+		            		}else {
+		            		if(TableSymbol.getInstance().getAuxiliar(i+aux).getCertainClass(aux).getTypes().containsKey(node.getObjectId().getText())){
+		                    		
+		            			//node.setType(TableSymbol.getInstance().getAuxiliar(i+aux).getCertainClass(aux).getTypes().get(node.getObjectId().getText()).getText());
+		                    
+		            			
+		                    					
+		                            			exists = true;
+		                    					
+		                    				}
+		            		if(exists){
+		            			break;
+		            		}
+		            		aux = cAux.getInherits().getText();
+		            		cAux = TableClass.getInstance().getClasses().get(aux);
+		            		}
+		            	}
+		    		}else{
+		            	AClassDecl cAux = currentClass;
+		    	    	String aux = cAux.getName().getText();
+		            	while(!aux.equals("Object")){
+		            		
+		            		Auxiliar mVars = TableSymbol.getInstance().getAuxiliar(i+aux+currentMethod);
+		            		if(mVars != null){
+		            			CClass vars = mVars.getCertainClass(aux);
+			            		if(vars != null && vars.getTypes().containsKey(node.getObjectId().getText())){
+			            			
+			            			
+			            			//node.setType(TableSymbol.getInstance().getAuxiliar(i+aux+currentMethod).getCertainClass(aux).getTypes()
+			            			//		.get(node.getObjectId().getText()).getText());
+			            			
+
+				            		exists = true;
+			            		}
+		            		}
+		            		if(exists){
+		            			break;
+		            		}
+		            		aux = cAux.getInherits().getText();
+		            		cAux = TableClass.getInstance().getClasses().get(aux);
+		            	}
+		    		}
+		    		if(exists){
+		    			break;
+		    		}
+		    	}
+		    	if(!exists){
+		    		ErrorManager.getInstance().getErrors().add(Error.UNDECL_IDENTIFIER);
+		    		//node.setType("minor");
+		    		return;
+		    	}else{
+		    		if(node.toString().equals("SELF_TYPE")){
+		    			//node.setType("SELF_TYPE of " + currentClass.getName().getText());
+		    		}
+		    	}
+		    }
 		 public void outAEqExpr(AEqExpr node){
 		    	if(!node.getL().toString().contains("Bool") | !node.getR().toString().contains("Bool")){
 		    		ErrorManager.getInstance().getErrors().add(Error.BASIC_COMPARE);
@@ -103,7 +183,6 @@ public class CoolSemantic implements SemanticFacade {
 		    		types.put(node, basicClasses().get("String"));
 		    		}
 		    }
-		 
 		 
 		  public void outAAtExpr(AAtExpr node){
 			  
@@ -488,7 +567,7 @@ public class CoolSemantic implements SemanticFacade {
 	
 	@Override
 	public void check() throws SemanticException {
-		start.apply(new OtherVisitor());
+		
 		
 		start.apply(new ExampleVisitor());
 		
@@ -506,8 +585,10 @@ public class CoolSemantic implements SemanticFacade {
 			throw new SemanticException();
 		}
 		
-	
-		
+		start.apply(new OtherVisitor());
+		if(ErrorManager.getInstance().getErrors().size() > 0){
+			throw new SemanticException();
+		}
 		
 		
 		
