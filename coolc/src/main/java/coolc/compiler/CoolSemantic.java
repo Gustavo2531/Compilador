@@ -5,6 +5,8 @@ import java.io.PrintStream;
 
 
 
+
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,12 +73,16 @@ public class CoolSemantic implements SemanticFacade {
 		String clase = "";
 		String hereda = "";
 		boolean need = false;
+		int indice = 0;
 		
 		
 	    
+	    
+
 		 public void outAWhileExpr(AWhileExpr node){
 		    	if(!node.getTest().toString().contains("Bool")){
 		    		ErrorManager.getInstance().getErrors().add(Error.BAD_LOOP);
+		    		ErrorManager.getInstance().semanticError("Coolc.semant.badLoop");
 		    		//node.setType("minor");
 		    	}else{
 		    		//node.setType("Object");
@@ -100,6 +106,44 @@ public class CoolSemantic implements SemanticFacade {
 		    		
 		    	return false;
 		    }
+		 public void inAMethodFeature(AMethodFeature node){
+		    	ind++;
+		    	currentMethod = node.getObjectId().getText();
+		    //	String cClass = currentClass.getName().getText();
+
+		    	LinkedList<PFormal> params = node.getFormal();
+		    	
+		    	for(int i = 0; i < params.size(); i++){
+		    		AFormal p = (AFormal) params.get(i);
+		    		if(p.getTypeId().getText().equals("SELF_TYPE")){
+		    			ErrorManager.getInstance().getErrors().add(Error.SELF_TYPE_FORMAL);
+		    			ErrorManager.getInstance().semanticError("Coolc.semant.selfTypeFormal",p.getTypeId().getText());
+		    			//TableSymbol.getInstance().getAuxiliar(ind+cClass+currentMethod).getCertainClass(cClass).getTypes().remove(p.getObjectId().getText());
+		    			
+		    		}
+		    		}
+		    }
+		    public void outAMethodFeature(AMethodFeature node){
+		    	ind--;
+		    	currentMethod = "";
+		    	
+		    	if(node.getTypeId().getText().equals("SELF_TYPE")){
+		    		if(!node.getExpr().toString().contains("SELF_TYPE")){
+		    			ErrorManager.getInstance().getErrors().add(Error.BAD_INFERRED);
+		    			ErrorManager.getInstance().semanticError("Coolc.semant.badInferred", node.getTypeId().getText(), node.getExpr().toString(),"SELF_TYPE");
+		    		}
+		    		return;
+		    	}
+		    		if(ErrorManager.getInstance().getErrors().size() == 0){
+		    		String mType = node.getTypeId().getText();
+		    		String eType = node.getExpr().toString();
+		    				    		if(!isSubType2(mType, eType)){
+		    			ErrorManager.getInstance().getErrors().add(Error.BAD_INFERRED);
+		    			ErrorManager.getInstance().semanticError("Coolc.semant.badInferred", mType, eType,mType);
+		    		}
+		    	}
+		    }
+		    
 		 public void outAObjectExpr(AObjectExpr node){
 		    	boolean exists = false;
 				if(node.getObjectId().getText().equals("self")){
@@ -183,6 +227,7 @@ public class CoolSemantic implements SemanticFacade {
 		    	}
 		    	if(!exists){
 		    		ErrorManager.getInstance().getErrors().add(Error.UNDECL_IDENTIFIER);
+		    		ErrorManager.getInstance().semanticError("Coolc.semant.undeclIdentifier",node.getObjectId().getText());
 		    		//node.setType("minor");
 		    		return;
 		    	}else{
@@ -211,6 +256,9 @@ public class CoolSemantic implements SemanticFacade {
 				String theClass = node.getExpr().toString();
 				if(theClass.contains("SELF_TYPE")){
 					theClass = currentClass.getName().getText();
+					//ErrorManager.getInstance().getErrors().add(Error.BAD_INFERRED);
+					//TTypeId h=new TTypeId("major");
+					//node.setTypeId(h);
 				}
 		    	if(node.getTypeId() != null){
 		    		String other = node.getTypeId().getText();
@@ -250,6 +298,7 @@ public class CoolSemantic implements SemanticFacade {
 					LinkedList<PFormal> params = theMethod.getFormal();
 					if(tries.size() != params.size()){
 						ErrorManager.getInstance().getErrors().add(Error.FORMALS_FAILED_LONG);
+						ErrorManager.getInstance().semanticError("Coolc.semant.formalsFailedLong",tries.getFirst().toString(),params.getFirst().toString(), tries.getLast().toString());
 						//node.setType("minor");
 						return;
 					}else{
@@ -263,6 +312,7 @@ public class CoolSemantic implements SemanticFacade {
 							}**/
 							if(!isSubType3(p, t)){
 								ErrorManager.getInstance().getErrors().add(Error.FORMALS_FAILED_LONG);
+								ErrorManager.getInstance().semanticError("Coolc.semant.formalsFailedLong",t,p,p);
 								//node.setType("minor");
 								return;
 							}
@@ -279,6 +329,7 @@ public class CoolSemantic implements SemanticFacade {
 					}
 				}else{
 					ErrorManager.getInstance().getErrors().add(Error.DISPATCH_UNDEFINED);
+					ErrorManager.getInstance().semanticError("Coolc.semant.dispatchUndefined",node.getExpr().toString());
 					//node.setType("minor");
 					return;
 				}
@@ -306,14 +357,18 @@ public class CoolSemantic implements SemanticFacade {
 		
 		  
 			public boolean isSubType2(String obj, String second){
-		    	if(obj.equals(second)){
+		    	if(obj.contains(second)){
 		    		return true;
 		    		}
 		    	while(!second.contains("Object")){
 		    		AClassDecl cClass = TableClass.getInstance().getClasses().get(second);
 		    		
-		    	
+		    		if(cClass==null) {
+		    			return false;
+		    		}else {
 		    			second = cClass.getInherits().getText();
+		    		}
+		    			//second = cClass.getInherits().getText();
 		    		
 		    		if(second.equals(obj))
 		    			return true;
@@ -330,7 +385,10 @@ public class CoolSemantic implements SemanticFacade {
 		 
 		    	if(s.equals("self")){
 		    		ErrorManager.getInstance().getErrors().add(Error.ASSIGN_SELF);
-		    		ErrorManager.getInstance().semanticError("Coolc.semant.assignSelf");
+		    		ErrorManager.getInstance().semanticError("Coolc.semant.assignSelf", s);
+		    		//ErrorManager.getInstance().getErrors().add(Error.BAD_INFERRED);
+		    		//TTypeId h=new TTypeId("major");
+				//node.setTypeId(h);
 		    		return;
 		    	}
 		    	/**assignnoconform.cool
@@ -339,6 +397,7 @@ public class CoolSemantic implements SemanticFacade {
 		    		//node.setType(node.getExpr().getTypeAsString());
 		    	}else{
 		    		ErrorManager.getInstance().getErrors().add(Error.BAD_ASSIGNMENT);
+		    		ErrorManager.getInstance().semanticError("Coolc.semant.badAssignment", node.toString(), s, s);
 		    		
 		    		//node.setType("minor");
 		    	}
@@ -350,7 +409,9 @@ public class CoolSemantic implements SemanticFacade {
 		 
 		    	if(s.contains("self")){
 		    		ErrorManager.getInstance().getErrors().add(Error.ASSIGN_SELF);
-		    
+		    		ErrorManager.getInstance().semanticError("Coolc.semant.assignSelf",s);
+		    		ErrorManager.getInstance().getErrors().add(Error.BAD_INFERRED);
+		    		ErrorManager.getInstance().semanticError("Coolc.semant.badInferred");
 		    		//node.setType("major");
 		    		return;
 		    	}
@@ -360,6 +421,7 @@ public class CoolSemantic implements SemanticFacade {
 		    		//node.setType(node.getExpr().getTypeAsString());
 		    	}else{
 		    		ErrorManager.getInstance().getErrors().add(Error.BAD_ASSIGNMENT);
+		    		ErrorManager.getInstance().semanticError("Coolc.semant.badAssignment", node.toString(), typeObj, node.getObjectId().toString());
 		    		//node.setType("minor");
 		    	}
 		    }
@@ -593,19 +655,13 @@ public class CoolSemantic implements SemanticFacade {
 		
 		start.apply(new ExampleVisitor());
 		
-		if(ErrorManager.getInstance().getErrors().size() > 0){
-			throw new SemanticException();
-		}
+	
 		
 		start.apply(new Pass1());
-		if(ErrorManager.getInstance().getErrors().size() > 0){
-			throw new SemanticException();
-		}
+		
 		
 		start.apply(new P2());
-		if(ErrorManager.getInstance().getErrors().size() > 0){
-			throw new SemanticException();
-		}
+		
 		
 		start.apply(new OtherVisitor());
 		if(ErrorManager.getInstance().getErrors().size() > 0){
