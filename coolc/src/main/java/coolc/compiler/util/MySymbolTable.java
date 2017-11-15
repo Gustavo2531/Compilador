@@ -73,12 +73,13 @@ public class MySymbolTable<K,V> implements SymbolTable<K,V>{
 		 * Searches for K in all mappings starting from last, exception if not found
 		 */
 		public V get(K s) throws SemanticException{
-			//assert s instanceof String;
-				for(int i = layers.size()-1; i>=0; i--) {
+			for(int i = layers.size()-1; i>=0; i--) {
 					if (layers.get(i).containsKey(s)) 
 						return layers.get(i).get(s);
 				}
+			
 				throw new SemanticException();
+				
 				
 			
 		}

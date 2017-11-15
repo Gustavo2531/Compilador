@@ -170,11 +170,7 @@ public class ExampleVisitor extends DepthFirstAdapter {
 	/*
 	 * When visiting every Class, we check if it is called Main.
 	 */
-	@Override
-	public void inAClassDecl(AClassDecl node) {
-		//System.out.println("Placing: " + node.getName().getText());
-		
-	}
+
 	
 
 	public void outAClassDecl(AClassDecl node){

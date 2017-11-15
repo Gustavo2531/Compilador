@@ -109,7 +109,7 @@ public class CompilerImpl implements Compiler {
 	}
 
 	@Override
-	public Map<Node, AClassDecl> getTypes() {
+	public Map<Node, CoolSemantic.Klass> getTypes() {
 		return semantic.getTypes();
 	}
 

@@ -14,5 +14,5 @@ public interface SemanticFacade {
 	public void setup(Start start, PrintStream out);
 	public void check() throws SemanticException;
 	public Set<Error> getErrors();
-	public Map<Node, AClassDecl> getTypes();
+	public Map<Node, CoolSemantic.Klass> getTypes();
 }
