@@ -652,6 +652,7 @@ public class CoolSemantic implements SemanticFacade {
 	@Override
 	public void check() throws SemanticException {
 		
+		start.apply(new OtherVisitor());
 		
 		start.apply(new ExampleVisitor());
 		
@@ -662,8 +663,6 @@ public class CoolSemantic implements SemanticFacade {
 		
 		start.apply(new P2());
 		
-		
-		start.apply(new OtherVisitor());
 		if(ErrorManager.getInstance().getErrors().size() > 0){
 			throw new SemanticException();
 		}

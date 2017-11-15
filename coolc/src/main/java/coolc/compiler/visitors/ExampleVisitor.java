@@ -27,6 +27,8 @@ import coolc.compiler.util.TableClass;
 import coolc.compiler.util.TableSymbol;
 import coolc.compiler.util.Auxiliar;
 import coolc.compiler.util.CClass;
+import coolc.compiler.util.ClassVariables;
+import coolc.compiler.util.CustomKlass;
 import coolc.compiler.util.Error;
 
 import coolc.compiler.util.TableClass;
@@ -42,7 +44,17 @@ public class ExampleVisitor extends DepthFirstAdapter {
 	String clase = "";
 	String metodo = "";
 	int depth = 0;
+	CustomKlass currentCustomKlass;
+
 	
+	@Override
+	public void inAAttributeFeature(AAttributeFeature node) {
+		boolean isOverriding = ClassVariables.getInstance().parentHasAttribute(node.getObjectId().getText(), currentCustomKlass);
+		if(isOverriding) {
+			ErrorManager.getInstance().getErrors().add(Error.ATTR_INHERITED);
+			ErrorManager.getInstance().semanticError("Coolc.semant.attrRedefinition", node.getObjectId());
+		}
+	}
 	
 	/*
 	 * outAProgram is the last node visited, so we check here if there was no main method
@@ -173,7 +185,8 @@ public class ExampleVisitor extends DepthFirstAdapter {
 	@Override
 	public void inAClassDecl(AClassDecl node) {
 		//System.out.println("Placing: " + node.getName().getText());
-		
+		//ClassVariables.getInstance().printKlasses();
+		currentCustomKlass = ClassVariables.getInstance().searchKlassWithName(node.getName().getText());
 	}
 	
 

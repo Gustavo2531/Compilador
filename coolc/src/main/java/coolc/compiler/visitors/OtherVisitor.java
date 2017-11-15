@@ -23,17 +23,23 @@ import coolc.compiler.autogen.node.PFormal;
 import coolc.compiler.autogen.node.TTypeId;
 import coolc.compiler.util.TableClass;
 import coolc.compiler.util.ClassVariables;
-
+import coolc.compiler.util.CustomKlass;
 import coolc.compiler.util.Error;
 
 import coolc.compiler.util.TableSymbol;
 
 public class OtherVisitor extends DepthFirstAdapter {
-	String currentClass;
+	CustomKlass currentClass;
 	
 	@Override
 	public void inAClassDecl(AClassDecl node) {
-		currentClass = node.getName().getText();
+		String inherits = "";
+		if (node.getInherits() == null) {
+			inherits = "Object";
+		} else {
+			inherits = node.getInherits().getText();
+		}
+		currentClass = new CustomKlass(node.getName().getText(), inherits);
 		ClassVariables.getInstance().putClass(currentClass);
 	}
 	
