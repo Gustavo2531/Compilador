@@ -44,17 +44,6 @@ public class ExampleVisitor extends DepthFirstAdapter {
 	String clase = "";
 	String metodo = "";
 	int depth = 0;
-	CustomKlass currentCustomKlass;
-
-	
-	@Override
-	public void inAAttributeFeature(AAttributeFeature node) {
-		boolean isOverriding = ClassVariables.getInstance().parentHasAttribute(node.getObjectId().getText(), currentCustomKlass);
-		if(isOverriding) {
-			ErrorManager.getInstance().getErrors().add(Error.ATTR_INHERITED);
-			ErrorManager.getInstance().semanticError("Coolc.semant.attrRedefinition", node.getObjectId());
-		}
-	}
 	
 	/*
 	 * outAProgram is the last node visited, so we check here if there was no main method
@@ -182,12 +171,7 @@ public class ExampleVisitor extends DepthFirstAdapter {
 	/*
 	 * When visiting every Class, we check if it is called Main.
 	 */
-	@Override
-	public void inAClassDecl(AClassDecl node) {
-		//System.out.println("Placing: " + node.getName().getText());
-		//ClassVariables.getInstance().printKlasses();
-		currentCustomKlass = ClassVariables.getInstance().searchKlassWithName(node.getName().getText());
-	}
+	
 	
 
 	public void outAClassDecl(AClassDecl node){
@@ -237,6 +221,7 @@ public class ExampleVisitor extends DepthFirstAdapter {
 		
 		
 	}
+	
 	public void outAAttributeFeature(AAttributeFeature node){
 		
         if(node.getObjectId().getText().equals("self")){
@@ -252,7 +237,6 @@ public class ExampleVisitor extends DepthFirstAdapter {
     		ErrorManager.getInstance().getErrors().add(Error.ASSIGN_SELF);
     		ErrorManager.getInstance().getErrors().add(Error.BAD_INFERRED);
     		ErrorManager.getInstance().semanticError("Coolc.semant.assignSelf");
-    		return;
     		}
 	}
 	

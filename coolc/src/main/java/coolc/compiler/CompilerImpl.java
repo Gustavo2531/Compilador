@@ -20,7 +20,7 @@ import coolc.compiler.visitors.ASTPrinter;
 import coolc.compiler.visitors.ASTPrinterTypes;
 
 public class CompilerImpl implements Compiler {
-	public static String file = "src/test/resources/test.cool";
+	public static String file = "src/test/resources/semantic/input/attroverride.cool";
 	//public static String file = "src/test/resources/codegen/input/while-val.cool";
 	//public static String file = "src/test/resources/semantic/input/redefinedobject.cool";
 	public static String outFile = "src/test/resources/test.s";
@@ -72,7 +72,6 @@ public class CompilerImpl implements Compiler {
 		// PrintStream out = new PrintStream(new FileOutputStream(outFile));
 		// compiler.genCode(start, out);
 		// compiler.genCode(start, System.out);
-		
 	}
 	
 	@Override

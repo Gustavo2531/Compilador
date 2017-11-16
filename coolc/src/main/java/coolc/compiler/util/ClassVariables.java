@@ -20,6 +20,10 @@ public class ClassVariables {
 		return instance;
 	}
 	
+	public void reset() {
+		instance = new ClassVariables();
+	}
+	
 	public void putClass(CustomKlass klass) {
 		classWithVariables.put(klass, new LinkedList<String>());
 	}

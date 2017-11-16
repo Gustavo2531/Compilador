@@ -24,6 +24,7 @@ import coolc.compiler.autogen.lexer.LexerException;
 import coolc.compiler.autogen.node.Start;
 import coolc.compiler.autogen.parser.ParserException;
 import coolc.compiler.exceptions.SemanticException;
+import coolc.compiler.util.ClassVariables;
 import coolc.compiler.util.Error;
 //import coolc.compiler.tables.ClassTable;
 import coolc.compiler.util.Error;
@@ -109,6 +110,7 @@ public class SemanticTest {
 		semanticFacade = (SemanticFacade)ctor.newInstance();
 		
 		ErrorManager.getInstance().reset();
+		ClassVariables.getInstance().reset();
 		//ClassTable.getInstance().resetInstance();
 	}
 
@@ -165,7 +167,7 @@ public class SemanticTest {
 		try {
 			compiler.semanticCheck(start, out);
 			assert false;
-		} catch (SemanticException e) {			
+		} catch (SemanticException e) {
 			setResult = compiler.getErrors();
 			assert setResult.containsAll(setTest);
 		}				

@@ -1,6 +1,7 @@
 package coolc.compiler;
 
 import java.io.PrintStream;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -55,6 +56,7 @@ import coolc.compiler.autogen.node.AEqExpr;
 import coolc.compiler.autogen.node.ACallExpr;
 import coolc.compiler.autogen.node.ACaseExpr;
 import coolc.compiler.visitors.ExampleVisitor;
+import coolc.compiler.visitors.InhVisitor;
 import coolc.compiler.visitors.OtherVisitor;
 
 import coolc.compiler.autogen.node.PLetDecl;
@@ -346,7 +348,6 @@ public class CoolSemantic implements SemanticFacade {
 	    		ErrorManager.getInstance().getErrors().add(Error.ASSIGN_SELF);
 	    		ErrorManager.getInstance().getErrors().add(Error.BAD_INFERRED);
 	    		ErrorManager.getInstance().semanticError("Coolc.semant.assignSelf");
-	    		return;
 	    		}
 		}
 		
@@ -449,7 +450,6 @@ public class CoolSemantic implements SemanticFacade {
 		    			ErrorManager.getInstance().getErrors().add(Error.BAD_INFERRED);
 		    			ErrorManager.getInstance().semanticError("Coolc.semant.badInferred", node.getTypeId().getText(), node.getExpr().toString(),"SELF_TYPE");
 		    		}
-		    		return;
 		    	}
 		    		if(ErrorManager.getInstance().getErrors().size() == 0){
 		    		String mType = node.getTypeId().getText();
@@ -706,7 +706,6 @@ public class CoolSemantic implements SemanticFacade {
 		    		//ErrorManager.getInstance().getErrors().add(Error.BAD_INFERRED);
 		    		//TTypeId h=new TTypeId("major");
 				//node.setTypeId(h);
-		    		return;
 		    	}
 		    	/**assignnoconform.cool
 				//TestBad 2**/
@@ -730,7 +729,6 @@ public class CoolSemantic implements SemanticFacade {
 		    		ErrorManager.getInstance().getErrors().add(Error.BAD_INFERRED);
 		    		ErrorManager.getInstance().semanticError("Coolc.semant.badInferred");
 		    		//node.setType("major");
-		    		return;
 		    	}
 		    	/**assignnoconform.cool
 				//TestBad 2**/
@@ -972,6 +970,8 @@ public class CoolSemantic implements SemanticFacade {
 		
 		start.apply(new OtherVisitor());
 		
+		start.apply(new InhVisitor());
+		
 		start.apply(new ExampleVisitor());
 	
 		
@@ -979,7 +979,6 @@ public class CoolSemantic implements SemanticFacade {
 		
 		
 		start.apply(new P2());
-		
 		if(ErrorManager.getInstance().getErrors().size() > 0){
 			throw new SemanticException();
 		}
