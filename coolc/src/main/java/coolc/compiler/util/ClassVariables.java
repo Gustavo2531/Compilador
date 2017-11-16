@@ -6,11 +6,14 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class ClassVariables {
-	private HashMap<CustomKlass, LinkedList<String>> classWithVariables;
+	private HashMap<CustomKlass, HashMap<String, String>> classWithVariables;
+	private HashMap<CustomKlass, HashMap<String, CustomMethodForKlass>> classWithMethods;
+	
 	private static ClassVariables instance;
 	
 	private ClassVariables() {
 		classWithVariables = new HashMap<>();
+		classWithMethods = new HashMap<>();
 	}
 	
 	public static ClassVariables getInstance() {
@@ -25,11 +28,16 @@ public class ClassVariables {
 	}
 	
 	public void putClass(CustomKlass klass) {
-		classWithVariables.put(klass, new LinkedList<String>());
+		classWithVariables.put(klass, new HashMap<String, String>());
+		classWithMethods.put(klass, new HashMap<String, CustomMethodForKlass>());
 	}
 	
-	public LinkedList<String> getVariableList(CustomKlass klass) {
+	public HashMap<String, String> getVariableMap(CustomKlass klass) {
 		return classWithVariables.get(klass);
+	}
+	
+	public HashMap<String, CustomMethodForKlass> getMethodMap(CustomKlass klass){
+		return classWithMethods.get(klass);
 	}
 	
 	public CustomKlass searchKlassWithName(String name) {
@@ -55,14 +63,13 @@ public class ClassVariables {
 	}
 	
 	public boolean hasAttribute(CustomKlass klass, String attr) {
-		LinkedList<String> attrList = classWithVariables.get(klass);
-		if(attrList != null) {
-			for(String currentAttr : attrList ) {
-				if(currentAttr.equals(attr)) {
-					return true;
-				}
-			}
-		} 
+		
+		HashMap<String, String> klassVariables = classWithVariables.get(klass);
+		if(klassVariables != null) {
+			String var = klassVariables.get(attr);
+			return var != null;
+		}
+		
 		return false;
 	}
 	

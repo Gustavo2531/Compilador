@@ -23,13 +23,16 @@ import coolc.compiler.autogen.node.PFormal;
 import coolc.compiler.autogen.node.TTypeId;
 import coolc.compiler.util.TableClass;
 import coolc.compiler.util.ClassVariables;
+import coolc.compiler.util.CustomFormalForMethod;
 import coolc.compiler.util.CustomKlass;
+import coolc.compiler.util.CustomMethodForKlass;
 import coolc.compiler.util.Error;
 
 import coolc.compiler.util.TableSymbol;
 
 public class OtherVisitor extends DepthFirstAdapter {
 	CustomKlass currentClass;
+	CustomMethodForKlass currentMethod;
 	
 	@Override
 	public void inAClassDecl(AClassDecl node) {
@@ -45,8 +48,24 @@ public class OtherVisitor extends DepthFirstAdapter {
 	
 	@Override
 	public void outAAttributeFeature(AAttributeFeature node) {
-		ClassVariables.getInstance().getVariableList(currentClass).add(node.getObjectId().getText());
+		ClassVariables.getInstance().getVariableMap(currentClass).put(node.getObjectId().getText(), node.getTypeId().getText());
 	}
 	
+	@Override
+	public void outAMethodFeature(AMethodFeature node) {
+		ClassVariables.getInstance().getMethodMap(currentClass).put(node.getObjectId().getText(), currentMethod);
+	}
 	
+	@Override
+	public void inAMethodFeature(AMethodFeature node) {
+		currentMethod = new CustomMethodForKlass(node.getObjectId().getText(), node.getTypeId().getText());
+	}
+	
+	@Override
+	public void outAFormal(AFormal node) {
+		String formalId = node.getObjectId().getText();
+		String formalType = node.getTypeId().getText();
+		
+		currentMethod.getFormals().add(new CustomFormalForMethod(formalId, formalType));
+	}
 }
