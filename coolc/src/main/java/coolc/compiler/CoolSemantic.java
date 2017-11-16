@@ -93,296 +93,6 @@ public class CoolSemantic implements SemanticFacade {
 			}
 	//private boolean hasSelfTypeParameterPosition = false;
 	
-	public class ExampleVisitor2 extends DepthFirstAdapter {
-		private boolean hasMain = false;
-		private HashMap<String, Boolean> classDeclMap = new HashMap<>();
-		AClassDecl currentClass = null;
-		String currentMethod = "";
-		private LinkedList<String> missingClasses = new LinkedList<>();
-		private LinkedList<String> missingMethodReturnTypes = new LinkedList<>();
-		String clase = "";
-		String metodo = "";
-		int depth = 0;
-		@Override
-		public void inAClassDecl(AClassDecl node) {
-			//System.out.println("Placing: " + node.getName().getText());
-					symbolTable2.openScope();
-					
-		}
-		@Override
-		public void inAAttributeFeature(AAttributeFeature node) {
-			try {
-				symbolTable2.put(node.getObjectId().getText(), klasses.get(node.getTypeId().getText()));
-				}catch(SemanticException e) {
-				//e.printStackTrace();
-				}
-			}
-		public void inAMethodFeature(AMethodFeature node){
-			symbolTable2.openScope();
-		LinkedList<PFormal> params = node.getFormal();
-	    	ArrayList<String> repeated = new ArrayList<>();
-	    	boolean redefined = false;
-	   
-			//System.out.println(depth+clase + node.getObjectId().getText());
-	    	try {
-	    	symbolTable2.closeScope();
-	    	if(node.getTypeId().getText().equals(node.getTypeId().getText())) {
-	    		ErrorManager.getInstance().getErrors().add(Error.TYPE_NOT_FOUND);
-	    		ErrorManager.getInstance().semanticError("Coolc.semant.typeNotFound", node.getObjectId().getText(), node.getTypeId().getText());
-	    	}
-	   
-	    	for(int i = 0; i < params.size(); i++){
-	    		AFormal p = (AFormal) params.get(i);
-	    		if(!repeated.contains(p.getObjectId().getText())){
-	    			repeated.add(p.getObjectId().getText());
-	    		}else{
-	    			redefined = true;
-	    		}
-	    		if(p.getObjectId().getText().equals("self")){
-	    			ErrorManager.getInstance().getErrors().add(Error.SELF_FORMAL);
-	    		}
-	    	}
-	    	if(redefined){
-	    		ErrorManager.getInstance().getErrors().add(Error.FORMAL_REDEFINITION);
-	    	}
-	    	}catch(SemanticException e) {
-	    					//e.printStackTrace(); 
-	    		
-	    		
-	    	}
-	    //	String myType = node.getTypeId().getText();
-			/**String myType = node.getTypeId().getText();
-	    		if(!myType.equals("SELF_TYPE")){
-		    	if(!TableClass.getInstance().getClasses().containsKey(myType)){
-		    		ErrorManager.getInstance().getErrors().add(Error.TYPE_NOT_FOUND);
-		    		ErrorManager.getInstance().semanticError("Coolc.semant.typeNotFound", node.getObjectId(),node.getTypeId());
-		    	}
-	    	}
-	    	if(!myType.equals("SELF_TYPE")){
-		    	if(!TableClass.getInstance().getClasses().containsKey(myType)){
-		    		ErrorManager.getInstance().getErrors().add(Error.TYPE_NOT_FOUND);
-		    	}
-	    	}
-	    //	ind++;
-	    	currentMethod = node.getObjectId().getText();
-	    	String cClass = currentClass.getName().getText();
-
-	    	LinkedList<PFormal> params = node.getFormal();
-	    	
-	    	for(int i = 0; i < params.size(); i++){
-	    		AFormal p = (AFormal) params.get(i);**/
-			/**if(node.getTypeId().getText().equals("SELF_TYPE")){
-				ErrorManager.getInstance().getErrors().add(Error.SELF_TYPE_FORMAL);
-				ErrorManager.getInstance().getErrors().add(Error.UNDECL_IDENTIFIER);
-				ErrorManager.getInstance().semanticError("Coolc.semant.selfTypeFormal", node.getTypeId().getText());
-				//SymbolTable.getInstance().getAuxiliar(ind+cClass+currentMethod).getCertainClass(cClass).getTypes().remove(p.getObjectId().getText());
-				
-			}**/
-	    	
-	    }
-		/*
-		 * outAProgram is the last node visited, so we check here if there was no main method
-		 */
-		
-	
-
-
- 	
-		
-		
-		@Override
-		public void outAFormal(AFormal node) {
-			try {
-				symbolTable2.put(node.getObjectId().getText(), 
-				klasses.get(node.getTypeId().getText()));
-			}catch (SemanticException e) {
-				//e.printStackTrace();
-			}
-			if(node.getTypeId().getText().equals("SELF_TYPE")) {
-				ErrorManager.getInstance().getErrors().add(Error.SELF_TYPE_FORMAL);
-				ErrorManager.getInstance().semanticError("Coolc.semant.selfTypeFormal", node.getObjectId());
-			}
-		}
-		
-		@Override
-		public void outAListExpr(AListExpr node) {
-			types2.put(node, types2.get(node.getExpr().getLast()));
-		}
-		
-		@Override
-		public void outAProgram(AProgram node) {
-			if(!hasMain){
-	    		ErrorManager.getInstance().getErrors().add(Error.NO_MAIN);
-	    		ErrorManager.getInstance().semanticError("Coolc.semant.noMain");
-			}
-			
-			for(int i = 0; i < missingClasses.size(); i += 2) {
-				String className = missingClasses.get(i);
-				String inheritClass = missingClasses.get(i+1);
-				if( classDeclMap.get(inheritClass) == null || classDeclMap.get(inheritClass) == false ) {
-					ErrorManager.getInstance().getErrors().add(Error.CANNOT_INHERIT);
-					ErrorManager.getInstance().semanticError("Coolc.semant.undefined", className, inheritClass);
-				}
-			}
-			
-			for( int i = 0; i < missingMethodReturnTypes.size(); i += 2 ) {
-				String className = missingMethodReturnTypes.get(i);
-				String returnType = missingMethodReturnTypes.get(i+1);
-				if ( classDeclMap.get(returnType) == null || classDeclMap.get(returnType) == false ) {
-					ErrorManager.getInstance().getErrors().add(Error.TYPE_NOT_FOUND);
-					ErrorManager.getInstance().semanticError("Coolc.semant.typeNotFound", className, returnType);
-				} 
-			}
-			
-			
-			classDeclMap = new HashMap<>();
-			missingClasses = new LinkedList<>();
-			missingMethodReturnTypes = new LinkedList<>();
-		}
-		
-		 public void outALetExpr(ALetExpr node){
-			    
-				// types.put(node, basicClasses().get(key))
-				 //ind--;
-			    	LinkedList<PLetDecl> params = node.getLetDecl();
-			    	for(int i = 0; i < params.size(); i++){
-			    		ALetDecl p = (ALetDecl) params.get(i);
-			    		if(p.getObjectId().getText().equals("self")){
-			    			ErrorManager.getInstance().getErrors().add(Error.SELF_IN_LET);
-			    			ErrorManager.getInstance().semanticError("Coolc.semant.selfInLet");
-			    			//types.put(node, basicClasses().get("Let"));
-			    			
-			    		}
-			    	}
-				  
-			  }
-		 
-		@Override
-		public void outAMethodFeature(AMethodFeature node) {
-			//System.out.println("Checking in out: " + node.getName().getText());
-			if( !(node.getTypeId().getText().equals("Object") || node.getTypeId().getText().equals("Bool") || node.getTypeId().getText().equals("Int") || node.getTypeId().getText().equals("String")) ) {
-				missingMethodReturnTypes.add(node.getObjectId().getText());
-				missingMethodReturnTypes.add(node.getTypeId().getText());
-			}	
-		}
-
-		
-		
-		/*
-		 * When visiting every Class, we check if it is called Main.
-		 */
-	
-		
-		public void outAClassDecl(AClassDecl node){
-			try {
-				symbolTable2.closeScope();
-			}catch(SemanticException e){
-				//e.printStackTrace();
-			}
-			if(node.getName().getText().equals("Main")){
-				hasMain = true;
-			}
-			
-			
-			//Por defecto se hereda de Object
-			if(node.getInherits() == null){
-				node.setInherits(new TTypeId("Object"));
-			}
-			
-			if(node.getInherits().getText().equals("Bool") || node.getInherits().getText().equals("String")){
-				ErrorManager.getInstance().getErrors().add(Error.INHERIT_BASIC);
-				ErrorManager.getInstance().semanticError("Coolc.semant.inheritBasic",node.getName().getText());
-			}
-
-			
-			if(node.getInherits().getText().equals("SELF_TYPE")){
-				ErrorManager.getInstance().getErrors().add(Error.INHERIT_SELF_TYPE);
-			if(node.getName().getText().equals("Main")){
-							hasMain = false;
-							ErrorManager.getInstance().semanticError("Coolc.semant.inheritSelfType",node.getName().getText());
-				}
-			}
-			
-			if(node.getName().getText().equals("Int") || node.getName().getText().equals("SELF_TYPE") || node.getName().getText().equals("String") || node.getName().getText().equals("Object") ||
-					node.getName().getText().equals("Bool")){
-				ErrorManager.getInstance().getErrors().add(Error.REDEF_BASIC);
-				ErrorManager.getInstance().semanticError("Coolc.semant.redefBasic",node.getName().getText());
-			}
-			
-			if( classDeclMap.get(node.getName().getText()) == null ||  classDeclMap.get(node.getName().getText()) == false ) {
-				classDeclMap.put(node.getName().getText(), true);
-			} else {
-				ErrorManager.getInstance().getErrors().add(Error.REDEFINED);
-				ErrorManager.getInstance().semanticError("Coolc.semant.redefined", node.getName().getText());
-			}
-			
-			//System.out.println("Checking in out: " + node.getName().getText());
-			if( !(node.getInherits().getText().equals("Object") || node.getInherits().getText().equals("Bool") || node.getInherits().getText().equals("Int") || node.getInherits().getText().equals("String")) ) {
-				missingClasses.add(node.getName().getText());
-				missingClasses.add(node.getInherits().getText());
-			}
-			
-			
-		}
-		
-		public void outAObjectExpr(AObjectExpr node) {
- 			try {
- 				Klass k = symbolTable2.get(node.getObjectId().getText());
- 				types2.put(node, k);
- 			}catch (SemanticException e){
- 				//e.printStackTrace();
- 			}
- 		}
-		public void outAAttributeFeature(AAttributeFeature node){
-			
-	        if(node.getObjectId().getText().equals("self")){
-	        	
-	        		ErrorManager.getInstance().getErrors().add(Error.SELF_ATTR);
-	        		ErrorManager.getInstance().semanticError("Coolc.semant.selfAttr");
-	        }
-		}
-		
-		public void outAAssignExpr(AAssignExpr node){
-	    	String s = node.getObjectId().getText();
-	    	if(s.equals("self")){
-	    		ErrorManager.getInstance().getErrors().add(Error.ASSIGN_SELF);
-	    		ErrorManager.getInstance().getErrors().add(Error.BAD_INFERRED);
-	    		ErrorManager.getInstance().semanticError("Coolc.semant.assignSelf");
-	    		}
-		}
-		
-		 public void inACaseExpr(ACaseExpr node){
-		        depth++;
-		        LinkedList<PBranch> params = node.getBranch();
-		    	boolean redefined = false;
-		    	ArrayList<String> repeated = new ArrayList<>();
-		    	
-		    	Auxiliar vartemp = new Auxiliar(depth+clase+metodo, new ArrayList<CClass>());
-		    	CClass curry = new CClass(clase,new HashMap<String,TTypeId>());
-		   TableSymbol.getInstance().getVariables().add(vartemp);
-				TableSymbol.getInstance().getAuxiliar(depth+clase+metodo).getLista().add(curry);
-				for(int i = 0; i < params.size(); i++){
-		    		ABranch p = (ABranch) params.get(i);
-		    		if(!repeated.contains(p.getTypeId().getText())){
-		    			repeated.add(p.getTypeId().getText());
-		    		}else{
-		    			redefined = true;
-		    		}
-		    	}
-		    	if(redefined){
-		    		ErrorManager.getInstance().getErrors().add(Error.DUPLICATE_BRANCH);
-		    	}else{
-			    	for(int i = 0; i < params.size(); i++){
-			    		ABranch p = (ABranch) params.get(i);
-			    		TableSymbol.getInstance().getAuxiliar(depth+clase+metodo).getCertainClass(clase).getTypes().put(p.getObjectId().getText(), p.getTypeId());
-			    	}
-		    	}
-		    }
-		    public void outACaseExpr(ACaseExpr node){
-		        depth--;
-		    }
-		
-	}
 
 	class Pass1 extends DepthFirstAdapter {
 		int ind = 0;
@@ -424,6 +134,8 @@ public class CoolSemantic implements SemanticFacade {
 		    		
 		    	return false;
 		    }
+		 
+		 /*No necesita cambio*/
 		 public void inAMethodFeature(AMethodFeature node){
 		    	ind++;
 		    	currentMethod = node.getObjectId().getText();
@@ -441,6 +153,7 @@ public class CoolSemantic implements SemanticFacade {
 		    		}
 		    		}
 		    }
+		
 		    public void outAMethodFeature(AMethodFeature node){
 		    	ind--;
 		    	currentMethod = "";
@@ -454,7 +167,8 @@ public class CoolSemantic implements SemanticFacade {
 		    		if(ErrorManager.getInstance().getErrors().size() == 0){
 		    		String mType = node.getTypeId().getText();
 		    		String eType = node.getExpr().toString();
-		    				    		if(!isSubType2(mType, eType)){
+		    				    		if(!isSubType2(mType, eType)){ /* necesita cambio*/
+		    				    		
 		    			ErrorManager.getInstance().getErrors().add(Error.BAD_INFERRED);
 		    			ErrorManager.getInstance().semanticError("Coolc.semant.badInferred", mType, eType,mType);
 		    		}
@@ -695,29 +409,6 @@ public class CoolSemantic implements SemanticFacade {
 		    }
 		//assignnoconform.cool
 		//TestBad 2
-		 public void outAAssignExpr(AAtExpr node){
-
-		    	String s = node.getTypeId().toString();
-		    	String Obj = node.getObjectId().toString();
-		 
-		    	if(s.equals("self")){
-		    		ErrorManager.getInstance().getErrors().add(Error.ASSIGN_SELF);
-		    		ErrorManager.getInstance().semanticError("Coolc.semant.assignSelf", s);
-		    		//ErrorManager.getInstance().getErrors().add(Error.BAD_INFERRED);
-		    		//TTypeId h=new TTypeId("major");
-				//node.setTypeId(h);
-		    	}
-		    	/**assignnoconform.cool
-				//TestBad 2**/
-		    	if(isSubType(s, node.toString())){
-		    		//node.setType(node.getExpr().getTypeAsString());
-		    	}else{
-		    		ErrorManager.getInstance().getErrors().add(Error.BAD_ASSIGNMENT);
-		    		ErrorManager.getInstance().semanticError("Coolc.semant.badAssignment", node.toString(), s, s);
-		    		
-		    		//node.setType("minor");
-		    	}
-		    }
 		 public void outAAssignExpr(AAssignExpr node){
 		    	String s = node.getObjectId().getText();
 		    	
@@ -938,9 +629,11 @@ public class CoolSemantic implements SemanticFacade {
 	    			//node.setType("minor");
 	    			return;
 	    		}else{
+	    		types2.put(node, BOOL);
 	    			//node.setType("Bool");
 	    		}
 	    	}else{
+	    		types2.put(node, BOOL);
 	    		//node.setType("Bool");
 	    	}
 	    }

@@ -2,6 +2,8 @@ package coolc.compiler.visitors;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.TreeMap;
 
 import coolc.compiler.CoolSemantic.Klass;
 import coolc.compiler.ErrorManager;
@@ -13,6 +15,7 @@ import coolc.compiler.autogen.node.AClassDecl;
 import coolc.compiler.autogen.node.AFormal;
 import coolc.compiler.autogen.node.AMethodFeature;
 import coolc.compiler.autogen.node.AProgram;
+import coolc.compiler.autogen.node.Node;
 import coolc.compiler.autogen.node.PExpr;
 import coolc.compiler.autogen.node.PFormal;
 
@@ -21,11 +24,17 @@ import coolc.compiler.util.CustomFormalForMethod;
 import coolc.compiler.util.CustomKlass;
 import coolc.compiler.util.CustomMethodForKlass;
 import coolc.compiler.util.Error;
+import coolc.compiler.util.MySymbolTable;
 import coolc.compiler.util.SymbolTable;
 import coolc.compiler.util.TableClass;
 import coolc.compiler.util.TableSymbol;
 
 public class InhVisitor extends DepthFirstAdapter {
+	private Map<Node, AClassDecl> types = new HashMap<Node, AClassDecl>();
+	private Map<Node, Klass> types2 = new HashMap<Node, Klass>();
+	SymbolTable<String, Klass> symbolTable2 = new MySymbolTable<String, Klass>();
+	private Map<String, Klass> klasses = new TreeMap<String, Klass>();
+	private Klass STR, BOOL, INT, OBJECT, ERROR, VOID, IO;
 	
 	CustomKlass currentCustomKlass;
 	
@@ -111,6 +120,7 @@ public class InhVisitor extends DepthFirstAdapter {
 				LinkedList<CustomFormalForMethod> params = method.getFormals();
 				if(tries.size() != params.size()){
 					ErrorManager.getInstance().getErrors().add(Error.FORMALS_FAILED_LONG);
+					ErrorManager.getInstance().semanticError("Coolc.semant.formalsFailedLong", "m","t","t");
 					//node.setType("minor");
 					return;
 				}else{
@@ -123,12 +133,17 @@ public class InhVisitor extends DepthFirstAdapter {
 							String[] parts = t.split(" ");
 							t = parts[parts.length - 1];
 						}**/
+						System.out.println("t"+t);
+						System.out.println("pf name"+pf.name);
+						System.out.println("the method"+method.getMethodName());
+						//System.out.println(a.name.equals(b.name));
 						
-						if(!t.contains(p)){
-							System.out.println("Entre hasta aca");
+						if(pf.name.contains(method.getMethodName())){
+							
 							ErrorManager.getInstance().getErrors().add(Error.FORMALS_FAILED_LONG);
+							ErrorManager.getInstance().semanticError("Coolc.semant.formalsFailedLong", "m","t","t");
 							//node.setType("minor");
-							return;
+						
 						}
 					}
 				}
@@ -136,25 +151,30 @@ public class InhVisitor extends DepthFirstAdapter {
 	    }
 	 
 	 public void outAAtExpr(AAtExpr node){
-			String theClass = node.getExpr().toString();
+			String theClass = currentCustomKlass.name;//node.getObjectId().toString();
 			
 			boolean found = false;
 			CustomMethodForKlass theMethod = null;
 			String f = node.getObjectId().getText();
-		 	CustomKlass n = ClassVariables.getInstance().searchKlassWithName(theClass);
+		 	CustomKlass n = ClassVariables.getInstance().searchKlassWithName(currentCustomKlass.name);
 			while(!theClass.contains("Object")){
-				
 				if(ClassVariables.getInstance().getMethodMap(n)!=null) {
+					
 				if( ClassVariables.getInstance().getMethodMap(n).containsKey(f)){
 					
 					theMethod = ClassVariables.getInstance().getMethodMap(n).get(f);
 					found = true;
 					break;
 				}
-				CustomKlass aux = ClassVariables.getInstance().searchKlassWithName(theClass);
+				
+				n = ClassVariables.getInstance().searchKlassWithName(n.parent);
 				
 						//ClassTable.getInstance().getClasses().get(theClass);
-				theClass = aux.parent.toString();
+				if(n == null) {
+					
+				}else {
+				theClass =n.parent.toString();
+				}
 				}else {
 					break;
 				}
@@ -176,6 +196,7 @@ public class InhVisitor extends DepthFirstAdapter {
 				LinkedList<CustomFormalForMethod> params = theMethod.getFormals();
 				if(tries.size() != params.size()){
 					ErrorManager.getInstance().getErrors().add(Error.FORMALS_FAILED_LONG);
+					ErrorManager.getInstance().semanticError("Coolc.semant.formalsFailedLong", "m","t","t");
 					//node.setType("minor");
 					return;
 				}else{
@@ -188,11 +209,16 @@ public class InhVisitor extends DepthFirstAdapter {
 							String[] parts = t.split(" ");
 							t = parts[parts.length - 1];
 						}**/
-						if(!t.contains(p)){
-							System.out.println("Entre hasta aca");
+						
+						//System.out.println(a.name.equals(b.name));
+						
+						if(pf.name.contains(theMethod.getMethodName())){
+							
 							ErrorManager.getInstance().getErrors().add(Error.FORMALS_FAILED_LONG);
+							
+							ErrorManager.getInstance().semanticError("Coolc.semant.formalsFailedLong", "m","t","t");
 							//node.setType("minor");
-							return;
+							
 						}
 					}
 					
@@ -200,6 +226,29 @@ public class InhVisitor extends DepthFirstAdapter {
 			}
 	    }
 
+	 public void outAAssignExpr(AAtExpr node){
+
+	    	String s = node.getTypeId().toString();
+	    	String Obj = node.getObjectId().toString();
+	 
+	    	if(s.equals("self")){
+	    		ErrorManager.getInstance().getErrors().add(Error.ASSIGN_SELF);
+	    		ErrorManager.getInstance().semanticError("Coolc.semant.assignSelf", s);
+	    		//ErrorManager.getInstance().getErrors().add(Error.BAD_INFERRED);
+	    		//TTypeId h=new TTypeId("major");
+			//node.setTypeId(h);
+	    	}
+	    	/**assignnoconform.cool
+			//TestBad 2**/
+	    	if(isSubType(s, node.toString())){
+	    		//node.setType(node.getExpr().getTypeAsString());
+	    	}else{
+	    		ErrorManager.getInstance().getErrors().add(Error.BAD_ASSIGNMENT);
+	    		ErrorManager.getInstance().semanticError("Coolc.semant.badAssignment", node.toString(), s, s);
+	    		
+	    		//node.setType("minor");
+	    	}
+	   }
 	public void inAMethodFeature(AMethodFeature node) {
 		CustomKlass n = null;
 		HashMap<String, CustomMethodForKlass> hereda = null ;
@@ -225,6 +274,7 @@ public class InhVisitor extends DepthFirstAdapter {
 		if(hereda.containsKey(m)) {
 			
 			CustomMethodForKlass iMeth = hereda.get(name);
+			System.out.println("iMeth"+iMeth.getMethodName());
 			if (parent.get(name).getFormals().size() != hereda.get(name).getFormals().size()) {
 				ErrorManager.getInstance().getErrors().add(Error.DIFF_N_FORMALS);
 			
@@ -277,31 +327,39 @@ public class InhVisitor extends DepthFirstAdapter {
 			return;
 		}
 		
-		for(String s : hereda.keySet()) {
+		for(String s : parent.keySet()) {
 			
 			
 		
-			if(parent.containsKey(s)) {
-				CustomMethodForKlass iMeth = hereda.get(s);
-				for(String cm: variable.keySet()) {
+			if(hereda.containsKey(s)) {
+				
+				CustomMethodForKlass iMeth = parent.get(s);
+				LinkedList<CustomFormalForMethod> l=hereda.get(s).getFormals();
+				
 					for(int i = 0; i< iMeth.getFormals().size(); i++) {
+						
 						CustomFormalForMethod a = iMeth.getFormals().get(i);
+						CustomFormalForMethod b = l.get(i);
 						//CustomFormalForMethod b =  iMeth.getMethodReturnType();
 						
-						if(cm.contains(s)) {//&&a.name.contains(s)) {
-							
-							if(cm.contains(a.name)) {
+						//&&a.name.contains(s)) {
+						
+							if(!a.name.contains(iMeth.getMethodName())) {
+								
+								
 							
 							}else {
+							
 								ErrorManager.getInstance().getErrors().add(Error.FORMALS_FAILED_LONG);
-								ErrorManager.getInstance().semanticError("Coolc.semant.formalsFailedLong", cm ,"h","i");
+								ErrorManager.getInstance().semanticError("Coolc.semant.formalsFailedLong", "ni idea" ,"h","i");
 								break;
 							}		
-						}
-					}
-					break;
+						
+					
+					
 				}
 			}else {
+				
 				ErrorManager.getInstance().getErrors().add(Error.FORMALS_FAILED_LONG);
 				ErrorManager.getInstance().semanticError("Coolc.semant.formalsFailedLong", "m","t","t");
 			}	
