@@ -87,8 +87,12 @@ public class InhVisitor extends DepthFirstAdapter {
 	    			found = true;
 	    			break;
 	    		}
+	    		if(cAux==null) {
+	    			break;
+	    		}else {
 	    		aux = cAux.parent.toString();
 	    		cAux = ClassVariables.getInstance().searchKlassWithName(aux);
+	    		}
 	    		
 	    		
 	    	}
@@ -119,7 +123,9 @@ public class InhVisitor extends DepthFirstAdapter {
 							String[] parts = t.split(" ");
 							t = parts[parts.length - 1];
 						}**/
-						if(!isSubType(p, t)){
+						
+						if(!t.contains(p)){
+							System.out.println("Entre hasta aca");
 							ErrorManager.getInstance().getErrors().add(Error.FORMALS_FAILED_LONG);
 							//node.setType("minor");
 							return;
@@ -182,7 +188,8 @@ public class InhVisitor extends DepthFirstAdapter {
 							String[] parts = t.split(" ");
 							t = parts[parts.length - 1];
 						}**/
-						if(!isSubType(p, t)){
+						if(!t.contains(p)){
+							System.out.println("Entre hasta aca");
 							ErrorManager.getInstance().getErrors().add(Error.FORMALS_FAILED_LONG);
 							//node.setType("minor");
 							return;
