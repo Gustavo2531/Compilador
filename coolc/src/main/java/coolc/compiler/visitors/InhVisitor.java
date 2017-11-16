@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
 
+
 import coolc.compiler.CoolSemantic.Klass;
 import coolc.compiler.ErrorManager;
 import coolc.compiler.autogen.analysis.DepthFirstAdapter;
@@ -37,6 +38,7 @@ public class InhVisitor extends DepthFirstAdapter {
 	private Klass STR, BOOL, INT, OBJECT, ERROR, VOID, IO;
 	
 	CustomKlass currentCustomKlass;
+	CustomMethodForKlass currentMethodForKlass;
 	
 	
 	@Override
@@ -133,9 +135,9 @@ public class InhVisitor extends DepthFirstAdapter {
 							String[] parts = t.split(" ");
 							t = parts[parts.length - 1];
 						}**/
-						System.out.println("t"+t);
-						System.out.println("pf name"+pf.name);
-						System.out.println("the method"+method.getMethodName());
+						//System.out.println("t"+t);
+						//System.out.println("pf name"+pf.name);
+						//System.out.println("the method"+method.getMethodName());
 						//System.out.println(a.name.equals(b.name));
 						
 						if(pf.name.contains(method.getMethodName())){
@@ -249,53 +251,68 @@ public class InhVisitor extends DepthFirstAdapter {
 	    		//node.setType("minor");
 	    	}
 	   }
+
+
 	public void inAMethodFeature(AMethodFeature node) {
-		CustomKlass n = null;
-		HashMap<String, CustomMethodForKlass> hereda = null ;
-		HashMap<String, CustomMethodForKlass> parent = null ;
-		if(currentCustomKlass !=null) {
-			
-			hereda = ClassVariables.getInstance().getMethodMap(currentCustomKlass);
-			n=ClassVariables.getInstance().searchKlassWithName(currentCustomKlass.parent);
-			
+		boolean foundFirstError = false;
+		HashMap<String, CustomMethodForKlass> currentClassMethods = ClassVariables.getInstance().getMethodMap(currentCustomKlass);
+		if(currentClassMethods != null) {
+			currentMethodForKlass = currentClassMethods.get(node.getObjectId().getText());
+			if(currentMethodForKlass != null) {
+				//System.out.println("I have definition for: " + node.getObjectId().getText());
+				if(!ClassVariables.getInstance().validOverridingMethodTypes(currentCustomKlass, currentMethodForKlass)) {
+					foundFirstError = true;
+					ErrorManager.getInstance().getErrors().add(Error.BAD_REDEFINITION);
+					ErrorManager.getInstance().semanticError("Coolc.semant.badRedefinition", currentMethodForKlass.getMethodName(), "n", "n");
+					//Coolc.semant.badRedefinition=In redefined method [%s], parameter type [%s] is different from original type [%s].\n
+				}
+			}
 		}
 		
-		if(n != null) {
-			parent = ClassVariables.getInstance().getMethodMap(n);
+		if(!false) {
+			CustomKlass n = null;
+			HashMap<String, CustomMethodForKlass> hereda = null ;
+			HashMap<String, CustomMethodForKlass> parent = null ;
+			if(currentCustomKlass !=null) {
+				
+				hereda = ClassVariables.getInstance().getMethodMap(currentCustomKlass);
+				n=ClassVariables.getInstance().searchKlassWithName(currentCustomKlass.parent);
+				
+			}
 			
-		} else {
-			return;
-		}
-		
-		for (String name: parent.keySet()) {
-			CustomMethodForKlass mMeth = parent.get(name);
-			String m=parent.get(name).getMethodName();
+			if(n != null) {
+				parent = ClassVariables.getInstance().getMethodMap(n);
+				
+			} else {
+				return;
+			}
 			
-		if(hereda.containsKey(m)) {
-			
-			CustomMethodForKlass iMeth = hereda.get(name);
-			System.out.println("iMeth"+iMeth.getMethodName());
-			if (parent.get(name).getFormals().size() != hereda.get(name).getFormals().size()) {
-				ErrorManager.getInstance().getErrors().add(Error.DIFF_N_FORMALS);
-			
-			
-				}else {
-					
-					for(int i = 0; i< mMeth.getFormals().size(); i++) {
-						CustomFormalForMethod a = iMeth.getFormals().get(i);
-						CustomFormalForMethod b =  mMeth.getFormals().get(i);
+			for (String name: parent.keySet()) {
+				CustomMethodForKlass mMeth = parent.get(name);
+				String m=parent.get(name).getMethodName();
+				
+			if(hereda.containsKey(m)) {
+				
+				CustomMethodForKlass iMeth = hereda.get(name);
+				if (parent.get(name).getFormals().size() != hereda.get(name).getFormals().size()) {
+					ErrorManager.getInstance().getErrors().add(Error.DIFF_N_FORMALS);
+				
+				
+					}else {
 						
-						if(a.name.toString().equals(b.name.toString()) && !a.type.toString().equals(b.type.toString()) ) {
-							ErrorManager.getInstance().getErrors().add(Error.BAD_REDEFINITION);
+						for(int i = 0; i< mMeth.getFormals().size(); i++) {
+							CustomFormalForMethod a = iMeth.getFormals().get(i);
+							CustomFormalForMethod b =  mMeth.getFormals().get(i);
 							
+							if(a.name.toString().equals(b.name.toString()) && !a.type.toString().equals(b.type.toString()) ) {
+								ErrorManager.getInstance().getErrors().add(Error.BAD_REDEFINITION);
+								
+							}
 						}
 					}
 				}
 			}
 		}
-		
-		
-	
 	}
 	
 	
