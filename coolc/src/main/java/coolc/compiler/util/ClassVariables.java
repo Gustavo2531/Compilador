@@ -101,4 +101,68 @@ public class ClassVariables {
 			}
 		}
 	}
+	
+	public boolean validOverridingMethodTypes(CustomKlass currentKlass, CustomMethodForKlass currentMethod) {
+		return validOverridingMethodTypes(currentKlass, currentMethod, null);
+	}
+	
+	private boolean validOverridingMethodTypes(CustomKlass currentKlass, CustomMethodForKlass currentMethod, CustomKlass parentKlass) {
+		
+		if(parentKlass != null) {
+			parentKlass = searchKlassWithName(parentKlass.parent);
+			if(parentKlass == null) {
+				return true;
+			}
+		}
+		
+		if(parentKlass == null && !currentKlass.name.equals("Object")) {
+			if(!currentKlass.parent.equals("Object")) {
+				parentKlass = searchKlassWithName(currentKlass.parent);
+				if(parentKlass == null) {
+					return true;
+				}
+			} else {
+				return true;
+			}
+		} else if(currentKlass.name.equals("Object")){
+			return true;
+		}
+		
+		HashMap<String, CustomMethodForKlass> parentKlassMethods = classWithMethods.get(parentKlass);
+		if(parentKlassMethods != null) {
+			CustomMethodForKlass parentMethod = parentKlassMethods.get(currentMethod.getMethodName());
+			
+			if(parentMethod != null) {
+				boolean correctTypes = true;
+				
+				for(CustomFormalForMethod currentFormal : currentMethod.getFormals()) {
+					String currentId = currentFormal.name;
+					String currentType = currentFormal.type;
+					
+					for(CustomFormalForMethod parentFormal : parentMethod.getFormals()) {
+						if(parentFormal.name.equals(currentId)) {
+							if(!parentFormal.type.equals(currentType)) {
+								correctTypes = false;
+							}
+							break;
+						}
+					}
+					
+					if(!correctTypes) {
+						break;
+					}
+				}
+				
+				if(!correctTypes) {
+					return false;
+				} else {
+					return validOverridingMethodTypes(currentKlass, currentMethod, parentKlass);
+				}
+			} else {
+				return true;
+			}
+		} else {
+			return true;
+		}
+	}
 }
