@@ -611,7 +611,7 @@ public class CoolSemantic implements SemanticFacade {
 					theMethod = TableSymbol.getInstance().getMethod("Object").getFeatures().get(f);
 				}
 				if(theMethod != null){
-					LinkedList<PExpr> tries = node.getList();
+					/**LinkedList<PExpr> tries = node.getList();
 					LinkedList<PFormal> params = theMethod.getFormal();
 					if(tries.size() != params.size()){
 						ErrorManager.getInstance().getErrors().add(Error.FORMALS_FAILED_LONG);
@@ -626,7 +626,7 @@ public class CoolSemantic implements SemanticFacade {
 							/**if(t.contains("SELF_TYPE")){
 								String[] parts = t.split(" ");
 								t = parts[parts.length - 1];
-							}**/
+							}
 							if(!isSubType3(p, t)){
 								ErrorManager.getInstance().getErrors().add(Error.FORMALS_FAILED_LONG);
 								ErrorManager.getInstance().semanticError("Coolc.semant.formalsFailedLong",t,p,p);
@@ -643,7 +643,7 @@ public class CoolSemantic implements SemanticFacade {
 						}else{
 							//node.setType(theMethod.getTypeId().getText());
 						}
-					}
+					} **/
 				}else{
 					ErrorManager.getInstance().getErrors().add(Error.DISPATCH_UNDEFINED);
 					ErrorManager.getInstance().semanticError("Coolc.semant.dispatchUndefined",node.getExpr().toString());
