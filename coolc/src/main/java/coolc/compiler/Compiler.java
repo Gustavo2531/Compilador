@@ -22,5 +22,6 @@ public interface Compiler {
 	public void genCode(Start node, PrintStream output);
 	public void setup(SemanticFacade s, CodegenFacade c);
 	public Set<Error> getErrors();
-	public Map<Node, AClassDecl> getTypes();
+	public Map<Node, CoolSemantic.Klass> getTypes();
+	
 }

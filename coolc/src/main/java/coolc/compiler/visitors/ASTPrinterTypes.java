@@ -3,6 +3,7 @@ package coolc.compiler.visitors;
 import java.io.PrintStream;
 import java.util.Map;
 
+import coolc.compiler.CoolSemantic;
 import coolc.compiler.autogen.node.AClassDecl;
 import coolc.compiler.autogen.node.Node;
 import coolc.compiler.autogen.node.PExpr;
@@ -10,9 +11,9 @@ import coolc.compiler.autogen.node.PExpr;
 
 public class ASTPrinterTypes extends ASTPrinter {
 
-	private Map<Node, AClassDecl> map;
+	private Map<Node, CoolSemantic.Klass> map;
 
-	public ASTPrinterTypes(Map<Node, AClassDecl> map, PrintStream out) {
+	public ASTPrinterTypes(Map<Node, CoolSemantic.Klass> map, PrintStream out) {
 		super(out);
 		this.map = map;
 	}
@@ -30,7 +31,7 @@ public class ASTPrinterTypes extends ASTPrinter {
 						.getName()
 						.substring(
 								node.getClass().getName().lastIndexOf('.') + 1)
-				+ ((node instanceof PExpr)?":"+map.get(node).getName().getText():"")
+				+ ((node instanceof PExpr) ? ":" + (map.get(node) == null ? "NO_TYPE" : map.get(node).name) : "")
 				+ "\n" + output;
 
 		// replace any ` with a |
