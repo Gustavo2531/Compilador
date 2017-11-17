@@ -2,17 +2,21 @@
   >- AProgram
      |- AClassDecl
      |  |- Main
+     |  |- Object
      |  `- AMethodFeature
      |     |- main
      |     |- Int
      |     `- AIntExpr:Int
      |        `- 0
      |- AClassDecl
-     |  `- A
+     |  |- A
+     |  `- Object
      |- AClassDecl
-     |  `- B
+     |  |- B
+     |  `- Object
      `- AClassDecl
         |- C
+        |- Object
         |- AAttributeFeature
         |  |- a
         |  `- A
