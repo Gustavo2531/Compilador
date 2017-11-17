@@ -798,40 +798,31 @@ public class CoolSemantic implements SemanticFacade {
 		} 
 		
 		
+		
 		 @Override
 		public void outAAssignExpr(AAssignExpr node) {
 			// TODO Auto-generated method stub
 			
-			super.outAAssignExpr(node);
+			
+		}
+		 @Override
+		public void outACallExpr(ACallExpr node) {
+			// TODO Auto-generated method stub
+			 types2.put(node, INT);
+		}
+		 @Override
+		public void outAAtExpr(AAtExpr node) {
+			// TODO Auto-generated method stub
+			
+			 
+				 types2.put(node, INT);
+			 
 		}
 		 
 			public void outAListExpr(AListExpr node) {
 			
-			
-			 if(node.getExpr().toString().contains("String")&&!node.getExpr().toString().contains("Int")){
-				 types2.put(node, STR);
-			 }
-			 if(node.getExpr().toString().contains("Bool")){
-				 types2.put(node, BOOL);
-							 
-				}
-			 if(node.getExpr().toString().contains("Int")){
 				 types2.put(node, INT);
-				 
-			 }
-			 if(node.getExpr().toString().contains("IO")){
-				 types2.put(node, IO);
-			 }
-			 if(node.getExpr().toString().contains("Error")){
-				 types2.put(node, ERROR);
-							 
-			 }
-			 if(node.getExpr().toString().contains("void")){
-				 types2.put(node, VOID);
-				 
-			 }
-				 
-				
+			 
 			}
 	
 		 
