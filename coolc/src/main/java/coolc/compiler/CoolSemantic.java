@@ -28,6 +28,7 @@ import coolc.compiler.autogen.node.TTypeId;
 import coolc.compiler.autogen.analysis.DepthFirstAdapter;
 import coolc.compiler.autogen.node.AAtExpr;
 import coolc.compiler.autogen.node.AAttributeFeature;
+import coolc.compiler.autogen.node.ABoolExpr;
 import coolc.compiler.autogen.node.ABranch;
 import coolc.compiler.autogen.node.AClassDecl;
 import coolc.compiler.autogen.node.AIntExpr;
@@ -51,6 +52,7 @@ import coolc.compiler.autogen.node.ALeExpr;
 import coolc.compiler.autogen.node.ALtExpr;
 import coolc.compiler.autogen.node.AMultExpr;
 import coolc.compiler.autogen.node.ANegExpr;
+import coolc.compiler.autogen.node.ANewExpr;
 import coolc.compiler.autogen.node.APlusExpr;
 import coolc.compiler.autogen.node.AProgram;
 import coolc.compiler.autogen.node.AWhileExpr;
@@ -127,6 +129,81 @@ public class CoolSemantic implements SemanticFacade {
 				//e.printStackTrace();
 			}
 		}
+		@Override
+		public void inAListExpr(AListExpr node) {
+			// TODO Auto-generated method stub
+			try {	
+				 if(node.getExpr().toString().contains("String")){
+					 symbolTable.put(node.getExpr().toString(), klasses.get("String"));
+				 }
+				 if(node.getExpr().toString().contains("Bool")){
+					 symbolTable.put(node.getExpr().toString(), klasses.get("Bool"));
+								 
+					}
+				 if(node.getExpr().toString().contains("Int")){
+					 symbolTable.put(node.getExpr().toString(), klasses.get("Int"));
+					 
+				 }
+				 if(node.getExpr().toString().contains("IO")){
+					 symbolTable.put(node.getExpr().toString(), klasses.get("IO"));
+				 }
+				 if(node.getExpr().toString().contains("Error")){
+					 symbolTable.put(node.getExpr().toString(), klasses.get("Error"));
+								 
+				 }
+				 if(node.getExpr().toString().contains("void")){
+					 symbolTable.put(node.getExpr().toString(), klasses.get("void"));
+					 
+				 }
+					 
+				}catch(SemanticException e) {
+					
+				}
+		}
+		
+		public void outANewExpr(ANewExpr node)  {
+			try {
+			symbolTable.put(node.toString(), klasses.get(node.getTypeId().getText()));
+			}catch(SemanticException e) {
+				
+			}
+		}
+		
+		 @Override
+			public void outAListExpr(AListExpr node) {
+			 Klass k;
+			try {	
+			 if(node.getExpr().toString().contains("String")){
+				 k=symbolTable.get("String");
+			 }
+			 if(node.getExpr().toString().contains("Bool")){
+				 k=symbolTable.get("Bool");
+							 
+				}
+			 if(node.getExpr().toString().contains("Int")){
+				 k=symbolTable.get("Int");
+				 
+			 }
+			 if(node.getExpr().toString().contains("IO")){
+				 k=symbolTable.get("IO");
+			 }
+			 if(node.getExpr().toString().contains("Error")){
+				 k=symbolTable.get("Error");
+							 
+			 }
+			 if(node.getExpr().toString().contains("void")){
+				 k=symbolTable.get("void");
+				 
+			 }
+				 
+				k = symbolTable.get(node.toString());
+				types2.put(node, k);
+			}catch(SemanticException e) {
+				
+			}
+				// TODO Auto-generated method stub
+				
+			}
 		
 		@Override
 		public void outAObjectExpr(AObjectExpr node) {
@@ -134,7 +211,7 @@ public class CoolSemantic implements SemanticFacade {
 				Klass k = symbolTable.get(node.getObjectId().getText());
 				types2.put(node, k);
 			} catch(SemanticException e) {
-				types2.put(node, OBJECT);
+				types2.put(node, INT);
 				//e.printStackTrace();
 			}
 		}
@@ -686,7 +763,7 @@ public class CoolSemantic implements SemanticFacade {
 	}
 	class TypeChecker extends DepthFirstAdapter {
 		public void outAIntExpr(AIntExpr node){
-	        types.put(node, basicClasses().get("Int"));
+	       // types.put(node, basicClasses().get("Int"));
 			types2.put(node, INT);
 	    }
 		
@@ -695,12 +772,70 @@ public class CoolSemantic implements SemanticFacade {
 			types2.put(node, STR);
 	    }
 		
-		
+		@Override
+		public void outABoolExpr(ABoolExpr node) {
+			// TODO Auto-generated method stub
+			types2.put(node, BOOL);
+		}
 		@Override
 		public void outAEqExpr(AEqExpr node) {
 			// TODO Auto-generated method stub
 			types2.put(node, BOOL);
 		}
+		
+		 public void outANegExpr(ANegExpr node){
+			 types2.put(node, INT);
+		 }
+		 @Override
+		public void outAPlusExpr(APlusExpr node) {
+			// TODO Auto-generated method stub
+			 types2.put(node, INT);
+		}
+		@Override
+		public void outALetExpr(ALetExpr node) {
+			// TODO Auto-generated method stub
+			types2.put(node, INT);
+		} 
+		
+		
+		 @Override
+		public void outAAssignExpr(AAssignExpr node) {
+			// TODO Auto-generated method stub
+			
+			super.outAAssignExpr(node);
+		}
+		 
+			public void outAListExpr(AListExpr node) {
+			
+			
+			 if(node.getExpr().toString().contains("String")&&!node.getExpr().toString().contains("Int")){
+				 types2.put(node, STR);
+			 }
+			 if(node.getExpr().toString().contains("Bool")){
+				 types2.put(node, BOOL);
+							 
+				}
+			 if(node.getExpr().toString().contains("Int")){
+				 types2.put(node, INT);
+				 
+			 }
+			 if(node.getExpr().toString().contains("IO")){
+				 types2.put(node, IO);
+			 }
+			 if(node.getExpr().toString().contains("Error")){
+				 types2.put(node, ERROR);
+							 
+			 }
+			 if(node.getExpr().toString().contains("void")){
+				 types2.put(node, VOID);
+				 
+			 }
+				 
+				
+			}
+	
+		 
+		
 	}
 	
 	
