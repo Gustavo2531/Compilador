@@ -211,6 +211,8 @@ public class CoolSemantic implements SemanticFacade {
 				Klass k = symbolTable.get(node.getObjectId().getText());
 				types2.put(node, k);
 			} catch(SemanticException e) {
+				
+				
 				types2.put(node, INT);
 				//e.printStackTrace();
 			}
@@ -791,37 +793,79 @@ public class CoolSemantic implements SemanticFacade {
 			// TODO Auto-generated method stub
 			 types2.put(node, INT);
 		}
+		 
+		 @Override
+		public void outAMinusExpr(AMinusExpr node) {
+			// TODO Auto-generated method stub
+			 types2.put(node, INT);
+		}
 		@Override
 		public void outALetExpr(ALetExpr node) {
 			// TODO Auto-generated method stub
 			types2.put(node, INT);
 		} 
 		
+		@Override
+		public void outALtExpr(ALtExpr node) {
+			// TODO Auto-generated method stub
+			types2.put(node, BOOL);
+		}
+		@Override
+		public void outANoExpr(ANoExpr node) {
+			// TODO Auto-generated method stub
+			types2.put(node, BOOL);
+		}
 		
+		@Override
+		public void outALeExpr(ALeExpr node) {
+			// TODO Auto-generated method stub
+			types2.put(node, BOOL);
+		}
+		@Override
+		public void outAMultExpr(AMultExpr node) {
+			// TODO Auto-generated method stub
+			types2.put(node, INT);
+		}
 		
+		@Override
+		public void outADivExpr(ADivExpr node) {
+			// TODO Auto-generated method stub
+			types2.put(node, INT);
+		}
 		 @Override
 		public void outAAssignExpr(AAssignExpr node) {
 			// TODO Auto-generated method stub
 			
-			
+			 types2.put(node, INT);
 		}
 		 @Override
 		public void outACallExpr(ACallExpr node) {
 			// TODO Auto-generated method stub
 			 types2.put(node, INT);
 		}
+		 
 		 @Override
 		public void outAAtExpr(AAtExpr node) {
 			// TODO Auto-generated method stub
+			//System.out.println(node.getObjectId().toString());
 			
-			 
 				 types2.put(node, INT);
 			 
 		}
 		 
 			public void outAListExpr(AListExpr node) {
-			
-				 types2.put(node, INT);
+			//System.out.println(node.getExpr().getLast().toString());
+			if(node.getExpr().getLast().toString().contains("String")&& !node.getExpr().getLast().toString().contains("Int") && !node.getExpr().getLast().toString().contains("Bool")) {
+				types2.put(node, STR);
+			}
+			if(!node.getExpr().getLast().toString().contains("String")&& node.getExpr().getLast().toString().contains("Int") && !node.getExpr().getLast().toString().contains("Bool")) {
+				types2.put(node, INT);
+			}
+			if(!node.getExpr().getLast().toString().contains("String")&& node.getExpr().getLast().toString().contains("Int") && !node.getExpr().getLast().toString().contains("Bool")) {
+				types2.put(node, BOOL);
+			}
+			types2.put(node, INT);
+				 
 			 
 			}
 	
