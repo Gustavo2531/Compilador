@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import javax.print.DocFlavor.STRING;
+
 import coolc.compiler.autogen.node.AAssignExpr;
 import coolc.compiler.autogen.node.AFormal;
 import coolc.compiler.autogen.node.AMethodFeature;
@@ -66,7 +68,7 @@ import coolc.compiler.autogen.node.PLetDecl;
 public class CoolSemantic implements SemanticFacade {
 	private Map<Node, AClassDecl> types = new HashMap<Node, AClassDecl>();
 	private Map<Node, Klass> types2 = new HashMap<Node, Klass>();
-	SymbolTable<String, Klass> symbolTable2 = new MySymbolTable<String, Klass>();
+	SymbolTable<String, Klass> symbolTable = new MySymbolTable<String, Klass>();
 	private Map<String, Klass> klasses = new TreeMap<String, Klass>();
 	private Klass STR, BOOL, INT, OBJECT, ERROR, VOID, IO;
 
@@ -75,7 +77,7 @@ public class CoolSemantic implements SemanticFacade {
 	
 	public class Klass{
 		public String name;
-		Klass parent;
+		public Klass parent;
 		TreeMap<String, Method> methods = new TreeMap<String,Method>();
 		TreeMap<String, Klass> vars = new TreeMap<String,Klass>();
 	}
@@ -93,7 +95,51 @@ public class CoolSemantic implements SemanticFacade {
 			}
 	//private boolean hasSelfTypeParameterPosition = false;
 	
-
+	class ScopePass extends DepthFirstAdapter {
+		Klass currentKlass;
+		@Override
+		public void inAClassDecl(AClassDecl node) {
+			symbolTable.openScope();
+			
+			currentKlass = new Klass();
+			currentKlass.name = node.getName().getText();
+			currentKlass.parent = OBJECT;
+			klasses.put(currentKlass.name, currentKlass);
+			types2.put(node, currentKlass);
+			// TODO: Add parent
+		}
+		
+		@Override
+		public void outAClassDecl(AClassDecl node) {
+			try {
+				symbolTable.closeScope();
+			} catch (SemanticException e){
+				//e.printStackTrace();
+			}
+		}
+		
+		@Override
+		public void inAAttributeFeature(AAttributeFeature node) {
+			try {
+				//System.err.println(klasses.get(node.getTypeId().getText()));
+				symbolTable.put(node.getObjectId().getText(), klasses.get(node.getTypeId().getText()));
+			} catch(SemanticException e) {
+				//e.printStackTrace();
+			}
+		}
+		
+		@Override
+		public void outAObjectExpr(AObjectExpr node) {
+			try {
+				Klass k = symbolTable.get(node.getObjectId().getText());
+				types2.put(node, k);
+			} catch(SemanticException e) {
+				types2.put(node, OBJECT);
+				//e.printStackTrace();
+			}
+		}
+	}
+	
 	class Pass1 extends DepthFirstAdapter {
 		int ind = 0;
 		AClassDecl currentClass;
@@ -466,7 +512,7 @@ public class CoolSemantic implements SemanticFacade {
 	    	}
 	    	
 	    	
-	    		types = new HashMap<Node, AClassDecl>();
+	    		
 	    }
 		
 		
@@ -493,7 +539,7 @@ public class CoolSemantic implements SemanticFacade {
 			if(!node.getL().toString().contains("Int") || !node.getR().toString().contains("Int")){
 	    			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
 	    			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
-	    			types.put(node,error);
+	    			//types.put(node,error);
 	    			return;
 	    		//node.setType("minor");
 	    		}else{
@@ -526,7 +572,7 @@ public class CoolSemantic implements SemanticFacade {
 	    	if(!node.getL().toString().contains("Int") || !node.getR().toString().contains("Int")){
     			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
     			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
-    			types.put(node,error);
+    			//types.put(node,error);
     			return;
     		//node.setType("minor");
     		}else{
@@ -542,7 +588,7 @@ public class CoolSemantic implements SemanticFacade {
 	    	if(!node.getL().toString().contains("Int") || !node.getR().toString().contains("Int")){
     			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
     			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
-    			types.put(node,error);
+    			//types.put(node,error);
     			return;
     		//node.setType("minor");
     		}else{
@@ -558,7 +604,7 @@ public class CoolSemantic implements SemanticFacade {
 	    	if(!node.getL().toString().contains("Int") || !node.getR().toString().contains("Int")){
     			ErrorManager.getInstance().getErrors().add(Error.NOT_INT_PARAMS);
     			ErrorManager.getInstance().semanticError("Coolc.semant.notIntParams", node.getL().toString());
-    			types.put(node,error);
+    			//types.put(node,error);
     			return;
     		//node.setType("minor");
     		}else{
@@ -629,11 +675,11 @@ public class CoolSemantic implements SemanticFacade {
 	    			//node.setType("minor");
 	    			return;
 	    		}else{
-	    		types2.put(node, BOOL);
+	    		//types2.put(node, BOOL);
 	    			//node.setType("Bool");
 	    		}
 	    	}else{
-	    		types2.put(node, BOOL);
+	    		//types2.put(node, BOOL);
 	    		//node.setType("Bool");
 	    	}
 	    }
@@ -641,12 +687,20 @@ public class CoolSemantic implements SemanticFacade {
 	class TypeChecker extends DepthFirstAdapter {
 		public void outAIntExpr(AIntExpr node){
 	        types.put(node, basicClasses().get("Int"));
+			types2.put(node, INT);
 	    }
 		
 		public void outAStrExpr(AStrExpr node){
-	        types.put(node, basicClasses().get("String"));
+	        //types.put(node, basicClasses().get("String"));
+			types2.put(node, STR);
 	    }
 		
+		
+		@Override
+		public void outAEqExpr(AEqExpr node) {
+			// TODO Auto-generated method stub
+			types2.put(node, BOOL);
+		}
 	}
 	
 	
@@ -660,6 +714,8 @@ public class CoolSemantic implements SemanticFacade {
 	@Override
 	public void check() throws SemanticException {
 		basicClasses();
+		start.apply(new ScopePass());
+		start.apply(new TypeChecker());
 		
 		start.apply(new OtherVisitor());
 		
@@ -677,8 +733,6 @@ public class CoolSemantic implements SemanticFacade {
 		}
 		
 		
-		
-		start.apply(new TypeChecker());
 	}
 
 	@Override
@@ -900,13 +954,18 @@ public class CoolSemantic implements SemanticFacade {
 		 		OBJECT.vars = null;
 		 		
 		 		IO = new Klass();
+		 		IO.name = "IO";
+		 		IO.parent = OBJECT;
 
 		 		
 		 		INT = new Klass();
 		 		INT.name = "Int";
+		 		INT.parent = OBJECT;
 
 		 		
 		 		BOOL = new Klass();
+		 		BOOL.name = "Bool";
+		 		BOOL.parent = OBJECT;
 
 				
 		 		STR = new Klass();
@@ -915,15 +974,19 @@ public class CoolSemantic implements SemanticFacade {
 
 				
 				ERROR = new Klass();
-
+				ERROR.name = "ERROR";
+				ERROR.parent = OBJECT;
 				
 				
 				VOID = new Klass();
+				VOID.name = "VOID";
+				VOID.parent = OBJECT;
 
 				klasses.put("Object", OBJECT);
-		
+				klasses.put("IO", IO);
 				klasses.put("Int", INT);
-			klasses.put("String", STR);
+				klasses.put("Bool", BOOL);
+			    klasses.put("String", STR);
 				
 		map.put("Object", ObjectClass);
 		map.put("IO", IOClass);

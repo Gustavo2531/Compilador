@@ -20,10 +20,12 @@ import coolc.compiler.visitors.ASTPrinter;
 import coolc.compiler.visitors.ASTPrinterTypes;
 
 public class CompilerImpl implements Compiler {
-	public static String file = "src/test/resources/semantic/input/overridingmethod4.cool";
+	public static String file = "src/test/resources/semantic/input/compare.cool";
 	//public static String file = "src/test/resources/codegen/input/while-val.cool";
 	//public static String file = "src/test/resources/semantic/input/redefinedobject.cool";
 	public static String outFile = "src/test/resources/test.s";
+	
+	
 	
 	private CoolcLexer lexer;
 	private Parser parser;
@@ -55,18 +57,21 @@ public class CompilerImpl implements Compiler {
 			System.exit(-1);
 		}
 		
-		start.apply(new ASTPrinter(System.out));
+		//start.apply(new ASTPrinter(System.out));
 		ErrorManager.getInstance().setOut(System.err);
 		ErrorManager.getInstance().reset();
 		
 		try {
 			compiler.semanticCheck(start, System.err);
 		} catch (SemanticException e) {
-			System.err.format("Compilation halted due to semantic errors.\n");			
-			System.exit(-1);
+			System.err.format("Compilation halted due to semantic errors.\n");		
+			//System.exit(-1);
+		} finally {
+			ErrorManager.getInstance().reset();
+			start.apply(new ASTPrinterTypes(compiler.getTypes(), System.out));
 		}
 		
-		start.apply(new ASTPrinterTypes(compiler.getTypes(), System.out));
+		//start.apply(new ASTPrinterTypes(compiler.getTypes(), System.out));
 		
 		// When generating code, uncomment this:
 		// PrintStream out = new PrintStream(new FileOutputStream(outFile));

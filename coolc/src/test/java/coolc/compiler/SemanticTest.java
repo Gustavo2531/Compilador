@@ -132,19 +132,23 @@ public class SemanticTest {
 
 		compiler.setup(semanticFacade, null);
 		Start start = compiler.lexAndParse(new File(inputPath + file), out);
-		compiler.semanticCheck(start, out);
-		
-		start.apply(new ASTPrinterTypes(compiler.getTypes(), out));
-		out.close();
-		
-		Iterator<String> refLines = FileUtils.readLines(new File(refPath + file + ".out")).iterator();
-		Iterator<String> outLines = FileUtils.readLines(new File(outputPath + file + ".out")).iterator();
-		
-		while(true) {				
-			if (!refLines.hasNext()) break;
-			String r = refLines.next();
-			String o = outLines.next();
-			assert r.compareTo(o) == 0 : String.format("%s -> %s, reference=[%s], output=[%s]", file, testName, r, o);
+		try {
+			compiler.semanticCheck(start, out);
+		} catch (SemanticException e) {
+			
+		} finally {
+			start.apply(new ASTPrinterTypes(compiler.getTypes(), out));
+			out.close();
+			
+			Iterator<String> refLines = FileUtils.readLines(new File(refPath + file + ".out")).iterator();
+			Iterator<String> outLines = FileUtils.readLines(new File(outputPath + file + ".out")).iterator();
+			
+			while(true) {				
+				if (!refLines.hasNext()) break;
+				String r = refLines.next();
+				String o = outLines.next();
+				assert r.compareTo(o) == 0 : String.format("%s -> %s, reference=[%s], output=[%s]", file, testName, r, o);
+			}
 		}
 	}
 

@@ -1,6 +1,11 @@
-class Main{
-a:Int<-1;
-main():Object{
-"Hello"
+class Main{main(): Int{0};};
+
+Class A{
+	x:Int;
+	
+	f(x:A):String{"ab"};
+	g(x:Bool):A{self};
+	h(y:String):String{{x;y;} };
+	
 };
-};
+
